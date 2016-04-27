@@ -116,5 +116,6 @@ namespace Branch.com.proem.exm.util
         /// 零售明细
         /// </summary>
         public const string ZC_RESALE_ITME = "ZC_RESALE_ITME";
+
     }
 }

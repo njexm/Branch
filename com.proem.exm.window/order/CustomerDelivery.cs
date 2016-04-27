@@ -458,9 +458,15 @@ namespace Branch.com.proem.exm.window.order
             {
                 AddOrReduceButton_Click(this, EventArgs.Empty);
             }
+            ///零售商品数量修改
             if(isResale & e.KeyCode == Keys.B)
             {
                 button1_Click(this, EventArgs.Empty);
+            }
+            ///零售商品删除
+            if (isResale & e.KeyCode == Keys.C)
+            {
+                button2_Click(this, EventArgs.Empty);
             }
 
             ///查询键点击查询
@@ -1149,108 +1155,118 @@ namespace Branch.com.proem.exm.window.order
         /// <param name="e"></param>
         private void balance_Click(object sender, EventArgs e)
         {
-            isResale = false;
-            if (itemDataGridView.DataSource == null)
+            if (!isResale)   ///不是零售
             {
-                MessageBox.Show("当前没有要结算的订单");
-                return;
-            }
-            if (itemDataGridView.RowCount == 0)
-            {
-                MessageBox.Show("当前没有要结算的订单");
-                return;
-            }
-            ///存在拒收商品标识
-            bool existRefuse = false;
-            ///整单商品拒收标识
-            bool allRefuse = true;
-            for (int i = 0; i < itemDataGridView.Rows.Count; i++)
-            {
-                if (Convert.ToInt32(itemDataGridView[5, i].Value) != 0)
+                if (itemDataGridView.DataSource == null)
                 {
-                    existRefuse = true;
-                    //RefuseReason refuseReason = new RefuseReason(this, itemDataGridView[1, i].Value.ToString(), i);
-                    //refuseReason.ShowDialog();
-                    if (Convert.ToInt32(itemDataGridView[5, i].Value) != Convert.ToInt32(itemDataGridView[3, i].Value))
+                    MessageBox.Show("当前没有要结算的订单");
+                    return;
+                }
+                if (itemDataGridView.RowCount == 0)
+                {
+                    MessageBox.Show("当前没有要结算的订单");
+                    return;
+                }
+                ///存在拒收商品标识
+                bool existRefuse = false;
+                ///整单商品拒收标识
+                bool allRefuse = true;
+                for (int i = 0; i < itemDataGridView.Rows.Count; i++)
+                {
+                    if (Convert.ToInt32(itemDataGridView[5, i].Value) != 0)
+                    {
+                        existRefuse = true;
+                        //RefuseReason refuseReason = new RefuseReason(this, itemDataGridView[1, i].Value.ToString(), i);
+                        //refuseReason.ShowDialog();
+                        if (Convert.ToInt32(itemDataGridView[5, i].Value) != Convert.ToInt32(itemDataGridView[3, i].Value))
+                        {
+                            allRefuse = false;
+                        }
+                    }
+                    else
                     {
                         allRefuse = false;
                     }
                 }
+
+                if (!existRefuse)
+                {
+                    ///不存在拒收情况，直接进入结算  
+                    PayForm pay = new PayForm();
+                    pay.totalAmount = totalAmount.Text.ToString();
+                    pay.memberCardId = card_label.Text.ToString();
+                    pay.orderId = id_.Text.ToString();
+                    pay.ModeFlag = 0;
+                    pay.customerDelivery = this;
+                    pay.ShowDialog();
+                }
                 else
                 {
-                    allRefuse = false;
+                    if (allRefuse)
+                    {
+                        DialogResult dr = MessageBox.Show("当前客户未提取商品,是否整单拒收？", "标题", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+                        if (dr == DialogResult.No)
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            for (int i = 0; i < itemDataGridView.Rows.Count; i++)
+                            {
+                                if (Convert.ToInt32(itemDataGridView[5, i].Value) != 0)
+                                {
+                                    RefuseReason refuseReason = new RefuseReason(this, itemDataGridView[1, i].Value.ToString(), i);
+                                    refuseReason.ShowDialog();
+                                }
+                            }
+
+                            actualTotalMoney = "0";
+                            saveRefuseInform(Constant.ORDER_STATUS_ALL_REFUSE);
+                            MessageBox.Show("整单拒收成功");
+                            initData();
+                        }
+                    }
+                    else
+                    {
+                        ///部分拒收    
+                        DialogResult dr = MessageBox.Show("当前订单中存在未收商品,是否部分拒收,结算？", "标题", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+                        if (dr == DialogResult.No)
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            for (int i = 0; i < itemDataGridView.Rows.Count; i++)
+                            {
+                                if (Convert.ToInt32(itemDataGridView[5, i].Value) != 0)
+                                {
+                                    RefuseReason refuseReason = new RefuseReason(this, itemDataGridView[1, i].Value.ToString(), i);
+                                    refuseReason.ShowDialog();
+                                }
+                            }
+                            ///先结算  
+                            PayForm pay = new PayForm();
+                            pay.totalAmount = totalAmount.Text.ToString();
+                            pay.memberCardId = card_label.Text.ToString();
+                            pay.orderId = id_.Text.ToString();
+                            pay.ModeFlag = 1;
+                            pay.customerDelivery = this;
+                            pay.ShowDialog();
+
+                        }
+                    }
                 }
             }
-
-            if (!existRefuse)
+            else  ///零售进入结算
             {
-                ///不存在拒收情况，直接进入结算  
                 PayForm pay = new PayForm();
-                pay.totalAmount = totalAmount.Text.ToString();
-                pay.memberCardId = card_label.Text.ToString();
-                pay.orderId = id_.Text.ToString();
-                pay.ModeFlag = 0;
+                pay.totalAmount = resaletotalsum.Text.ToString();
+                pay.memberCardId =associatorInfo == null ? string.Empty : associatorInfo.CardNumber;
+                pay.orderId = "LS"+ DateTime.Now.ToString("yyyyMMddhhmmss")+LoginUserInfo.street;
+                pay.ModeFlag = 2;
                 pay.customerDelivery = this;
                 pay.ShowDialog();
             }
-            else
-            {
-                if (allRefuse)
-                {
-                    DialogResult dr = MessageBox.Show("当前客户未提取商品,是否整单拒收？", "标题", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
-                    if (dr == DialogResult.No)
-                    {
-                        return;
-                    }
-                    else
-                    {
-                        for (int i = 0; i < itemDataGridView.Rows.Count; i++)
-                        {
-                            if (Convert.ToInt32(itemDataGridView[5, i].Value) != 0)
-                            {
-                                RefuseReason refuseReason = new RefuseReason(this, itemDataGridView[1, i].Value.ToString(), i);
-                                refuseReason.ShowDialog();
-                            }
-                        }
-
-                        actualTotalMoney = "0";
-                        saveRefuseInform(Constant.ORDER_STATUS_ALL_REFUSE);
-                        MessageBox.Show("整单拒收成功");
-                        initData();
-                    }
-                }
-                else
-                {
-                    ///部分拒收    
-                    DialogResult dr = MessageBox.Show("当前订单中存在未收商品,是否部分拒收,结算？", "标题", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
-                    if (dr == DialogResult.No)
-                    {
-                        return;
-                    }
-                    else
-                    {
-                        for (int i = 0; i < itemDataGridView.Rows.Count; i++)
-                        {
-                            if (Convert.ToInt32(itemDataGridView[5, i].Value) != 0)
-                            {
-                                RefuseReason refuseReason = new RefuseReason(this, itemDataGridView[1, i].Value.ToString(), i);
-                                refuseReason.ShowDialog();
-                            }
-                        }
-                        ///先结算  
-                        PayForm pay = new PayForm();
-                        pay.totalAmount = totalAmount.Text.ToString();
-                        pay.memberCardId = card_label.Text.ToString();
-                        pay.orderId = id_.Text.ToString();
-                        pay.ModeFlag = 1;
-                        pay.customerDelivery = this;
-                        pay.ShowDialog();
-
-                    }
-                }
-            }
-
-
         }
 
 
@@ -2421,7 +2437,7 @@ namespace Branch.com.proem.exm.window.order
             {
                 if (resaleAdd)
                 {
-                    resaleDatagridView.Rows.Add(new Object[] { serial, obj.GoodsName, 1 , weight, obj.GoodsPrice, obj.GoodsPrice });
+                    resaleDatagridView.Rows.Add(new Object[] { serial, obj.GoodsName, 1 , weight, obj.GoodsPrice, obj.GoodsPrice, obj.Id });
                     resaleDatagridView.Rows[resaleDatagridView.Rows.Count -1].Selected = true;
                     resaleDatagridView.CurrentCell = resaleDatagridView.Rows[resaleDatagridView.Rows.Count - 1].Cells[0];
                 }
@@ -2431,6 +2447,8 @@ namespace Branch.com.proem.exm.window.order
                     return;
                 }
             }
+            ///计算数量小计和金额总计
+            ResaleCalculate();
         }
 
         /// <summary>
@@ -2499,7 +2517,116 @@ namespace Branch.com.proem.exm.window.order
             int index = resaleDatagridView.CurrentRow.Index;
             resaleDatagridView.Rows[index].Cells[2].Value = num;
             resaleDatagridView.Rows[index].Cells[5].Value = float.Parse(resaleDatagridView.Rows[index].Cells[4].Value.ToString()) * Int32.Parse(num);
-            //TODO少个计算总的数量和金额的算法
+            //计算总的数量和金额的算法
+            ResaleCalculate();
+        }
+
+        /// <summary>
+        /// 删除商品
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (resaleDatagridView.RowCount == 0)
+            {
+                return;
+            }
+            string name = resaleDatagridView.CurrentRow.Cells[1].Value.ToString();
+            DialogResult dr = MessageBox.Show("确定删除"+name + "?", "提示",MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (dr == DialogResult.Yes)
+            {
+                int index = resaleDatagridView.CurrentRow.Index;
+                resaleDatagridView.Rows.RemoveAt(index);
+                //计算总的数量和金额的算法
+                ResaleCalculate();
+            }
+        }
+
+        /// <summary>
+        /// 零售金额计算
+        /// </summary>
+        private void ResaleCalculate()
+        {
+            int totalSum = 0;
+            float totalMoney = 0;
+            for (int i = 0; i < resaleDatagridView.RowCount; i++)
+            {
+                int nums = Int32.Parse(resaleDatagridView.Rows[i].Cells[2].Value.ToString());
+                float money = float.Parse(resaleDatagridView.Rows[i].Cells[5].Value.ToString());
+                totalSum += nums;
+                totalMoney += money;
+            }
+
+            resaletotalNumlabel.Text = totalSum.ToString();
+            resaletotalsum.Text = totalMoney.ToString("0.00");
+        }
+
+        /// <summary>
+        /// 保存零售信息
+        /// </summary>
+        /// <param name="waterNumber"></param>
+        public void saveResaleInform(string waterNumber)
+        {
+            ///零售主表
+            Resale resale = new Resale();
+            resale.Id = Guid.NewGuid().ToString();
+            resale.CreateTime = DateTime.Now;
+            resale.UpdateTime = DateTime.Now;
+            resale.WaterNumber = waterNumber;
+            resale.Nums = resaletotalNumlabel.Text;
+            resale.Money = resaletotalsum.Text;
+            resale.BranchId = LoginUserInfo.branchId;
+            resale.memberId = associatorInfo == null ? string.Empty : associatorInfo.Id;
+            List<ResaleItem> list = new List<ResaleItem>();
+            for (int i = 0; i < resaleDatagridView.RowCount; i++)
+            {
+                ResaleItem obj = new ResaleItem();
+                obj.Id = Guid.NewGuid().ToString();
+                obj.CreateTime = DateTime.Now;
+                obj.UpdateTime = DateTime.Now;
+                obj.GoodsFileId = resaleDatagridView.Rows[i].Cells[6].Value.ToString();
+                obj.Nums = resaleDatagridView.Rows[i].Cells[2].Value.ToString();
+                obj.Money = resaleDatagridView.Rows[i].Cells[5].Value.ToString();
+                obj.ResaleId = resale.Id;
+                list.Add(obj);
+            }
+            BranchResaleItemService branchItemService = new BranchResaleItemService();
+            BranchResaleService branchService = new BranchResaleService();
+            ResaleItemService itemServcie = new ResaleItemService();
+            ResaleService service = new ResaleService();
+            branchItemService.AddResaleItem(list);
+            branchService.AddResale(resale);
+            ///上传零售信息
+            if (PingTask.IsConnected)
+            {
+                ///连网状态
+                itemServcie.AddResaleItem(list);
+                service.AddResale(resale);
+            }
+            else
+            { 
+                //断网状态
+                List<UploadInfo> uploadList = new List<UploadInfo>();
+                UploadInfo obj1 = new UploadInfo();
+                obj1.Id = resale.Id;
+                obj1.CreateTime = DateTime.Now;
+                obj1.UpdateTime = DateTime.Now;
+                obj1.Type = Constant.ZC_RESALE;
+                uploadList.Add(obj1);
+                foreach (ResaleItem obj in list)
+                {
+                    UploadInfo obj2 = new UploadInfo();
+                    obj2.Id = obj.Id;
+                    obj2.CreateTime = DateTime.Now;
+                    obj2.UpdateTime = DateTime.Now;
+                    obj2.Type = Constant.ZC_RESALE_ITME;
+                    uploadList.Add(obj2);
+                }
+                UploadDao uploadDao = new UploadDao();
+                uploadDao.AddUploadInfo(uploadList);
+            }
+            ///TODO  库存的减少
         }
     }
 }

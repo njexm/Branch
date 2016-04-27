@@ -9,7 +9,7 @@ namespace Branch.com.proem.exm.service.branch
 {
     public class BranchResaleItemService
     {
-        public void AddResale(List<ResaleItem> list) 
+        public void AddResaleItem(List<ResaleItem> list) 
         {
             BranchResaleItemDao dao = new BranchResaleItemDao();
             dao.AddResaleItem(list);

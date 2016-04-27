@@ -70,6 +70,7 @@ namespace Branch.com.proem.exm.window.order
         /// 标识是部分拒收，还是直接结算
         /// 0，结算
         /// 1，部分拒收
+        /// 2，零售
         /// </summary>
         public int ModeFlag;
 
@@ -202,9 +203,12 @@ namespace Branch.com.proem.exm.window.order
                 {
                     customerDelivery.saveRefuseInform(Constant.ORDER_STATUS_PART_REFUSE);
                 }
-                else
+                else if(ModeFlag == 0)
                 {
                     customerDelivery.saveAllPay(Constant.ORDER_STATUS_FININSH);
+                }else if(ModeFlag == 2)
+                {
+                    customerDelivery.saveResaleInform();
                 }
                 clFlag = true;
                 ///打印小票的代码
