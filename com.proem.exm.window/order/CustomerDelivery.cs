@@ -458,6 +458,10 @@ namespace Branch.com.proem.exm.window.order
             {
                 AddOrReduceButton_Click(this, EventArgs.Empty);
             }
+            if(isResale & e.KeyCode == Keys.B)
+            {
+                button1_Click(this, EventArgs.Empty);
+            }
 
             ///查询键点击查询
             if (queryTextBox.Focused == true && e.KeyCode == Keys.Enter)
@@ -2346,7 +2350,7 @@ namespace Branch.com.proem.exm.window.order
             }
             else
             {
-                serial = numberString.Substring(2, 5);
+                serial = numberString;
             }
 
             BranchZcGoodsMasterService branchGoodsService = new BranchZcGoodsMasterService();
@@ -2367,10 +2371,14 @@ namespace Branch.com.proem.exm.window.order
                     if (resaleAdd)
                     {
                         int nums = Int32.Parse(resaleDatagridView[2, i].Value.ToString());
-                        float old_weight = string.IsNullOrEmpty(resaleDatagridView[3, i].Value.ToString()) ? 0 : float.Parse(resaleDatagridView[3, i].Value.ToString());
+                        float price = float.Parse(resaleDatagridView[4, i].Value == null ? "0" : resaleDatagridView[4, i].Value.ToString());
+                        if(! serial.StartsWith("69"))
+                        {
+                            float old_weight = string.IsNullOrEmpty(resaleDatagridView[3, i].Value.ToString()) ? 0 : float.Parse(resaleDatagridView[3, i].Value.ToString());
+                            resaleDatagridView[3, i].Value = old_weight + float.Parse(weight);
+                        }
                         resaleDatagridView[2, i].Value = nums + 1;
-                        resaleDatagridView[3, i].Value = old_weight + float.Parse(weight);
-                        resaleDatagridView[5, i].Value = (nums + 1) * (old_weight + float.Parse(weight));
+                        resaleDatagridView[5, i].Value = (nums + 1) * price;
                         resaleDatagridView.Rows[i].Selected = true;
                         resaleDatagridView.CurrentCell = resaleDatagridView.Rows[i].Cells[0];
                         break;
@@ -2379,28 +2387,32 @@ namespace Branch.com.proem.exm.window.order
                     {
                         int nums = Int32.Parse(resaleDatagridView[2, i].Value.ToString());
                         float old_weight = string.IsNullOrEmpty(resaleDatagridView[3, i].Value.ToString()) ? 0 : float.Parse(resaleDatagridView[3, i].Value.ToString());
-                        if (float.Parse(weight) > old_weight)
-                        {
-                            MessageBox.Show("扫码减去的商品重量不能大于已扫描的商品重量", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            return;
+                        if(!serial.StartsWith("69")){
+                            if (float.Parse(weight) > old_weight)
+                            {
+                                MessageBox.Show("扫码减去的商品重量不能大于已扫描的商品重量", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return;
+                            }
                         }
-                        else 
+
+                        if (nums == 1)
                         {
-                            if (nums == 1)
+                            resaleDatagridView.Rows.RemoveAt(i);
+                            AddOrReduceButton_Click(this, EventArgs.Empty);
+                        }
+                        else
+                        {
+                            float price = float.Parse(resaleDatagridView[4, i].Value == null ? "0" : resaleDatagridView[4, i].Value.ToString());
+                            resaleDatagridView[2, i].Value = nums - 1;
+                            if (!serial.StartsWith("69"))
                             {
-                                resaleDatagridView.Rows.RemoveAt(i);
-                                AddOrReduceButton_Click(this, EventArgs.Empty);
-                            }
-                            else
-                            {
-                                resaleDatagridView[2, i].Value = nums - 1;
                                 resaleDatagridView[3, i].Value = old_weight - float.Parse(weight);
-                                resaleDatagridView[5, i].Value = (nums - 1) * (old_weight - float.Parse(weight));
-                                resaleDatagridView.Rows[i].Selected = true;
-                                resaleDatagridView.CurrentCell = resaleDatagridView.Rows[i].Cells[0];
-                                AddOrReduceButton_Click(this, EventArgs.Empty);
-                                break;
                             }
+                            resaleDatagridView[5, i].Value = (nums - 1) * price;
+                            resaleDatagridView.Rows[i].Selected = true;
+                            resaleDatagridView.CurrentCell = resaleDatagridView.Rows[i].Cells[0];
+                            AddOrReduceButton_Click(this, EventArgs.Empty);
+                            break;
                         }
                     }
                 }
@@ -2451,6 +2463,43 @@ namespace Branch.com.proem.exm.window.order
                 resaleAdd = true;
                 AddOrReduceButton.Text = "+加(A)";
             }
+        }
+
+        /// <summary>
+        /// 点击数量修改按钮
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (resaleDatagridView.RowCount == 0)
+            {
+                return;
+            }
+            string serialNumber = resaleDatagridView.CurrentRow.Cells[0].Value.ToString();
+            if (!serialNumber.StartsWith("69"))
+            {
+                ///说明是称重的商品，无法进行数量修改
+                MessageBox.Show("称重商品无法手动修改数量", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            else
+            {
+                InputNums obj = new InputNums(this);
+                obj.Show();
+            }
+        }
+
+        /// <summary>
+        /// 修改成本数量
+        /// </summary>
+        /// <param name="num"></param>
+        public void ResaleChangeNums(string num)
+        {
+            int index = resaleDatagridView.CurrentRow.Index;
+            resaleDatagridView.Rows[index].Cells[2].Value = num;
+            resaleDatagridView.Rows[index].Cells[5].Value = float.Parse(resaleDatagridView.Rows[index].Cells[4].Value.ToString()) * Int32.Parse(num);
+            //TODO少个计算总的数量和金额的算法
         }
     }
 }
