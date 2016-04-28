@@ -208,7 +208,7 @@ namespace Branch.com.proem.exm.window.order
                     customerDelivery.saveAllPay(Constant.ORDER_STATUS_FININSH);
                 }else if(ModeFlag == 2)
                 {
-                    customerDelivery.saveResaleInform();
+                    customerDelivery.saveResaleInform(orderId);
                 }
                 clFlag = true;
                 ///打印小票的代码
