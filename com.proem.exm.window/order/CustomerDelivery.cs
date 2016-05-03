@@ -491,6 +491,7 @@ namespace Branch.com.proem.exm.window.order
         private void pickUp_Click(object sender, EventArgs e)
         {
             isResale = false;
+            printObjectlist.Clear();
 
             orderItemGroupBox.Show();
             itemTablePanel.Show();
@@ -837,14 +838,26 @@ namespace Branch.com.proem.exm.window.order
         /// </summary>
         public void initData()
         {
-            queryTextBox.Text = "";
-            card_label.Text = "";
-            name_label.Text = "";
-            inform_label.Text = "";
-            id_.Text = "";
-            totalSum.Text = "";
-            totalAmount.Text = "";
-            itemDataGridView.DataSource = null;
+            if (isResale)
+            {
+                memberTextBox.Text = "";
+                resaletotalNumlabel.Text = "0";
+                resaletotalsum.Text = "0.00";
+                ResaleWaterNumber = "";
+                associatorInfo = null;
+                resaleDatagridView = null;
+            }
+            else 
+            {
+                queryTextBox.Text = "";
+                card_label.Text = "";
+                name_label.Text = "";
+                inform_label.Text = "";
+                id_.Text = "";
+                totalSum.Text = "";
+                totalAmount.Text = "";
+                itemDataGridView.DataSource = null;
+            }
         }
 
         private void oneButton_Click(object sender, EventArgs e)
@@ -1262,13 +1275,18 @@ namespace Branch.com.proem.exm.window.order
                 PayForm pay = new PayForm();
                 pay.totalAmount = resaletotalsum.Text.ToString();
                 pay.memberCardId =associatorInfo == null ? string.Empty : associatorInfo.CardNumber;
-                pay.orderId = "LS"+ DateTime.Now.ToString("yyyyMMddhhmmss")+LoginUserInfo.street;
+                ResaleWaterNumber = "LS" + DateTime.Now.ToString("yyyyMMddhhmmss") + LoginUserInfo.street;
+                pay.orderId = ResaleWaterNumber;
                 pay.ModeFlag = 2;
                 pay.customerDelivery = this;
                 pay.ShowDialog();
             }
         }
 
+        /// <summary>
+        /// 零售流水号
+        /// </summary>
+        private string ResaleWaterNumber;
 
         /// <summary>
         /// 添加拒收原因
@@ -2069,19 +2087,14 @@ namespace Branch.com.proem.exm.window.order
         {
             actualPayAmount = p;
 
-            PrintPreviewDialog ppd = new PrintPreviewDialog();
+            //PrintPreviewDialog ppd = new PrintPreviewDialog();
             PrintDocument pd = new PrintDocument();
             //设置边距
 
-            Margins margin = new Margins(5, 5, 5, 5);
+            Margins margin = new Margins(20, 20, 20, 20);
 
             pd.DefaultPageSettings.Margins = margin;
             ////纸张设置默认
-
-            PaperSize pageSize = new PaperSize("First custom size", getYc(60), 600);
-
-            
-            pd.DefaultPageSettings.PaperSize = pageSize;
 
 
             //打印事件设置            
@@ -2090,9 +2103,9 @@ namespace Branch.com.proem.exm.window.order
             pd.PrintPage += new PrintPageEventHandler(this.pd_PrintPage);
             try
             {
-                ppd.Document = pd;
+                //ppd.Document = pd;
 
-                ppd.ShowDialog();
+                //ppd.ShowDialog();
                 pd.Print();
                 ///打印完成后再进行初始化数据
             }
@@ -2109,14 +2122,7 @@ namespace Branch.com.proem.exm.window.order
             }
         }
 
-        private int getYc(double cm)
-        {
-
-            return (int)(cm / 25.4) * 100;
-
-        }
-
-        public string GetPrintStr()
+        public string[] GetPrintStr()
         {
 
             StringBuilder sb = new StringBuilder();
@@ -2124,8 +2130,15 @@ namespace Branch.com.proem.exm.window.order
             string tou = "宜鲜美配送有限公司";
 
             string address = "南京市江宁区东麒路66号";
-
-            string saleID = id_.Text;
+            string saleID = "";
+            if (isResale)
+            {
+                saleID = ResaleWaterNumber;
+            }
+            else {
+                saleID = id_.Text;
+            }
+            
 
             //string item = "品名";
 
@@ -2200,57 +2213,51 @@ namespace Branch.com.proem.exm.window.order
                
             }
 
-            //for (int i = 0; i < count; i++)
-            //{
-
-            //    decimal xiaoji = (i + 1) * price;
-
-            //    sb.Append(item + (i + 1) + "\t\t" + (i + 1) + "\t" + price + "\t" + xiaoji);
-
-            //    total += xiaoji;
-
-
-
-            //    if (i != (count))
-
-            //        sb.Append("\n");
-
-            //}
-
-
 
             sb.Append("-----------------------------------------------------------------\n");
+            if(isResale)
+            {
+                sb.Append("数量: " + resaletotalNumlabel.Text + "\t\t 合计: " + resaletotalsum.Text + "\n");
+            }else
+            {
+                sb.Append("数量: " + totalSum.Text + "\t\t 合计: " + totalAmount.Text + "\n");
+            }
 
-            sb.Append("数量: " + totalSum.Text + "\t\t 合计: " + totalAmount.Text + "\n");
 
             sb.Append("实际付款金额:" + " " + actualPayAmount + "\n");
-
-            //sb.Append("         现金找零:" + "   " + (fukuan - total) + "\n");
 
             sb.Append("-----------------------------------------------------------------\n");
 
             sb.Append("地址：" + address + "\n");
-
-            sb.Append("电话：" + inform_label.Text + "\n");
-
-
             sb.Append("             谢谢惠顾欢迎下次光临                ");
-            //log.Error(sb.ToString()+"--------->");
-            return sb.ToString();
+
+            Console.WriteLine(sb.ToString());
+            return sb.ToString().Split('\n');
 
         }
+
+        private int index;
 
         private void pd_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e)
         {
-            SetInvoiceData(e.Graphics);
-        }
-
-        private void SetInvoiceData(Graphics g)
-        {
-            Font InvoiceFont = new Font("Arial", 7, FontStyle.Bold);
+            Graphics g = e.Graphics;
+            Font InvoiceFont = new Font("Arial", 10, FontStyle.Regular);
             SolidBrush GrayBrush = new SolidBrush(Color.Black);
-            g.DrawString(GetPrintStr(), InvoiceFont, GrayBrush, 10, 10);
-            g.Dispose();
+            string[] strs = GetPrintStr();
+            int y = 0;
+            while (index < strs.Length)
+            {
+                g.DrawString(GetPrintStr()[index++], InvoiceFont, GrayBrush, 5, 5 + y);
+                y += 15;
+                if (y > e.PageBounds.Height)
+                {
+                    e.HasMorePages = true;
+                    return;
+                }
+
+            }
+            index = 0;
+            e.HasMorePages = false;
         }
 
         private void itemInputButton_Click(object sender, EventArgs e)
@@ -2308,6 +2315,7 @@ namespace Branch.com.proem.exm.window.order
         private void resaleButton_Click(object sender, EventArgs e)
         {
             isResale = true;
+            printObjectlist.Clear();
 
             resalePanel.Show();
             informPanel.Hide();
@@ -2378,6 +2386,8 @@ namespace Branch.com.proem.exm.window.order
             }
 
             //TODO 
+
+            GoodsPrint goodsPrint = new GoodsPrint();
             bool isExist = false;
             for (int i = 0; i < resaleDatagridView.Rows.Count; i++ )
             {
@@ -2397,6 +2407,27 @@ namespace Branch.com.proem.exm.window.order
                         resaleDatagridView[5, i].Value = (nums + 1) * price;
                         resaleDatagridView.Rows[i].Selected = true;
                         resaleDatagridView.CurrentCell = resaleDatagridView.Rows[i].Cells[0];
+
+                        if (serial.StartsWith("69"))
+                        {
+                            foreach (GoodsPrint gp in printObjectlist)
+                            {
+                                if (gp.SerialNumber.Equals(serial))
+                                {
+                                    gp.Nums += 1;
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            goodsPrint.SerialNumber = serial;
+                            goodsPrint.Name = obj.GoodsName;
+                            goodsPrint.Nums = 1;
+                            goodsPrint.Price = obj.GoodsPrice;
+                            goodsPrint.Weight = string.IsNullOrEmpty(weight) ? 0 : float.Parse(weight);
+                            printObjectlist.Add(goodsPrint);
+                        }
                         break;
                     }
                     else
@@ -2413,11 +2444,51 @@ namespace Branch.com.proem.exm.window.order
 
                         if (nums == 1)
                         {
+                            foreach(GoodsPrint gp in printObjectlist)
+                            {
+                                if(gp.SerialNumber.Equals(serial) && gp.Weight == float.Parse(weight))
+                                {
+                                    printObjectlist.Remove(gp);
+                                    break;
+                                }else
+                                {
+                                    MessageBox.Show("没有此商品对应的扫码销售信息", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    return;
+                                }
+                            }
                             resaleDatagridView.Rows.RemoveAt(i);
                             AddOrReduceButton_Click(this, EventArgs.Empty);
                         }
                         else
                         {
+                            if(serial.StartsWith("69"))
+                            {
+                                foreach (GoodsPrint gp in printObjectlist)
+                                {
+                                    if (gp.SerialNumber.Equals(serial))
+                                    {
+                                        gp.Nums -= 1;
+                                        break;
+                                    }
+                                }
+                            }else
+                            {
+                                bool isHaveResaleGoods = false;
+                                foreach (GoodsPrint gp in printObjectlist)
+                                {
+                                    if (gp.SerialNumber.Equals(serial) && gp.Weight == float.Parse(weight))
+                                    {
+                                        printObjectlist.Remove(gp);
+                                        isHaveResaleGoods = true;
+                                        break;
+                                    }
+                                }
+                                if (!isHaveResaleGoods)
+                                {
+                                    MessageBox.Show("没有此商品对应的扫码销售信息", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    return;
+                                }
+                            }
                             float price = float.Parse(resaleDatagridView[4, i].Value == null ? "0" : resaleDatagridView[4, i].Value.ToString());
                             resaleDatagridView[2, i].Value = nums - 1;
                             if (!serial.StartsWith("69"))
@@ -2440,6 +2511,13 @@ namespace Branch.com.proem.exm.window.order
                     resaleDatagridView.Rows.Add(new Object[] { serial, obj.GoodsName, 1 , weight, obj.GoodsPrice, obj.GoodsPrice, obj.Id });
                     resaleDatagridView.Rows[resaleDatagridView.Rows.Count -1].Selected = true;
                     resaleDatagridView.CurrentCell = resaleDatagridView.Rows[resaleDatagridView.Rows.Count - 1].Cells[0];
+                    ///将待打印的商品添加进去
+                    goodsPrint.SerialNumber = serial;
+                    goodsPrint.Name = obj.GoodsName;
+                    goodsPrint.Nums = 1;
+                    goodsPrint.Weight = string.IsNullOrEmpty(weight) ? 0 : float.Parse(weight);
+                    goodsPrint.Price = obj.GoodsPrice;
+                    printObjectlist.Add(goodsPrint);
                 }
                 else
                 {
@@ -2517,6 +2595,14 @@ namespace Branch.com.proem.exm.window.order
             int index = resaleDatagridView.CurrentRow.Index;
             resaleDatagridView.Rows[index].Cells[2].Value = num;
             resaleDatagridView.Rows[index].Cells[5].Value = float.Parse(resaleDatagridView.Rows[index].Cells[4].Value.ToString()) * Int32.Parse(num);
+           foreach(GoodsPrint obj in printObjectlist)
+           {
+               if (obj.SerialNumber.Equals(resaleDatagridView.Rows[index].Cells[0].Value.ToString()))
+               {
+                   obj.Nums = float.Parse(num);
+                   break;
+               }
+           }
             //计算总的数量和金额的算法
             ResaleCalculate();
         }
@@ -2537,6 +2623,15 @@ namespace Branch.com.proem.exm.window.order
             if (dr == DialogResult.Yes)
             {
                 int index = resaleDatagridView.CurrentRow.Index;
+                ///TODO  有错误
+                foreach (GoodsPrint obj in printObjectlist)
+                {
+                    if (obj.SerialNumber.Equals(resaleDatagridView.Rows[index].Cells[0].Value.ToString()))
+                    {
+                        printObjectlist.Remove(obj);
+                        continue;
+                    }
+                }
                 resaleDatagridView.Rows.RemoveAt(index);
                 //计算总的数量和金额的算法
                 ResaleCalculate();
