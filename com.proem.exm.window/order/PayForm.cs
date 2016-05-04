@@ -144,7 +144,9 @@ namespace Branch.com.proem.exm.window.order
             
             customerDelivery.actualTotalMoney = textBox4.Text;
 
-            if (paidAmount >= float.Parse(textBox4.Text))
+            float cashAmount = string.IsNullOrEmpty(cashTextbox.Text.Trim()) ? 0: float.Parse(cashTextbox.Text);
+
+            if (paidAmount + cashAmount >= float.Parse(textBox4.Text))
             {
                 flag = true;
                 if (float.Parse(textBox4.Text) - this.cardpayment > 0)

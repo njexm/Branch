@@ -845,7 +845,8 @@ namespace Branch.com.proem.exm.window.order
                 resaletotalsum.Text = "0.00";
                 ResaleWaterNumber = "";
                 associatorInfo = null;
-                resaleDatagridView = null;
+                resaleDatagridView.DataSource = null;
+                resaleDatagridView.DataMember = null;
             }
             else 
             {
@@ -2156,11 +2157,11 @@ namespace Branch.com.proem.exm.window.order
 
             sb.Append("-----------------------------------------------------------------\n");
 
-            sb.Append("日期:" + DateTime.Now.ToShortDateString() + "  " + "单号:" + id_.Text + "\n");
+            sb.Append("日期:" + DateTime.Now.ToShortDateString() + "  " + "单号:" + saleID + "\n");
 
             sb.Append("-----------------------------------------------------------------\n");
 
-            sb.Append("品名" + "\t\t" + "单价" + "\t" + "重量/数量" + "\t" + "小计" + "\n");
+            sb.Append("品名" + "\t\t" + "单价" + "\t" + "重/量" + "\t" + "小计" + "\n");
             //for (int i = 0; i < itemDataGridView.RowCount; i++)
             //{
             //    int actualnums = itemDataGridView[4, i].Value == null ? 0 : Convert.ToInt32(itemDataGridView[4, i].Value);
@@ -2202,13 +2203,13 @@ namespace Branch.com.proem.exm.window.order
                 {
                     name = name.Substring(0, 6) + "... ";
                 }
-                if (obj.SerialNumber.StartsWith("28"))
+                if (obj.SerialNumber.Length == 5)
                 {
-                    sb.Append(name + obj.Price.ToString("0.00") + "\t" + obj.Weight.ToString("0.000") + obj.Unit + "\t" + (obj.Price * obj.Weight).ToString("0.00") + "\n");
+                    sb.Append(name + obj.Price.ToString("0.00") + "\t" + obj.Weight.ToString("0.000") + "\t" + (obj.Price * obj.Weight).ToString("0.00") + "\n");
                 }
                 else
                 {
-                    sb.Append(name + obj.Price.ToString("0.00") + "\t" + obj.Nums + obj.Unit + "\t" + (obj.Price*obj.Nums).ToString("0.00") + "\n");
+                    sb.Append(name + obj.Price.ToString("0.00") + "\t" + obj.Nums + "\t" + (obj.Price*obj.Nums).ToString("0.00") + "\n");
                 }
                
             }
@@ -2629,7 +2630,7 @@ namespace Branch.com.proem.exm.window.order
                     if (obj.SerialNumber.Equals(resaleDatagridView.Rows[index].Cells[0].Value.ToString()))
                     {
                         printObjectlist.Remove(obj);
-                        continue;
+                        break;
                     }
                 }
                 resaleDatagridView.Rows.RemoveAt(index);

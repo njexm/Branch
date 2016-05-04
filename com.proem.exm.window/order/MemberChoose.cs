@@ -116,6 +116,10 @@ namespace Branch.com.proem.exm.window.order
         /// <param name="e"></param>
         private void confirmButton_Click(object sender, EventArgs e)
         {
+            if (dataGridView1.DataSource == null)
+            {
+                return;
+            }
             AssociatorInfo obj = new AssociatorInfo();
             obj.Id = dataGridView1.CurrentRow.Cells[0].Value.ToString();
             obj.CardNumber = dataGridView1.CurrentRow.Cells[1].Value == null ? string.Empty : dataGridView1.CurrentRow.Cells[1].Value.ToString();
