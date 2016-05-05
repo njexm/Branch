@@ -12,6 +12,15 @@ namespace Branch.com.proem.exm.util
     public class Constant
     {
         /// <summary>
+        /// 每日登陆数据下载
+        /// </summary>
+        public const string DOWNLOAD_DAILY = "1";
+        /// <summary>
+        /// 零售数据下载
+        /// </summary>
+        public const string DOWNLOAD_RESALE = "2";
+
+        /// <summary>
         /// 订单状态6：代提货
         /// </summary>
         public const string ORDER_STATUS_RECEIPT = "6";

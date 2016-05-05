@@ -16,10 +16,28 @@ namespace Branch.com.proem.exm.window.main
 {
     public partial class DownloadData : Form
     {
+        /// <summary>
+        /// 标识数据下载的模式
+        /// 1，登陆数据下载
+        /// 2，进入零售数据下载
+        /// </summary>
+        private string flag;
+
         public DownloadData()
         {
             InitializeComponent();
         }
+
+        /// <summary>
+        /// 重载
+        /// </summary>
+        /// <param name="flag"></param>
+        public DownloadData(string flag)
+        {
+            InitializeComponent();
+            this.flag = flag;
+        }
+
 
         public void Step()
         {
@@ -49,10 +67,14 @@ namespace Branch.com.proem.exm.window.main
             DownloadDataService download = new DownloadDataService();
             download.DownloadData(this);
             DownloadIdentifyService service = new DownloadIdentifyService();
+            if(flag.Equals(Constant.DOWNLOAD_DAILY))
+            {
+                ///更新亭点收货标识
+                service.UpdateHarvestFlag(Constant.HARVEST_NO);
+            }
             ///更新最后一次下载时间
             service.UpdateIdentify(DateTime.Now);
-            ///更新亭点收货标识
-            service.UpdateHarvestFlag(Constant.HARVEST_NO);
+            
         }
 
         private void DownloadData_Shown(object sender, EventArgs e)

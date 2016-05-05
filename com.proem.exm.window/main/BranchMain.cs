@@ -57,6 +57,9 @@ namespace Branch.com.proem.exm.window.main
 
         private void customerDeliveryButton_Click(object sender, EventArgs e)
         {
+            DownloadData p = new DownloadData(Constant.DOWNLOAD_RESALE);
+            p.StartPosition = FormStartPosition.CenterScreen;
+            p.Show();
             CustomerDelivery customerDelivery = new CustomerDelivery();
             customerDelivery.customer += new CustomerDelivery.child_close(this.closethis);
             customerDelivery.Show();//CustomerDelivery客户提货
@@ -140,7 +143,7 @@ namespace Branch.com.proem.exm.window.main
             //service.UpdateIdentify(DateTime.Now);
             /////更新亭点收货标识
             //service.UpdateHarvestFlag(Constant.HARVEST_NO);
-            DownloadData p = new DownloadData();
+            DownloadData p = new DownloadData(Constant.DOWNLOAD_DAILY);
             p.StartPosition = FormStartPosition.CenterScreen;
             p.Show();
         }
