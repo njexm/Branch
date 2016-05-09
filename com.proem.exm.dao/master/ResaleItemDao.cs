@@ -26,8 +26,8 @@ namespace Branch.com.proem.exm.dao.master
         /// <param name="list"></param>
         public void AddResaleItem(List<ResaleItem> list)
         {
-            string sql = "insert into zc_resale_item (id, createTime, updateTime, goodsFile_id, nums, money, resale_id) "
-                +" values(:id, :createTime, :updateTime, :gooodsFileId, :nums, :money, :resaleId)";
+            string sql = "insert into zc_resale_item (id, createTime, updateTime,resale_id,  goodsFile_id, nums, money, discount_amount, actual_money) "
+                + " values(:id, :createTime, :updateTime,:resaleId, :gooodsFileId, :nums, :money, :discount_amount, :actual_money)";
             OracleConnection conn = null;
             OracleTransaction tran = null;
             OracleCommand cmd = new OracleCommand();
@@ -41,10 +41,12 @@ namespace Branch.com.proem.exm.dao.master
                     cmd.Parameters.Add(":id", obj.Id);
                     cmd.Parameters.Add(":createTime", obj.CreateTime);
                     cmd.Parameters.Add(":updateTime", obj.UpdateTime);
+                    cmd.Parameters.Add(":resaleId", obj.ResaleId);
                     cmd.Parameters.Add(":gooodsFileId", obj.GoodsFileId);
                     cmd.Parameters.Add(":nums", obj.Nums);
                     cmd.Parameters.Add(":money", obj.Money);
-                    cmd.Parameters.Add(":resaleId", obj.ResaleId);
+                    cmd.Parameters.Add(":discount_amount", obj.DiscountMoney);
+                    cmd.Parameters.Add(":actual_money", obj.ActualMoney);
                     cmd.ExecuteNonQuery();
                     cmd.Parameters.Clear();
                 }

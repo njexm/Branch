@@ -15,21 +15,35 @@ namespace Branch.com.proem.exm.domain
         public DateTime CreateTime { get; set; }
 
         public DateTime UpdateTime { get; set; }
-        /// <summary>
-        /// 商品id
-        /// </summary>
-        public string GoodsFileId { get; set; }
+
         /// <summary>
         /// 零售主表id
         /// </summary>
         public string ResaleId { get; set; }
+
+        /// <summary>
+        /// 商品id
+        /// </summary>
+        public string GoodsFileId { get; set; }
+        
         /// <summary>
         /// 数量
         /// </summary>
         public string Nums { get; set; }
+
         /// <summary>
         /// 金额
         /// </summary>
         public string Money { get; set; }
+
+        /// <summary>
+        /// 优惠金额
+        /// </summary>
+        public string DiscountMoney { get; set; }
+
+        /// <summary>
+        /// 实付金额
+        /// </summary>
+        public string ActualMoney { get; set; }
     }
 }

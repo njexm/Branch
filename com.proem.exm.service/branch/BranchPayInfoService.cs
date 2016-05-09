@@ -29,50 +29,40 @@ namespace Branch.com.proem.exm.service.branch
             return dao.FindAmountCashier(first, last, p);
         }
 
-        /// <summary>
-        /// 判断当前订单是否付款
-        /// </summary>
-        /// <param name="orderId"></param>
-        /// <returns></returns>
-        public bool isExist(string orderId)
-        {
-            BranchPayInfoDao dao = new BranchPayInfoDao();
-            return dao.isExist(orderId);
-        }
 
-        public void AddPayInfo(List<PayInfo> payList)
-        {
-            BranchPayInfoDao dao = new BranchPayInfoDao();
-            dao.AddPayInfo(payList);
-        }
+        //public void AddPayInfo(List<PayInfo> payList)
+        //{
+        //    BranchPayInfoDao dao = new BranchPayInfoDao();
+        //    dao.AddPayInfo(payList);
+        //}
 
 
-        public PayInfo FindById(string p)
-        {
-            BranchPayInfoDao dao = new BranchPayInfoDao();
-            return dao.FindById(p);
-        }
+        //public PayInfo FindById(string p)
+        //{
+        //    BranchPayInfoDao dao = new BranchPayInfoDao();
+        //    return dao.FindById(p);
+        //}
 
-        /// <summary>
-        /// 获取该订单现金付款金额
-        /// </summary>
-        /// <param name="orderid"></param>
-        /// <returns></returns>
-        public string FindCashPayment(string orderid)
-        {
-            BranchPayInfoDao dao = new BranchPayInfoDao();
-            return dao.FindCashPayment(orderid);
-        }
+        ///// <summary>
+        ///// 获取该订单现金付款金额
+        ///// </summary>
+        ///// <param name="orderid"></param>
+        ///// <returns></returns>
+        //public string FindCashPayment(string orderid)
+        //{
+        //    BranchPayInfoDao dao = new BranchPayInfoDao();
+        //    return dao.FindCashPayment(orderid);
+        //}
 
-        /// <summary>
-        /// 获取该订单付款方式
-        /// </summary>
-        /// <param name="orderid"></param>
-        /// <returns></returns>
-        public List<string> FindModePayment(string orderid)
-        {
-            BranchPayInfoDao dao = new BranchPayInfoDao();
-            return dao.FindModePayment(orderid);
-        }
+        ///// <summary>
+        ///// 获取该订单付款方式
+        ///// </summary>
+        ///// <param name="orderid"></param>
+        ///// <returns></returns>
+        //public List<string> FindModePayment(string orderid)
+        //{
+        //    BranchPayInfoDao dao = new BranchPayInfoDao();
+        //    return dao.FindModePayment(orderid);
+        //}
     }
 }

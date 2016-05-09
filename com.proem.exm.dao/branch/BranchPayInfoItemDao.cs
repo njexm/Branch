@@ -10,40 +10,39 @@ using System.Text;
 namespace Branch.com.proem.exm.dao.branch
 {
     /// <summary>
-    /// 分店zc_resale_item操作
+    /// 流水明细数据
     /// </summary>
-    public class BranchResaleItemDao : MysqlDBHelper
+    public class BranchPayInfoItemDao : MysqlDBHelper
     {
         /// <summary>
         /// 日志
         /// </summary>
-        private readonly ILog log = LogManager.GetLogger(typeof(BranchResaleItemDao));
+        private readonly ILog log = LogManager.GetLogger(typeof(BranchPayInfoItemDao));
 
         /// <summary>
-        /// 新增流水明细信息
+        /// 添加支付明细
         /// </summary>
         /// <param name="list"></param>
-        public void AddResaleItem(List<ResaleItem> list){
-            string sql = "insert into zc_resale_item values (@id, @createTime, @updateTime, @resaleId, @GoodsFileId, @nums ,@money, @discount_amount, @actual_money)";
+        public void AddPayInfoItem(List<PayInfoItem> list)
+        {
+            string sql = "insert into zc_payInfo_item values (@id, @createTime, @updateTime, @payInfoId, @payMode, @money)";
             MySqlConnection conn = null;
-            MySqlTransaction tran = null;
             MySqlCommand cmd = new MySqlCommand();
+            MySqlTransaction tran = null;
             try
             {
                 conn = GetConnection();
                 tran = conn.BeginTransaction();
                 cmd.Connection = conn;
                 cmd.CommandText = sql;
-                foreach(ResaleItem obj in list){
+                foreach(PayInfoItem obj in list)
+                {
                     cmd.Parameters.AddWithValue("@id", obj.Id);
                     cmd.Parameters.AddWithValue("@createTime", obj.CreateTime);
                     cmd.Parameters.AddWithValue("@updateTime", obj.UpdateTime);
-                    cmd.Parameters.AddWithValue("@resaleId", obj.ResaleId);
-                    cmd.Parameters.AddWithValue("@GoodsFileId", obj.GoodsFileId);
-                    cmd.Parameters.AddWithValue("@nums", obj.Nums);
+                    cmd.Parameters.AddWithValue("@payInfoId", obj.PayInfoId);
+                    cmd.Parameters.AddWithValue("@payMode", obj.PayMode);
                     cmd.Parameters.AddWithValue("@money", obj.Money);
-                    cmd.Parameters.AddWithValue("@discount_amount", obj.DiscountMoney);
-                    cmd.Parameters.AddWithValue("@actual_money", obj.ActualMoney);
                     cmd.ExecuteNonQuery();
                     cmd.Parameters.Clear();
                 }
@@ -52,9 +51,9 @@ namespace Branch.com.proem.exm.dao.branch
             catch (Exception ex)
             {
                 tran.Rollback();
-                log.Error("新增零售详细信息失败", ex);
+                log.Error("本地数据库插入支付明细失败", ex);
             }
-            finally 
+            finally
             {
                 CloseConnection(conn);
             }

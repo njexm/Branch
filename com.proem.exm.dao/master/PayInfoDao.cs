@@ -27,7 +27,8 @@ namespace Branch.com.proem.exm.dao.master
             OracleConnection conn = null;
             OracleTransaction tran = null;
             OracleCommand cmd = new OracleCommand();
-            string sql = "insert into zc_payinfo (id, createTime, updateTime, branch_id, memberid, orderid, payamount, paydate, paymode, salesman) values (:id, :createTime, :updateTime, :branchId, :memberId, :orderId, :payAmount, :payDate, :payMode, :salesman)";
+            string sql = "insert into zc_payinfo (id, createTime, updateTime, resale_id, member_id, money, branch_id, saleman_id) "
+                + " values (:id, :createTime, :updateTime, :resale_id, :member_id, :money, :branch_id, :saleman_id)";
             try
             {
                 conn = OracleUtil.OpenConn();
@@ -37,73 +38,24 @@ namespace Branch.com.proem.exm.dao.master
                 cmd.Parameters.Add(":id", obj.Id);
                 cmd.Parameters.Add(":createTime", obj.CreateTime);
                 cmd.Parameters.Add(":updateTime", obj.UpdateTime);
-                cmd.Parameters.Add(":branchId", obj.BranchId);
-                cmd.Parameters.Add(":memberId", obj.MemberId);
-                cmd.Parameters.Add(":orderId", obj.orderId);
-                cmd.Parameters.Add(":payAmount", obj.PayAmount);
-                cmd.Parameters.Add(":payDate", obj.payDate);
-                cmd.Parameters.Add(":payMode", obj.PayMode);
-                cmd.Parameters.Add(":salesman", obj.salesmanId);
+                cmd.Parameters.Add(":resale_id", obj.ResaleId);
+                cmd.Parameters.Add(":member_id", obj.MemberId);
+                cmd.Parameters.Add(":money", obj.Money);
+                cmd.Parameters.Add(":branch_id", obj.BranchId);
+                cmd.Parameters.Add(":saleman_id", obj.salesmanId);
                 cmd.ExecuteNonQuery();
                 tran.Commit();
             }
             catch (Exception ex)
             {
                 tran.Rollback();
-                log.Error("添加付款信息发生异常", ex);
-            }
-            finally
-            {
-                tran.Dispose();
-                cmd.Dispose();
-                OracleUtil.CloseConn(conn);
-            }
-        }
-
-        public void AddPayInfo(List<PayInfo> payList)
-        {
-            OracleConnection conn = null;
-            OracleTransaction tran = null;
-            OracleCommand cmd = new OracleCommand();
-            string sql = "insert into zc_payinfo (id, createTime, updateTime, branch_id, memberid, orderid, payamount, paydate, paymode, salesman) values (:id, :createTime, :updateTime, :branchId, :memberId, :orderId, :payAmount, :payDate, :payMode, :salesman)";
-            try
-            {
-                conn = OracleUtil.OpenConn();
-                tran = conn.BeginTransaction();
-                cmd.CommandText = sql;
-                cmd.Connection = conn;
-                foreach(PayInfo obj in payList)
-                {
-                    cmd.Parameters.Add(":id", obj.Id);
-                    cmd.Parameters.Add(":createTime", obj.CreateTime);
-                    cmd.Parameters.Add(":updateTime", obj.UpdateTime);
-                    cmd.Parameters.Add(":branchId", obj.BranchId);
-                    cmd.Parameters.Add(":memberId", obj.MemberId);
-                    cmd.Parameters.Add(":orderId", obj.orderId);
-                    cmd.Parameters.Add(":payAmount", obj.PayAmount);
-                    cmd.Parameters.Add(":payDate", obj.payDate);
-                    cmd.Parameters.Add(":payMode", obj.PayMode);
-                    cmd.Parameters.Add(":salesman", obj.salesmanId);
-                    cmd.ExecuteNonQuery();
-                    cmd.Parameters.Clear();
-                }
-                tran.Commit();
-            }
-            catch (Exception ex)
-            {
-                tran.Rollback();
-                List<UploadInfo> list = new List<UploadInfo>();
-                foreach (PayInfo obj in payList)
-                {
-                    UploadInfo uploadInfo = new UploadInfo();
-                    uploadInfo.Id = obj.Id;
-                    uploadInfo.CreateTime = DateTime.Now;
-                    uploadInfo.UpdateTime = DateTime.Now;
-                    uploadInfo.Type = Constant.PAY_INFO;
-                    list.Add(uploadInfo);
-                }
                 UploadDao uploadDao = new UploadDao();
-                uploadDao.AddUploadInfo(list);
+                UploadInfo uploadInfo = new UploadInfo();
+                uploadInfo.Id = obj.Id;
+                uploadInfo.CreateTime = DateTime.Now;
+                uploadInfo.UpdateTime = DateTime.Now;
+                uploadInfo.Type = Constant.PAY_INFO;
+                uploadDao.AddUploadInfo(uploadInfo);
                 log.Error("添加付款信息发生异常", ex);
             }
             finally
@@ -120,24 +72,22 @@ namespace Branch.com.proem.exm.dao.master
             OracleConnection conn = null;
             OracleTransaction tran = null;
             OracleCommand cmd = new OracleCommand();
-            string sql = "insert into zc_payinfo (id, createTime, updateTime, branch_id, memberid, orderid, payamount, paydate, paymode, salesman) values (:id, :createTime, :updateTime, :branchId, :memberId, :orderId, :payAmount, :payDate, :payMode, :salesman)";
+            string sql = "insert into zc_payinfo (id, createTime, updateTime, resale_id, member_id, money, branch_id, saleman_id) "
+                + " values (:id, :createTime, :updateTime, :resale_id, :member_id, :money, :branch_id, :saleman_id)";
             try
             {
                 conn = OracleUtil.OpenConn();
                 tran = conn.BeginTransaction();
                 cmd.CommandText = sql;
                 cmd.Connection = conn;
-
                 cmd.Parameters.Add(":id", obj.Id);
                 cmd.Parameters.Add(":createTime", obj.CreateTime);
                 cmd.Parameters.Add(":updateTime", obj.UpdateTime);
-                cmd.Parameters.Add(":branchId", obj.BranchId);
-                cmd.Parameters.Add(":memberId", obj.MemberId);
-                cmd.Parameters.Add(":orderId", obj.orderId);
-                cmd.Parameters.Add(":payAmount", obj.PayAmount);
-                cmd.Parameters.Add(":payDate", obj.payDate);
-                cmd.Parameters.Add(":payMode", obj.PayMode);
-                cmd.Parameters.Add(":salesman", obj.salesmanId);
+                cmd.Parameters.Add(":resale_id", obj.ResaleId);
+                cmd.Parameters.Add(":member_id", obj.MemberId);
+                cmd.Parameters.Add(":money", obj.Money);
+                cmd.Parameters.Add(":branch_id", obj.BranchId);
+                cmd.Parameters.Add(":saleman_id", obj.salesmanId);
                 cmd.ExecuteNonQuery();
                 tran.Commit();
                 flag = true;

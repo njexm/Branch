@@ -90,6 +90,11 @@ namespace Branch.com.proem.exm.util
         /// </summary>
         public const string PAY_INFO = "PAY_INFO";
 
+        /// <summary>
+        /// 支付明细
+        /// </summary>
+        public const string PAY_INFO_ITEM = "PAY_INFO_ITEM";
+
         public const string ZC_ORDER_HISTORY = "ZC_ORDER_HISTORY";
 
         public const string ZC_ORDER_HISTORY_UPDATE = "ZC_ORDER_HISTORY_UPDATE";
@@ -125,6 +130,7 @@ namespace Branch.com.proem.exm.util
         /// 零售明细
         /// </summary>
         public const string ZC_RESALE_ITME = "ZC_RESALE_ITME";
+
 
     }
 }

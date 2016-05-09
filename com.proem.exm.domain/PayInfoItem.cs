@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Branch.com.proem.exm.domain
 {
     /// <summary>
-    /// 支付信息主表
+    /// 支付明细
     /// </summary>
-    public class PayInfo
+    public class PayInfoItem
     {
         public string Id { get; set; }
 
@@ -18,29 +17,18 @@ namespace Branch.com.proem.exm.domain
         public DateTime UpdateTime { get; set; }
 
         /// <summary>
-        /// 流水主表Id
+        /// 支付主表id
         /// </summary>
-        public string ResaleId;
+        public string PayInfoId { get; set; }
 
         /// <summary>
-        /// 会员卡号
+        /// 支付方式
         /// </summary>
-        public string MemberId { get; set; }
+        public string PayMode { get; set; }
 
         /// <summary>
-        /// 付款金额
+        /// 支付金额
         /// </summary>
         public string Money { get; set; }
-
-        /// <summary>
-        /// 分店
-        /// </summary>
-        public string BranchId { get; set; }
-
-        /// <summary>
-        /// 业务员
-        /// </summary>
-        public string salesmanId { get; set; }
-
     }
 }
