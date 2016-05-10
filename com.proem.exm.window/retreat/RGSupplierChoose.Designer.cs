@@ -34,6 +34,9 @@
             this.leaveButton = new System.Windows.Forms.Button();
             this.supplierTablePanel = new System.Windows.Forms.Panel();
             this.supplierDataGridView = new System.Windows.Forms.DataGridView();
+            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.id = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.queryConditionGroupBox = new System.Windows.Forms.GroupBox();
             this.queryButton = new System.Windows.Forms.Button();
             this.supplierTextBox = new System.Windows.Forms.TextBox();
@@ -107,13 +110,41 @@
             // 
             // supplierDataGridView
             // 
+            this.supplierDataGridView.AllowUserToAddRows = false;
             this.supplierDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.supplierDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Column1,
+            this.Column2,
+            this.id});
             this.supplierDataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.supplierDataGridView.Location = new System.Drawing.Point(0, 0);
+            this.supplierDataGridView.MultiSelect = false;
             this.supplierDataGridView.Name = "supplierDataGridView";
             this.supplierDataGridView.RowTemplate.Height = 23;
+            this.supplierDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.supplierDataGridView.Size = new System.Drawing.Size(564, 240);
             this.supplierDataGridView.TabIndex = 0;
+            this.supplierDataGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.supplierDataGridView_CellDoubleClick);
+            // 
+            // Column1
+            // 
+            this.Column1.DataPropertyName = "branch_code";
+            this.Column1.HeaderText = "分店编号";
+            this.Column1.Name = "Column1";
+            // 
+            // Column2
+            // 
+            this.Column2.DataPropertyName = "branch_name";
+            this.Column2.FillWeight = 0.5F;
+            this.Column2.HeaderText = "分店名称";
+            this.Column2.Name = "Column2";
+            // 
+            // id
+            // 
+            this.id.DataPropertyName = "id";
+            this.id.HeaderText = "id";
+            this.id.Name = "id";
+            this.id.Visible = false;
             // 
             // queryConditionGroupBox
             // 
@@ -139,6 +170,7 @@
             this.queryButton.TabIndex = 30;
             this.queryButton.Text = "查询";
             this.queryButton.UseVisualStyleBackColor = true;
+            this.queryButton.Click += new System.EventHandler(this.queryButton_Click);
             // 
             // supplierTextBox
             // 
@@ -149,16 +181,17 @@
             this.supplierTextBox.Name = "supplierTextBox";
             this.supplierTextBox.Size = new System.Drawing.Size(354, 29);
             this.supplierTextBox.TabIndex = 29;
+            this.supplierTextBox.TextChanged += new System.EventHandler(this.supplierTextBox_TextChanged);
             // 
             // supplierLabel
             // 
             this.supplierLabel.AutoSize = true;
             this.supplierLabel.Font = new System.Drawing.Font("宋体", 14F);
-            this.supplierLabel.Location = new System.Drawing.Point(24, 20);
+            this.supplierLabel.Location = new System.Drawing.Point(7, 20);
             this.supplierLabel.Name = "supplierLabel";
-            this.supplierLabel.Size = new System.Drawing.Size(85, 19);
+            this.supplierLabel.Size = new System.Drawing.Size(104, 19);
             this.supplierLabel.TabIndex = 28;
-            this.supplierLabel.Text = "供应商：";
+            this.supplierLabel.Text = "要货分店：";
             // 
             // RGSupplierChoose
             // 
@@ -172,8 +205,9 @@
             this.MinimizeBox = false;
             this.Name = "RGSupplierChoose";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "选择供应商";
+            this.Text = "选择要货分店";
             this.TopMost = true;
+            this.Load += new System.EventHandler(this.RGSupplierChoose_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.RGSupplierChoose_KeyDown);
             this.supplierPanel.ResumeLayout(false);
             this.queryResultGroupBox.ResumeLayout(false);
@@ -197,5 +231,8 @@
         private System.Windows.Forms.Button queryButton;
         private System.Windows.Forms.TextBox supplierTextBox;
         private System.Windows.Forms.Label supplierLabel;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn id;
     }
 }

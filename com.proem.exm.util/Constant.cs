@@ -81,6 +81,20 @@ namespace Branch.com.proem.exm.util
         public const string PICK_UP_GOODS = "4";
 
         /// <summary>
+        /// 订单状态 ：待提交
+        /// </summary>
+        public const string CHECK_STATUS_UNDO = "0";
+        /// <summary>
+        ///订单状态：待审核 
+        /// </summary>
+        public const string CHECK_STATUS_WAITCHECK = "1";
+
+        /// <summary>
+        /// 订单状态: 完成
+        /// </summary>
+        public const string CHECK_STATUS_FINISH = "4";
+
+        /// <summary>
         /// 日常收货表
         /// </summary>
         public const string DAILY_RECEIVE_GOODS = "DAILY_RECEIVE_GOODS";
@@ -132,5 +146,18 @@ namespace Branch.com.proem.exm.util
         public const string ZC_RESALE_ITME = "ZC_RESALE_ITME";
 
 
+        /// <summary>
+        /// 要货单
+        /// </summary>
+        public const string ZC_REQUIRE = "ZC_REQUIRE";
+
+        public const string ZC_REQUIRE_DELETE = "ZC_REQUIRE_DELETE";
+
+        public const string ZC_REQUIRE_UPDATE = "ZC_REQUIRE_UPDATE";
+
+        /// <summary>
+        /// 要货单明细
+        /// </summary>
+        public const string ZC_REQUIRE_ITEM = "ZC_REQUIRE_ITEM";
     }
 }

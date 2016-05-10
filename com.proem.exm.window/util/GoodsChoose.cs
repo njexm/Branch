@@ -1,5 +1,6 @@
 ﻿using Branch.com.proem.exm.domain;
 using Branch.com.proem.exm.util;
+using Branch.com.proem.exm.window.require;
 using Branch.com.proem.exm.window.retreat;
 using log4net;
 using System;
@@ -77,6 +78,21 @@ namespace Branch.com.proem.exm.window.util
         public GoodsChoose()
         {
             InitializeComponent();
+        }
+
+        /// <summary>
+        /// 要货单
+        /// </summary>
+        private BranchZcRequire branchZcRequire;
+
+        /// <summary>
+        /// 重载
+        /// </summary>
+        /// <param name="obj"></param>
+        public GoodsChoose(BranchZcRequire obj)
+        {
+            InitializeComponent();
+            this.branchZcRequire = obj;
         }
 
         public GoodsChoose(ReturnGoods obj)
@@ -283,19 +299,33 @@ namespace Branch.com.proem.exm.window.util
         /// </summary>
         private void choosegoods()
         {
-            ZcGoodsMaster zcGoodsMaster = new ZcGoodsMaster();
-            zcGoodsMaster.SerialNumber = goodsDataGridView.SelectedRows[0].Cells[0].Value.ToString();
-            zcGoodsMaster.GoodsName = goodsDataGridView.SelectedRows[0].Cells[1].Value.ToString();
-            zcGoodsMaster.GoodsUnit = goodsDataGridView.SelectedRows[0].Cells[2].Value.ToString();
-            zcGoodsMaster.GoodsSpecifications = goodsDataGridView.SelectedRows[0].Cells[3].Value.ToString();
-            zcGoodsMaster.GoodsPrice = float.Parse(goodsDataGridView.SelectedRows[0].Cells[4].Value.ToString());
-            zcGoodsMaster.Remark = goodsDataGridView.SelectedRows[0].Cells[5].Value.ToString();
-            zcGoodsMaster.Id = goodsDataGridView.SelectedRows[0].Cells[6].Value.ToString();
-            if (this.count.Equals(ParentWindow.ReturnGoods.ToString()))
+            
+            List < ZcGoodsMaster > list = new List<ZcGoodsMaster>();
+            for (int i = 0; i <  goodsDataGridView.SelectedRows.Count;i++ )
             {
-                this.returnGoods.AddGoods(zcGoodsMaster);
+                         
+                ZcGoodsMaster zcGoodsMaster = new ZcGoodsMaster();
+                zcGoodsMaster.SerialNumber = goodsDataGridView.SelectedRows[i].Cells[0].Value.ToString();
+                zcGoodsMaster.GoodsName = goodsDataGridView.SelectedRows[i].Cells[1].Value.ToString();
+                zcGoodsMaster.GoodsUnit = goodsDataGridView.SelectedRows[i].Cells[2].Value.ToString();
+                zcGoodsMaster.GoodsSpecifications = goodsDataGridView.SelectedRows[i].Cells[3].Value.ToString();
+                zcGoodsMaster.GoodsPrice = float.Parse(goodsDataGridView.SelectedRows[i].Cells[4].Value.ToString());
+                zcGoodsMaster.Remark = goodsDataGridView.SelectedRows[i].Cells[5].Value.ToString();
+                zcGoodsMaster.Id = goodsDataGridView.SelectedRows[i].Cells[6].Value.ToString();
+                list.Add(zcGoodsMaster);
+                
+             }
+            
+            this.branchZcRequire.AddGoods(list);
+            
             }
-        }
+            
+
+
+
+          
+
+       
 
         private void goodsDataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -330,7 +360,7 @@ namespace Branch.com.proem.exm.window.util
                 {
                     okButton_Click(this, EventArgs.Empty);
                 }
-                if (e.KeyCode == Keys.H||e.KeyCode == Keys.Enter)
+                if (e.KeyCode == Keys.H || e.KeyCode == Keys.Enter)
                 {
                     chooseButton_Click(this, EventArgs.Empty);
                 }
@@ -347,6 +377,36 @@ namespace Branch.com.proem.exm.window.util
             {
                 leaveButton_Click(this, EventArgs.Empty);
             }
+        }
+
+        private void goodsDataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void chooseAllButton_Click(object sender, EventArgs e)
+        {
+            btn_SelectAll(sender,e);
+        }
+        /// <summary>
+        /// 全选
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btn_SelectAll(object sender, EventArgs e)
+        {
+            int selectedRows = goodsDataGridView.SelectedRows.Count;
+            if (selectedRows == goodsDataGridView.Rows.Count)
+            {
+                foreach (DataGridViewRow dr in goodsDataGridView.SelectedRows)
+                {
+                    dr.Selected = false;
+                    
+                }
+            }
+            else
+                goodsDataGridView.SelectAll();
+                chooseAllButton.Text = "取消全选";
         }
 
     }

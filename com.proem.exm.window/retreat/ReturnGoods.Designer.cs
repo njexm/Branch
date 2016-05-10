@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.returnGoodsPanel = new System.Windows.Forms.Panel();
             this.returnItemGroupBox = new System.Windows.Forms.GroupBox();
             this.itemCountPanel = new System.Windows.Forms.Panel();
@@ -56,6 +56,8 @@
             this.addGoodButton = new System.Windows.Forms.Button();
             this.deleteLineButton = new System.Windows.Forms.Button();
             this.returnInfoGroupBox = new System.Windows.Forms.GroupBox();
+            this.timeNowLabel = new System.Windows.Forms.Label();
+            this.timePanel = new System.Windows.Forms.Panel();
             this.salesmanNameTextBox = new System.Windows.Forms.TextBox();
             this.salesmanLabel = new System.Windows.Forms.Label();
             this.paymentDateTimePicker = new System.Windows.Forms.DateTimePicker();
@@ -72,8 +74,6 @@
             this.newBuiltButton = new System.Windows.Forms.Button();
             this.openButton = new System.Windows.Forms.Button();
             this.returnButton = new System.Windows.Forms.Button();
-            this.timeNowLabel = new System.Windows.Forms.Label();
-            this.timePanel = new System.Windows.Forms.Panel();
             this.returnGoodsPanel.SuspendLayout();
             this.returnItemGroupBox.SuspendLayout();
             this.itemCountPanel.SuspendLayout();
@@ -271,9 +271,9 @@
             // goods_price
             // 
             this.goods_price.DataPropertyName = "goods_price";
-            dataGridViewCellStyle5.Format = "N2";
-            dataGridViewCellStyle5.NullValue = null;
-            this.goods_price.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle1.Format = "N2";
+            dataGridViewCellStyle1.NullValue = null;
+            this.goods_price.DefaultCellStyle = dataGridViewCellStyle1;
             this.goods_price.HeaderText = "单价";
             this.goods_price.Name = "goods_price";
             this.goods_price.ReadOnly = true;
@@ -283,9 +283,9 @@
             // amount
             // 
             this.amount.DataPropertyName = "amount";
-            dataGridViewCellStyle6.Format = "N2";
-            dataGridViewCellStyle6.NullValue = null;
-            this.amount.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle2.Format = "N2";
+            dataGridViewCellStyle2.NullValue = null;
+            this.amount.DefaultCellStyle = dataGridViewCellStyle2;
             this.amount.HeaderText = "金额";
             this.amount.Name = "amount";
             this.amount.ReadOnly = true;
@@ -395,6 +395,25 @@
             this.returnInfoGroupBox.TabIndex = 1;
             this.returnInfoGroupBox.TabStop = false;
             this.returnInfoGroupBox.Text = "退货单";
+            // 
+            // timeNowLabel
+            // 
+            this.timeNowLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.timeNowLabel.AutoSize = true;
+            this.timeNowLabel.Location = new System.Drawing.Point(779, 30);
+            this.timeNowLabel.Name = "timeNowLabel";
+            this.timeNowLabel.Size = new System.Drawing.Size(65, 12);
+            this.timeNowLabel.TabIndex = 32;
+            this.timeNowLabel.Text = "当前时间：";
+            // 
+            // timePanel
+            // 
+            this.timePanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.timePanel.Location = new System.Drawing.Point(844, 20);
+            this.timePanel.Name = "timePanel";
+            this.timePanel.Size = new System.Drawing.Size(119, 32);
+            this.timePanel.TabIndex = 31;
+            this.timePanel.Paint += new System.Windows.Forms.PaintEventHandler(this.timePanel_Paint);
             // 
             // salesmanNameTextBox
             // 
@@ -568,24 +587,6 @@
             this.returnButton.Text = "返回主页面(Esc)";
             this.returnButton.UseVisualStyleBackColor = true;
             this.returnButton.Click += new System.EventHandler(this.returnButton_Click);
-            // 
-            // timeNowLabel
-            // 
-            this.timeNowLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.timeNowLabel.AutoSize = true;
-            this.timeNowLabel.Location = new System.Drawing.Point(779, 30);
-            this.timeNowLabel.Name = "timeNowLabel";
-            this.timeNowLabel.Size = new System.Drawing.Size(65, 12);
-            this.timeNowLabel.TabIndex = 32;
-            this.timeNowLabel.Text = "当前时间：";
-            // 
-            // timePanel
-            // 
-            this.timePanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.timePanel.Location = new System.Drawing.Point(844, 20);
-            this.timePanel.Name = "timePanel";
-            this.timePanel.Size = new System.Drawing.Size(119, 32);
-            this.timePanel.TabIndex = 31;
             // 
             // ReturnGoods
             // 

@@ -1,6 +1,7 @@
 ﻿using Branch.com.proem.exm.domain;
 using Branch.com.proem.exm.util;
 using Branch.com.proem.exm.window.require;
+using Branch.com.proem.exm.window.retreat;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,21 +12,24 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Branch.com.proem.exm.window.retreat
+namespace Branch.com.proem.exm.window.require
 {
     /// <summary>
     /// 打开已有退货单
     /// </summary>
-    public partial class RGReturnList : Form
+    public partial class ChooserCommitList : Form
     {
-        public RGReturnList()
+        public ChooserCommitList()
         {
             InitializeComponent();
         }
 
+        
+
         private BranchZcRequire branchZcRequire;
 
-        public RGReturnList(BranchZcRequire obj) {
+        public ChooserCommitList(BranchZcRequire obj)
+        {
             InitializeComponent();
             this.branchZcRequire = obj;
         }
@@ -57,17 +61,17 @@ namespace Branch.com.proem.exm.window.retreat
         {
             ZcRequire zcRequire = new ZcRequire();
             zcRequire.id = returnDataGridView.SelectedRows[0].Cells[0].Value.ToString();
-            zcRequire.yhdNumber = returnDataGridView.SelectedRows[0].Cells[1].Value.ToString();
+            zcRequire.yhdNumber = returnDataGridView.SelectedRows[0].Cells[2].Value.ToString();
             ///创建时间的转换，但是传到页面处理是报null；
-            string str=returnDataGridView.SelectedRows[0].Cells[2].Value.ToString();
+            string str=returnDataGridView.SelectedRows[0].Cells[1].Value.ToString();
             DateTime time = Convert.ToDateTime(str);
             zcRequire.createTime = time;
            
-            zcRequire.nums = returnDataGridView.SelectedRows[0].Cells[4].Value.ToString();
-            zcRequire.money = returnDataGridView.SelectedRows[0].Cells[3].Value.ToString();
-            zcRequire.checkMan = returnDataGridView.SelectedRows[0].Cells[6].Value.ToString();
+            zcRequire.nums = returnDataGridView.SelectedRows[0].Cells[3].Value.ToString();
+            zcRequire.money = returnDataGridView.SelectedRows[0].Cells[4].Value.ToString();
+            zcRequire.checkMan = returnDataGridView.SelectedRows[0].Cells[5].Value.ToString();
             
-            zcRequire.remark = returnDataGridView.SelectedRows[0].Cells[5].Value.ToString();
+            zcRequire.remark = returnDataGridView.SelectedRows[0].Cells[6].Value.ToString();
 
             zcRequire.branchId = returnDataGridView.SelectedRows[0].Cells[7].Value.ToString();
 
@@ -77,14 +81,6 @@ namespace Branch.com.proem.exm.window.retreat
 
             zcRequire.status = Int32.Parse( returnDataGridView.SelectedRows[0].Cells[10].Value.ToString());
             zcRequire.reason =  returnDataGridView.SelectedRows[0].Cells[11].Value.ToString();
-            if (!returnDataGridView.SelectedRows[0].Cells[12].Value.ToString().Equals(""))
-            {
-                zcRequire.checkDate = DateTime.Parse(returnDataGridView.SelectedRows[0].Cells[12].Value.ToString());
-            }else
-            {
-                zcRequire.checkDate = null;
-            }
-            
             this.branchZcRequire.AddZcRequireInfo(zcRequire);
 
         }
@@ -98,7 +94,7 @@ namespace Branch.com.proem.exm.window.retreat
         private void operatorButton_Click(object sender, EventArgs e)
         {
             RGROperatorChoose rGROperatorChoose = new RGROperatorChoose(this);
-            rGROperatorChoose.ShowDialog();//选择操作员
+            rGROperatorChoose.Show();//选择操作员
         }
 
         private void RGReturnList_KeyDown(object sender, KeyEventArgs e)
@@ -116,38 +112,9 @@ namespace Branch.com.proem.exm.window.retreat
 
         private void okButton_Click(object sender, EventArgs e)
         {
-            
-            string dataStatus = returnDataGridView.SelectedRows[0].Cells[10].Value.ToString();
-            if (dataStatus.Equals("0"))
-            {
-                choosegoods();
-                this.Close();
-            }
-            else if (dataStatus.Equals("4"))
-            {
-                MessageBox.Show("该订单已经提交，无法编辑");
-                return;
-            }
-            if (dataStatus.Equals("1"))
-            {
-                MessageBox.Show("该订单已经提交待审核，无法编辑");
-                return;
-            }
-            if (dataStatus.Equals("2"))
-            {
-                MessageBox.Show("该订单已经审核，无法编辑");
-                return;
-            }
-            if (dataStatus.Equals("3"))
-            {
-                choosegoods();
-                return;
-            }
-            if (dataStatus.Equals("5"))
-            {
-                MessageBox.Show("该订单已经作废，无法编辑");
-                return;
-            }
+
+            choosegoods();
+            this.Close();
             
             
         }
@@ -162,7 +129,6 @@ namespace Branch.com.proem.exm.window.retreat
            
             returnDataGridView.DataSource = GetData();
             returnDataGridView.DataMember = "zc_require";
-            returnDataGridView.AutoGenerateColumns = false;
         }
 
         
@@ -188,11 +154,11 @@ namespace Branch.com.proem.exm.window.retreat
             }
            
             string doMember = operatorTextBox.Text.ToString();
-            string sql = "select id,YHD_NUMBER,createTime,money, nums,remark, check_man, branch_id,user_id, callout_branch_id,status,reason,check_date FROM zc_require zr ";
+            string sql = "select id, createTime,YHD_NUMBER, nums, money,check_man,remark,user_id, branch_id,callout_branch_id,status,reason FROM zc_require zr where zr.status = 2 ";
 
             if (!string.IsNullOrEmpty(searchString.Trim()))
             {
-                sql += " where zr.createtime between to_date('" + startTime + "','yyyy-mm-dd hh24:mi:ss')  and to_date( '" + endTime + "','yyyy-mm-dd hh24:mi:ss')  AND zr.YHD_NUMBER like '%" + searchString + "%' AND zr.BRANCH_ID like '%" + LocalBranchId + "%' AND zr.callout_branch_id like '%" + requestBrach + "%' AND zr.user_id like '%" + doMember + "%' and zr.money>=" + minMoney + "";
+                sql += " and zr.createtime between to_date('" + startTime + "','yyyy-mm-dd hh24:mi:ss')  and to_date( '" + endTime + "','yyyy-mm-dd hh24:mi:ss')  AND zr.YHD_NUMBER like '%" + searchString + "%' AND zr.BRANCH_ID like '%" + LocalBranchId + "%' AND zr.callout_branch_id like '%" + requestBrach + "%' AND zr.user_id like '%" + doMember + "%' and zr.money>=" + minMoney + "";
             }
             ds = oracleUtil.GetDataSet(sql, "zc_require");
             return ds;

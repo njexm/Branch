@@ -23,5 +23,9 @@ namespace Branch.com.proem.exm.domain
         public string CreateUserId { get; set; }
 
         public string GoodsFileId { get; set; }
+
+        public string StoreMoney { get; set; }
+
+        public string weight { get; set; }
     }
 }

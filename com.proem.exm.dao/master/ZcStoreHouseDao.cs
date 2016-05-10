@@ -55,5 +55,85 @@ namespace Branch.com.proem.exm.dao.master
             return list;
         }
 
+        /// <summary>
+        /// 根据收货信息查询库存中是否存在改商品
+        /// </summary>
+        /// <returns></returns>
+        public ZcStoreHouse FindByBranchIdAndGoodFilesId(ZcRequireItem zcRequireItem)
+        {
+            ZcStoreHouse obj = new ZcStoreHouse();
+            OracleConnection conn = null;
+            try
+            {
+                conn = OracleUtil.OpenConn();
+                string sql = "select ID, CREATETIME, UPDATETIME, STATUS, STORE, STOREMONEY,  CREATEUSER_ID  from ZC_STOREHOUSE a  where GOODSFILE_ID ='" + zcRequireItem.goodsFileId + "' and  BRANCH_ID = '"+LoginUserInfo.branchId+"' ";
+               
+                OracleCommand cmd = new OracleCommand(sql, conn);
+                var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    
+                    obj.Id = reader.IsDBNull(0) ? string.Empty : reader.GetString(0);
+                    obj.CreateTime = reader.IsDBNull(1) ? default(DateTime) : reader.GetDateTime(1);
+                    obj.UpdateTime = reader.IsDBNull(2) ? default(DateTime) : reader.GetDateTime(2);
+                    obj.Status = reader.IsDBNull(3) ? default(int) : reader.GetInt32(3);
+                    obj.Store = reader.IsDBNull(4) ? string.Empty : reader.GetString(4);
+                    obj.CreateUserId = reader.IsDBNull(6) ? string.Empty : reader.GetString(6);
+                    
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("确认收货放入库存", ex);
+            }
+            finally
+            {
+                OracleUtil.CloseConn(conn);
+            }
+            return obj;
+        }
+
+        /// <summary>
+        /// 添加确认收货到库存
+        /// </summary>
+        /// <param name="obj"></param>
+        public void AddZcStoreHouse(ZcStoreHouse obj)
+        {
+            string sql = "insert into ZC_STOREHOUSE (id, CREATETIME, UPDATETIME, status, store, storemoney,branch_id,createuser_id,goodsfile_id,weight) values (:id, :createTime, :updateTime, :status, :store, :storemoney,:branch_id,:createuser_id,:goodsfile_id,:weight)";
+            OracleConnection conn = null;
+            OracleTransaction tran = null;
+            OracleCommand cmd = new OracleCommand();
+            try
+            {
+                conn = OracleUtil.OpenConn();
+                tran = conn.BeginTransaction();
+                cmd.CommandText = sql;
+                cmd.Connection = conn;
+                cmd.Parameters.Add(":id", obj.Id);
+                cmd.Parameters.Add(":createTime", obj.CreateTime);
+                cmd.Parameters.Add(":updateTime", obj.UpdateTime);
+                cmd.Parameters.Add(":status", obj.Status);
+                cmd.Parameters.Add(":storemoney", obj.StoreMoney);
+                cmd.Parameters.Add(":branch_id", obj.BranchId);
+                cmd.Parameters.Add(":createuser_id", obj.CreateUserId);
+                cmd.Parameters.Add(":goodsfile_id", obj.GoodsFileId);
+                cmd.Parameters.Add(":weight", obj.weight);
+                cmd.ExecuteNonQuery();
+                tran.Commit();
+            }
+            catch (Exception ex)
+            {
+                tran.Rollback();
+               
+            }
+            finally
+            {
+                tran.Dispose();
+                cmd.Dispose();
+                OracleUtil.CloseConn(conn);
+            }
+
+        }
+      
     }
 }

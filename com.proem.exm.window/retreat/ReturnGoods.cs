@@ -249,5 +249,10 @@ namespace Branch.com.proem.exm.window.retreat
             column = -1;
             row = -1;
         }
+
+        private void timePanel_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }

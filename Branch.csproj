@@ -37,24 +37,24 @@
   <ItemGroup>
     <Reference Include="AopSdk, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Users\admin\Desktop\支付接口\支付宝\F2FPay_Demo_DotNet\Projects\Alipay-demo-project\F2FPayDll\bin\Debug\AopSdk.dll</HintPath>
+      <HintPath>C:\Users\myseft\Desktop\Branch\AopSdk.dll</HintPath>
     </Reference>
     <Reference Include="F2FPayDll">
-      <HintPath>C:\Users\admin\Desktop\支付接口\支付宝\F2FPay_Demo_DotNet\Projects\Alipay-demo-project\F2FPayDll\bin\Release\F2FPayDll.dll</HintPath>
+      <HintPath>C:\Users\myseft\Desktop\Branch\F2FPayDll.dll</HintPath>
     </Reference>
     <Reference Include="LitJson">
-      <HintPath>C:\Users\admin\Desktop\支付接口\WxPayAPI_CS_v3\WxPayAPI_CS_v3\WxPayAPI_CS_v3\WxPayAPI\WxPayAPI\bin\LitJson.dll</HintPath>
+      <HintPath>C:\Users\myseft\Desktop\Branch\LitJson.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
-      <HintPath>G:\众彩订单系统\C#开发电子书\library\log4net-1.2.15-bin-newkey\log4net-1.2.15\bin\net\4.0\release\log4net.dll</HintPath>
+      <HintPath>C:\Users\myseft\Desktop\Branch\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.QualityTools.Testing.Fakes, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="MySql.Data, Version=6.9.8.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\工作\MySql.Data.dll</HintPath>
+      <HintPath>C:\Users\myseft\Desktop\Branch\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="Oracle.ManagedDataAccess">
-      <HintPath>G:\众彩订单系统\C#开发电子书\ODP.NET_Managed_ODAC12cR4\odp.net\managed\common\Oracle.ManagedDataAccess.dll</HintPath>
+      <HintPath>C:\Users\myseft\Desktop\Branch\Oracle.ManagedDataAccess.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -98,6 +98,7 @@
     <Compile Include="com.proem.exm.dao\branch\BranchZcOrderTransitDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchZcOrderTransitItemDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchZcProviderInfoDao.cs" />
+    <Compile Include="com.proem.exm.dao\branch\BranchZcRequireDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchZcStoreHouseDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchZcUserInfoDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchZcZoningDao.cs" />
@@ -127,6 +128,8 @@
     <Compile Include="com.proem.exm.dao\master\ZcOrderTransitDao.cs" />
     <Compile Include="com.proem.exm.dao\master\ZcOrderTransitItemDao.cs" />
     <Compile Include="com.proem.exm.dao\master\ZcProviderInfoDao.cs" />
+    <Compile Include="com.proem.exm.dao\master\ZcRequireDao.cs" />
+    <Compile Include="com.proem.exm.dao\master\ZcRequireItemDao.cs" />
     <Compile Include="com.proem.exm.dao\master\ZcStoreHouseDao.cs" />
     <Compile Include="com.proem.exm.dao\master\ZcUserInfoDao.cs" />
     <Compile Include="com.proem.exm.dao\master\ZcZoningDao.cs" />
@@ -164,6 +167,8 @@
     </Compile>
     <Compile Include="com.proem.exm.domain\ZcOrderTransitItem.cs" />
     <Compile Include="com.proem.exm.domain\ZcProviderInfo.cs" />
+    <Compile Include="com.proem.exm.domain\ZcRequire.cs" />
+    <Compile Include="com.proem.exm.domain\ZcRequireItem.cs" />
     <Compile Include="com.proem.exm.domain\ZcStoreHouse.cs" />
     <Compile Include="com.proem.exm.domain\ZcUserInfo.cs">
       <SubType>Code</SubType>
@@ -192,6 +197,7 @@
     <Compile Include="com.proem.exm.service\branch\BranchZcOrderTransitItemService.cs" />
     <Compile Include="com.proem.exm.service\branch\BranchZcOrderTransitService.cs" />
     <Compile Include="com.proem.exm.service\branch\BranchZcProviderInfoService.cs" />
+    <Compile Include="com.proem.exm.service\branch\BranchZcRequireService.cs" />
     <Compile Include="com.proem.exm.service\branch\BranchZcStoreHouseService.cs" />
     <Compile Include="com.proem.exm.service\branch\BranchZcUserInfoService.cs" />
     <Compile Include="com.proem.exm.service\branch\BranchZcZoningService.cs" />
@@ -221,6 +227,8 @@
     <Compile Include="com.proem.exm.service\master\ZcOrderTransitItemService.cs" />
     <Compile Include="com.proem.exm.service\master\ZcOrderTransitService.cs" />
     <Compile Include="com.proem.exm.service\master\ZcProviderInfoService.cs" />
+    <Compile Include="com.proem.exm.service\master\ZcRequireItemService.cs" />
+    <Compile Include="com.proem.exm.service\master\ZcRequireService.cs" />
     <Compile Include="com.proem.exm.service\master\ZcStoreHouseService.cs" />
     <Compile Include="com.proem.exm.service\master\ZcUserInfoService.cs" />
     <Compile Include="com.proem.exm.service\master\ZcZoningService.cs" />
@@ -381,6 +389,12 @@
     <Compile Include="com.proem.exm.window\receive\DGPrompt.Designer.cs">
       <DependentUpon>DGPrompt.cs</DependentUpon>
     </Compile>
+    <Compile Include="com.proem.exm.window\require\BranchZcRequire.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="com.proem.exm.window\require\BranchZcRequire.Designer.cs">
+      <DependentUpon>BranchZcRequire.cs</DependentUpon>
+    </Compile>
     <Compile Include="com.proem.exm.window\retreat\ReturnGoods.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -468,7 +482,7 @@
     <Compile Include="com.proem.exm.window\util\GoodsChoose.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="com.proem.exm.window\util\GoodsChoose.Designer.cs">
+    <Compile Include="com.proem.exm.window\util\GoodsChoose.designer.cs">
       <DependentUpon>GoodsChoose.cs</DependentUpon>
     </Compile>
     <Compile Include="com.proem.exm.window\util\ItemInput.cs">
@@ -478,6 +492,12 @@
       <DependentUpon>ItemInput.cs</DependentUpon>
     </Compile>
     <Compile Include="com.proem.exm.window\util\QueryGoods.cs" />
+    <Compile Include="com.proem.exm.window\require\ChooserCommitList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="com.proem.exm.window\require\ChooserCommitList.Designer.cs">
+      <DependentUpon>ChooserCommitList.cs</DependentUpon>
+    </Compile>
     <Compile Include="com.proem.exm.window\util\Scan.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -609,6 +629,9 @@
     <EmbeddedResource Include="com.proem.exm.window\receive\DGPrompt.resx">
       <DependentUpon>DGPrompt.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="com.proem.exm.window\require\BranchZcRequire.resx">
+      <DependentUpon>BranchZcRequire.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="com.proem.exm.window\retreat\ReturnGoods.resx">
       <DependentUpon>ReturnGoods.cs</DependentUpon>
     </EmbeddedResource>
@@ -656,6 +679,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="com.proem.exm.window\util\ItemInput.resx">
       <DependentUpon>ItemInput.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="com.proem.exm.window\require\ChooserCommitList.resx">
+      <DependentUpon>ChooserCommitList.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="com.proem.exm.window\util\Scan.resx">
       <DependentUpon>Scan.cs</DependentUpon>

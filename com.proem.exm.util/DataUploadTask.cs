@@ -176,6 +176,13 @@ namespace Branch.com.proem.exm.util
                             dao.DeleteByIdAndType(obj.Id, obj.Type);
                         }
                     }
+                    //else if (obj.Type == Constant.ZC_REQUIRE)
+                    //{
+                    //    ZcRequireItemService zcRequireItemService = new ZcRequireItemService();
+                        
+                    //}
+
+
                 }
             }
         }

@@ -147,7 +147,6 @@
             this.inventoryControlButton.BackgroundImage = global::Branch.Properties.Resources.mk_07;
             this.inventoryControlButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.inventoryControlButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.inventoryControlButton.Enabled = false;
             this.inventoryControlButton.FlatAppearance.BorderSize = 0;
             this.inventoryControlButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.inventoryControlButton.Font = new System.Drawing.Font("宋体", 20F);

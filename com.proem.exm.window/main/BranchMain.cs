@@ -20,6 +20,7 @@ using Branch.com.proem.exm.domain;
 using Branch.com.proem.exm.service.branch;
 using Branch.com.proem.exm.service.master;
 using Branch.com.proem.exm.window.history;
+using Branch.com.proem.exm.window.require;
 
 namespace Branch.com.proem.exm.window.main
 {
@@ -87,6 +88,9 @@ namespace Branch.com.proem.exm.window.main
         private void inventoryControlButton_Click(object sender, EventArgs e)
         {
             //InventoryControl库存管理
+            BranchZcRequire branchZcRequire = new BranchZcRequire();
+            branchZcRequire.Show();
+            this.Hide();
         }
 
         private void historyInformButton_Click(object sender, EventArgs e)

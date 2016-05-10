@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.goodsPanel = new System.Windows.Forms.Panel();
             this.chooseButton = new System.Windows.Forms.Button();
             this.okButton = new System.Windows.Forms.Button();
@@ -195,9 +195,7 @@
             this.id});
             this.goodsDataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.goodsDataGridView.Location = new System.Drawing.Point(0, 0);
-            this.goodsDataGridView.MultiSelect = false;
             this.goodsDataGridView.Name = "goodsDataGridView";
-            this.goodsDataGridView.ReadOnly = true;
             this.goodsDataGridView.RowTemplate.Height = 23;
             this.goodsDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.goodsDataGridView.Size = new System.Drawing.Size(590, 260);
@@ -235,9 +233,9 @@
             // goods_price
             // 
             this.goods_price.DataPropertyName = "goods_price";
-            dataGridViewCellStyle13.Format = "N2";
-            dataGridViewCellStyle13.NullValue = null;
-            this.goods_price.DefaultCellStyle = dataGridViewCellStyle13;
+            dataGridViewCellStyle1.Format = "N2";
+            dataGridViewCellStyle1.NullValue = null;
+            this.goods_price.DefaultCellStyle = dataGridViewCellStyle1;
             this.goods_price.HeaderText = "商品价格";
             this.goods_price.Name = "goods_price";
             this.goods_price.ReadOnly = true;
@@ -275,6 +273,7 @@
             this.chooseAllButton.TabIndex = 7;
             this.chooseAllButton.Text = "全部选择";
             this.chooseAllButton.UseVisualStyleBackColor = true;
+            this.chooseAllButton.Click += new System.EventHandler(this.chooseAllButton_Click);
             // 
             // queryConditionGroupBox
             // 
@@ -441,13 +440,6 @@
         private System.Windows.Forms.GroupBox queryResultGroupBox;
         private System.Windows.Forms.Panel goodsTablePanel;
         private System.Windows.Forms.DataGridView goodsDataGridView;
-        private System.Windows.Forms.DataGridViewTextBoxColumn serialnumber;
-        private System.Windows.Forms.DataGridViewTextBoxColumn goods_name;
-        private System.Windows.Forms.DataGridViewTextBoxColumn goods_unit;
-        private System.Windows.Forms.DataGridViewTextBoxColumn goods_specifications;
-        private System.Windows.Forms.DataGridViewTextBoxColumn goods_price;
-        private System.Windows.Forms.DataGridViewTextBoxColumn remark;
-        private System.Windows.Forms.DataGridViewTextBoxColumn id;
         private System.Windows.Forms.Button chooseOneButton;
         private System.Windows.Forms.Button chooseAllButton;
         private System.Windows.Forms.GroupBox queryConditionGroupBox;
@@ -461,5 +453,12 @@
         private System.Windows.Forms.RadioButton brandRadioButton;
         private System.Windows.Forms.RadioButton supplierRadioButton;
         private System.Windows.Forms.RadioButton typeRadioButton;
+        private System.Windows.Forms.DataGridViewTextBoxColumn serialnumber;
+        private System.Windows.Forms.DataGridViewTextBoxColumn goods_name;
+        private System.Windows.Forms.DataGridViewTextBoxColumn goods_unit;
+        private System.Windows.Forms.DataGridViewTextBoxColumn goods_specifications;
+        private System.Windows.Forms.DataGridViewTextBoxColumn goods_price;
+        private System.Windows.Forms.DataGridViewTextBoxColumn remark;
+        private System.Windows.Forms.DataGridViewTextBoxColumn id;
     }
 }

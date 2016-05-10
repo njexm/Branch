@@ -28,12 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.operatorPanel = new System.Windows.Forms.Panel();
             this.queryResultGroupBox = new System.Windows.Forms.GroupBox();
             this.okButton = new System.Windows.Forms.Button();
             this.leaveButton = new System.Windows.Forms.Button();
             this.operatorTablePanel = new System.Windows.Forms.Panel();
             this.operatorDataGridView = new System.Windows.Forms.DataGridView();
+            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.branchName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.queryConditionGroupBox = new System.Windows.Forms.GroupBox();
             this.queryButton = new System.Windows.Forms.Button();
             this.operatorTextBox = new System.Windows.Forms.TextBox();
@@ -107,13 +112,56 @@
             // 
             // operatorDataGridView
             // 
+            this.operatorDataGridView.AllowUserToAddRows = false;
+            this.operatorDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.operatorDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.operatorDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Column1,
+            this.Column3,
+            this.branchName,
+            this.Column2});
             this.operatorDataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.operatorDataGridView.Location = new System.Drawing.Point(0, 0);
             this.operatorDataGridView.Name = "operatorDataGridView";
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            this.operatorDataGridView.RowHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            this.operatorDataGridView.RowHeadersVisible = false;
             this.operatorDataGridView.RowTemplate.Height = 23;
+            this.operatorDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.operatorDataGridView.Size = new System.Drawing.Size(564, 240);
             this.operatorDataGridView.TabIndex = 0;
+            this.operatorDataGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.operatorDataGridView_CellDoubleClick);
+            // 
+            // Column1
+            // 
+            this.Column1.DataPropertyName = "username";
+            this.Column1.HeaderText = "姓名";
+            this.Column1.Name = "Column1";
+            this.Column1.ReadOnly = true;
+            // 
+            // Column3
+            // 
+            this.Column3.DataPropertyName = "id";
+            this.Column3.HeaderText = "id";
+            this.Column3.Name = "Column3";
+            this.Column3.Visible = false;
+            // 
+            // branchName
+            // 
+            this.branchName.DataPropertyName = "branch_name";
+            this.branchName.HeaderText = "分店名称";
+            this.branchName.Name = "branchName";
+            // 
+            // Column2
+            // 
+            this.Column2.DataPropertyName = "branch_code";
+            this.Column2.HeaderText = "分店编号";
+            this.Column2.Name = "Column2";
             // 
             // queryConditionGroupBox
             // 
@@ -139,6 +187,7 @@
             this.queryButton.TabIndex = 30;
             this.queryButton.Text = "查询";
             this.queryButton.UseVisualStyleBackColor = true;
+            this.queryButton.Click += new System.EventHandler(this.queryButton_Click);
             // 
             // operatorTextBox
             // 
@@ -174,6 +223,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "选择操作员";
             this.TopMost = true;
+            this.Load += new System.EventHandler(this.RGROperatorChoose_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.RGROperatorChoose_KeyDown);
             this.operatorPanel.ResumeLayout(false);
             this.queryResultGroupBox.ResumeLayout(false);
@@ -197,5 +247,9 @@
         private System.Windows.Forms.TextBox operatorTextBox;
         private System.Windows.Forms.Label operatorLabel;
         private System.Windows.Forms.DataGridView operatorDataGridView;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn branchName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
     }
 }
