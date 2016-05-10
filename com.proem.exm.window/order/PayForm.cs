@@ -152,16 +152,16 @@ namespace Branch.com.proem.exm.window.order
                 if (float.Parse(textBox4.Text) - this.cardpayment > 0)
                 {
                     PayInfo obj = new PayInfo();
-                    obj.Id = Guid.NewGuid().ToString();
-                    obj.CreateTime = DateTime.Now;
-                    obj.UpdateTime = DateTime.Now;
-                    obj.PayAmount = (float.Parse(textBox4.Text) - this.cardpayment).ToString("0.00");
-                    obj.orderId = orderId;
-                    obj.salesmanId = LoginUserInfo.id;
-                    obj.payDate = DateTime.Now;
-                    obj.PayMode = BranchPay.money;
-                    obj.MemberId = memberCardId;
-                    obj.BranchId = LoginUserInfo.branchId;
+                    //obj.Id = Guid.NewGuid().ToString();
+                    //obj.CreateTime = DateTime.Now;
+                    //obj.UpdateTime = DateTime.Now;
+                    //obj.PayAmount = (float.Parse(textBox4.Text) - this.cardpayment).ToString("0.00");
+                    //obj.orderId = orderId;
+                    //obj.salesmanId = LoginUserInfo.id;
+                    //obj.payDate = DateTime.Now;
+                    //obj.PayMode = BranchPay.money;
+                    //obj.MemberId = memberCardId;
+                    //obj.BranchId = LoginUserInfo.branchId;
                     AddPayInfo(obj);
                 }
             }
@@ -175,7 +175,7 @@ namespace Branch.com.proem.exm.window.order
             {
                 BranchPayInfoService payService = new BranchPayInfoService();
 
-                payService.AddPayInfo(payList);
+                //payService.AddPayInfo(payList);
 
                 //上传支付信息
                 if (PingTask.IsConnected)
@@ -606,38 +606,38 @@ namespace Branch.com.proem.exm.window.order
                     ///1现金返还
                     ///2易宝支付返还
                     ///3微信支付返还
-                    foreach(PayInfo obj in payList)
-                    {
-                        if(obj.PayMode == BranchPay.WxPay)
-                        {
-                            string amount = float.Parse(obj.PayAmount).ToString("0.00").Replace(".", "");
-                            WxPayData result = Refund.Run(null, obj.orderId + "4", amount, amount);
-                            if ("SUCCESS".Equals(result.GetValue("result_code")))
-                            {
-                                //MessageBox.Show("微信支付退款成功!");
-                            }
-                            else
-                            {
-                                if (result.IsSet("err_code_des"))
-                                {
-                                    MessageBox.Show(result.GetValue("err_code_des").ToString());
-                                    return;
-                                }
-                                else
-                                {
-                                    MessageBox.Show("未知错误!");
-                                    return;
-                                }
+                    //foreach(PayInfo obj in payList)
+                    //{
+                    //    if(obj.PayMode == BranchPay.WxPay)
+                    //    {
+                    //        string amount = float.Parse(obj.PayAmount).ToString("0.00").Replace(".", "");
+                    //        WxPayData result = Refund.Run(null, obj.orderId + "4", amount, amount);
+                    //        if ("SUCCESS".Equals(result.GetValue("result_code")))
+                    //        {
+                    //            //MessageBox.Show("微信支付退款成功!");
+                    //        }
+                    //        else
+                    //        {
+                    //            if (result.IsSet("err_code_des"))
+                    //            {
+                    //                MessageBox.Show(result.GetValue("err_code_des").ToString());
+                    //                return;
+                    //            }
+                    //            else
+                    //            {
+                    //                MessageBox.Show("未知错误!");
+                    //                return;
+                    //            }
 
-                            }
-                        }
-                        if (obj.PayMode == BranchPay.ZFBPay)
-                        {
-                            string amount = float.Parse(obj.PayAmount).ToString("0.00").Replace(".", "");
-                            string id = obj.orderId;
-                            ZFBPayRefund(amount,id);
-                        }
-                    }
+                    //        }
+                    //    }
+                    //    if (obj.PayMode == BranchPay.ZFBPay)
+                    //    {
+                    //        string amount = float.Parse(obj.PayAmount).ToString("0.00").Replace(".", "");
+                    //        string id = obj.orderId;
+                    //        ZFBPayRefund(amount,id);
+                    //    }
+                    //}
                 }
             }
         }

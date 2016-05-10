@@ -1538,114 +1538,115 @@ namespace Branch.com.proem.exm.window.order
         /// <returns></returns>
         public bool returnModeFlag(string constant)
         {
-            bool mode_flag = false;
-            ////查询该订单现金付款金额
-            BranchPayInfoService payService = new BranchPayInfoService();
-            List<string> payMode = payService.FindModePayment(id_.Text.ToString());
-            //MessageBox.Show(payMode.ToString());
-            bool money_flag = false;//现金
-            bool card_flag = false;//易宝卡
-            bool WxPay_flag = false;//微信
-            bool ZFBPay_flag = false;//支付宝
-            foreach (string i in payMode)
-            {
-                if (i.Equals(BranchPay.money))
-                {
-                    money_flag = true;
-                }
-                if (i.Equals(BranchPay.card))
-                {
-                    card_flag = true;
-                }
-                if (i.Equals(BranchPay.WxPay))
-                {
-                    WxPay_flag = true;
-                }
-                if (i.Equals(BranchPay.ZFBPay))
-                {
-                    ZFBPay_flag = true;
-                }
-            }
-            if (money_flag)
-            {
-                if (!card_flag && !WxPay_flag && !ZFBPay_flag)
-                {
-                    //付款方式唯一，且为现金支付
-                    //线下退款
-                    if (MessageBox.Show("当前订单退款方式为现金退款，是否确定退款？", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
-                    {
-                        List<PayInfo> payList = new List<PayInfo>();
-                        PayInfo obj = new PayInfo();
-                        obj.Id = Guid.NewGuid().ToString();
-                        obj.CreateTime = DateTime.Now;
-                        obj.UpdateTime = DateTime.Now;
-                        obj.PayAmount = (0 - returnAmount).ToString("0.00");
-                        obj.orderId = id_.Text.ToString();
-                        obj.salesmanId = LoginUserInfo.id;
-                        obj.payDate = DateTime.Now;
-                        obj.PayMode = BranchPay.money_refund;
-                        obj.MemberId = card_label.Text.ToString();
-                        obj.BranchId = LoginUserInfo.branchId;
-                        payList.Add(obj);
-                        payService.AddPayInfo(payList);
+            //bool mode_flag = false;
+            //////查询该订单现金付款金额
+            //BranchPayInfoService payService = new BranchPayInfoService();
+            //List<string> payMode = payService.FindModePayment(id_.Text.ToString());
+            ////MessageBox.Show(payMode.ToString());
+            //bool money_flag = false;//现金
+            //bool card_flag = false;//易宝卡
+            //bool WxPay_flag = false;//微信
+            //bool ZFBPay_flag = false;//支付宝
+            //foreach (string i in payMode)
+            //{
+            //    if (i.Equals(BranchPay.money))
+            //    {
+            //        money_flag = true;
+            //    }
+            //    if (i.Equals(BranchPay.card))
+            //    {
+            //        card_flag = true;
+            //    }
+            //    if (i.Equals(BranchPay.WxPay))
+            //    {
+            //        WxPay_flag = true;
+            //    }
+            //    if (i.Equals(BranchPay.ZFBPay))
+            //    {
+            //        ZFBPay_flag = true;
+            //    }
+            //}
+            //if (money_flag)
+            //{
+            //    if (!card_flag && !WxPay_flag && !ZFBPay_flag)
+            //    {
+            //        //付款方式唯一，且为现金支付
+            //        //线下退款
+            //        if (MessageBox.Show("当前订单退款方式为现金退款，是否确定退款？", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+            //        {
+            //            List<PayInfo> payList = new List<PayInfo>();
+            //            PayInfo obj = new PayInfo();
+            //            obj.Id = Guid.NewGuid().ToString();
+            //            obj.CreateTime = DateTime.Now;
+            //            obj.UpdateTime = DateTime.Now;
+            //            obj.PayAmount = (0 - returnAmount).ToString("0.00");
+            //            obj.orderId = id_.Text.ToString();
+            //            obj.salesmanId = LoginUserInfo.id;
+            //            obj.payDate = DateTime.Now;
+            //            obj.PayMode = BranchPay.money_refund;
+            //            obj.MemberId = card_label.Text.ToString();
+            //            obj.BranchId = LoginUserInfo.branchId;
+            //            payList.Add(obj);
+            //            payService.AddPayInfo(payList);
 
-                        //上传支付信息
-                        if (PingTask.IsConnected)
-                        {
-                            PayInfoService masterPayInfoService = new PayInfoService();
-                            masterPayInfoService.AddPayInfo(payList);
-                        }
-                        else
-                        {
-                            List<UploadInfo> list = new List<UploadInfo>();
-                            foreach (PayInfo i in payList)
-                            {
-                                UploadInfo uploadInfo = new UploadInfo();
-                                uploadInfo.Id = i.Id;
-                                uploadInfo.CreateTime = DateTime.Now;
-                                uploadInfo.UpdateTime = DateTime.Now;
-                                uploadInfo.Type = Constant.PAY_INFO;
-                                list.Add(uploadInfo);
-                            }
-                            UploadDao uploadDao = new UploadDao();
-                            uploadDao.AddUploadInfo(list);
-                        }
+            //            //上传支付信息
+            //            if (PingTask.IsConnected)
+            //            {
+            //                PayInfoService masterPayInfoService = new PayInfoService();
+            //                masterPayInfoService.AddPayInfo(payList);
+            //            }
+            //            else
+            //            {
+            //                List<UploadInfo> list = new List<UploadInfo>();
+            //                foreach (PayInfo i in payList)
+            //                {
+            //                    UploadInfo uploadInfo = new UploadInfo();
+            //                    uploadInfo.Id = i.Id;
+            //                    uploadInfo.CreateTime = DateTime.Now;
+            //                    uploadInfo.UpdateTime = DateTime.Now;
+            //                    uploadInfo.Type = Constant.PAY_INFO;
+            //                    list.Add(uploadInfo);
+            //                }
+            //                UploadDao uploadDao = new UploadDao();
+            //                uploadDao.AddUploadInfo(list);
+            //            }
 
-                        //修改本地历史订单状态
-                        BranchZcOrderHistoryService branchZcOrderHistoryService = new BranchZcOrderHistoryService();
-                        branchZcOrderHistoryService.UpdateOrderStatusByIds(id_.Text.ToString(), constant);
+            //            //修改本地历史订单状态
+            //            BranchZcOrderHistoryService branchZcOrderHistoryService = new BranchZcOrderHistoryService();
+            //            branchZcOrderHistoryService.UpdateOrderStatusByIds(id_.Text.ToString(), constant);
 
-                        MessageBox.Show("退款成功！");
+            //            MessageBox.Show("退款成功！");
 
-                        //清空listDataGridView上的信息
-                        listDataGridView.DataSource = null;
-                        //初始化信息
-                        queryTextBox.Text = "";
-                        card_label.Text = "";
-                        name_label.Text = "";
-                        inform_label.Text = "";
-                        id_.Text = "";
-                        this.order_Num = null;
+            //            //清空listDataGridView上的信息
+            //            listDataGridView.DataSource = null;
+            //            //初始化信息
+            //            queryTextBox.Text = "";
+            //            card_label.Text = "";
+            //            name_label.Text = "";
+            //            inform_label.Text = "";
+            //            id_.Text = "";
+            //            this.order_Num = null;
 
-                        return mode_flag;
-                    }
-                    else
-                    {
-                        return mode_flag;
-                    }
-                }
-            }
-            else
-            {
-                if (card_flag && !WxPay_flag && !ZFBPay_flag || !card_flag && WxPay_flag && !ZFBPay_flag || !card_flag && !WxPay_flag && ZFBPay_flag)
-                {
-                    //付款方式唯一，且非现金支付
-                    mode_flag = true;
-                    return mode_flag;
-                }
-            }
-            MessageBox.Show("当前订单为多方式支付，无法完成退款操作！");
-            return mode_flag;
+            //            return mode_flag;
+            //        }
+            //        else
+            //        {
+            //            return mode_flag;
+            //        }
+            //    }
+            //}
+            //else
+            //{
+            //    if (card_flag && !WxPay_flag && !ZFBPay_flag || !card_flag && WxPay_flag && !ZFBPay_flag || !card_flag && !WxPay_flag && ZFBPay_flag)
+            //    {
+            //        //付款方式唯一，且非现金支付
+            //        mode_flag = true;
+            //        return mode_flag;
+            //    }
+            //}
+            //MessageBox.Show("当前订单为多方式支付，无法完成退款操作！");
+            //return mode_flag;
+            return false;
         }
 
         /// <summary>

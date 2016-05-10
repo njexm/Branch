@@ -72,14 +72,14 @@ namespace Branch.com.proem.exm.util
                     }
                     else if (obj.Type == Constant.PAY_INFO)
                     {
-                        BranchPayInfoService service = new BranchPayInfoService();
-                        PayInfo payInfo = service.FindById(obj.Id);
-                        PayInfoService masterService = new PayInfoService();
-                        bool flag = masterService.AddPayInfoI(payInfo);
-                        if (flag)
-                        {
-                            dao.DeleteByIdAndType(obj.Id, obj.Type);
-                        }
+                        //BranchPayInfoService service = new BranchPayInfoService();
+                        //PayInfo payInfo = service.FindById(obj.Id);
+                        //PayInfoService masterService = new PayInfoService();
+                        //bool flag = masterService.AddPayInfoI(payInfo);
+                        //if (flag)
+                        //{
+                        //    dao.DeleteByIdAndType(obj.Id, obj.Type);
+                        //}
                     }
                     else if (obj.Type == Constant.ZC_ORDER_HISTORY)
                     {

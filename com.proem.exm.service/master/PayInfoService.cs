@@ -23,7 +23,7 @@ namespace Branch.com.proem.exm.service.master
         public void AddPayInfo(List<PayInfo> payList)
         {
             PayInfoDao dao = new PayInfoDao();
-            dao.AddPayInfo(payList);
+            //dao.AddPayInfo(payList);
         }
 
 

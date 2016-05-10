@@ -69,17 +69,17 @@ namespace Branch.com.proem.exm.window.order
             {
                 textBox4.Text = textBox4.Text + "0";
             }
-            PayInfo obj = new PayInfo();
-            obj.Id = Guid.NewGuid().ToString();
-            obj.CreateTime = DateTime.Now;
-            obj.UpdateTime = DateTime.Now;
-            obj.PayAmount = textBox4.Text;
-            obj.orderId = orderId;
-            obj.salesmanId = LoginUserInfo.id;
-            obj.payDate = DateTime.Now;
-            obj.PayMode = BranchPay.card;
-            obj.MemberId = memberCardId;
-            obj.BranchId = LoginUserInfo.branchId;
+            //PayInfo obj = new PayInfo();
+            //obj.Id = Guid.NewGuid().ToString();
+            //obj.CreateTime = DateTime.Now;
+            //obj.UpdateTime = DateTime.Now;
+            //obj.PayAmount = textBox4.Text;
+            //obj.orderId = orderId;
+            //obj.salesmanId = LoginUserInfo.id;
+            //obj.payDate = DateTime.Now;
+            //obj.PayMode = BranchPay.card;
+            //obj.MemberId = memberCardId;
+            //obj.BranchId = LoginUserInfo.branchId;
 
             //BranchPayInfoService service = new BranchPayInfoService();
             //service.AddPayInfo(obj);
@@ -87,7 +87,7 @@ namespace Branch.com.proem.exm.window.order
             //PayInfoService masterPayInfoService = new PayInfoService();
             //masterPayInfoService.AddPayInfo(obj);
 
-            this.payForm.AddPayInfo(obj);
+            //this.payForm.AddPayInfo(obj);
 
             payForm.AddPaidAmount(textBox4.Text);
             clFlag = true;

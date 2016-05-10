@@ -165,15 +165,15 @@ namespace Branch.com.proem.exm.window.util
             payinfo.CreateTime = DateTime.Now;
             payinfo.UpdateTime = DateTime.Now;
             //付款金额
-            payinfo.PayAmount = alreadyAmount.ToString();
-            //订单号
-            payinfo.orderId = orderNum;
-            //业务员
-            payinfo.salesmanId = LoginUserInfo.id;
-            //付款日期
-            payinfo.payDate = DateTime.Now;
-            //支付方式
-            payinfo.PayMode = branch;
+            //payinfo.PayAmount = alreadyAmount.ToString();
+            ////订单号
+            //payinfo.orderId = orderNum;
+            ////业务员
+            //payinfo.salesmanId = LoginUserInfo.id;
+            ////付款日期
+            //payinfo.payDate = DateTime.Now;
+            ////支付方式
+            //payinfo.PayMode = branch;
             //分店
             payinfo.BranchId = LoginUserInfo.branchId;
             //会员卡号

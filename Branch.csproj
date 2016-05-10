@@ -109,6 +109,7 @@
     <Compile Include="com.proem.exm.dao\master\DailyReceiveGoodsDao.cs" />
     <Compile Include="com.proem.exm.dao\master\DeliverAmountInfoDao.cs" />
     <Compile Include="com.proem.exm.dao\master\PayInfoDao.cs" />
+    <Compile Include="com.proem.exm.dao\master\PayInfoItemDao.cs" />
     <Compile Include="com.proem.exm.dao\master\RefundInfoDao.cs" />
     <Compile Include="com.proem.exm.dao\master\RelUserRoleDao.cs" />
     <Compile Include="com.proem.exm.dao\master\ResaleDao.cs" />

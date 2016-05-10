@@ -84,16 +84,16 @@ namespace Branch.com.proem.exm.window.order
             {
                 MessageBox.Show("微信支付成功!");
                 PayInfo obj = new PayInfo();
-                obj.Id = Guid.NewGuid().ToString();
-                obj.CreateTime = DateTime.Now;
-                obj.UpdateTime = DateTime.Now;
-                obj.PayAmount = actualTextbox.Text.Trim();
-                obj.orderId = this.OrderNumber;
-                obj.salesmanId = LoginUserInfo.id;
-                obj.payDate = DateTime.Now;
-                obj.PayMode = BranchPay.WxPay;
-                //obj.MemberId = memberCardId;
-                obj.BranchId = LoginUserInfo.branchId;
+                //obj.Id = Guid.NewGuid().ToString();
+                //obj.CreateTime = DateTime.Now;
+                //obj.UpdateTime = DateTime.Now;
+                //obj.PayAmount = actualTextbox.Text.Trim();
+                //obj.orderId = this.OrderNumber;
+                //obj.salesmanId = LoginUserInfo.id;
+                //obj.payDate = DateTime.Now;
+                //obj.PayMode = BranchPay.WxPay;
+                ////obj.MemberId = memberCardId;
+                //obj.BranchId = LoginUserInfo.branchId;
 
                 //BranchPayInfoService service = new BranchPayInfoService();
                 //service.AddPayInfo(obj);
@@ -103,7 +103,7 @@ namespace Branch.com.proem.exm.window.order
 
                 this.payForm.AddPayInfo(obj);
 
-                payForm.AddPaidAmount(obj.PayAmount);
+                //payForm.AddPaidAmount(obj.PayAmount);
 
                 clFlag = true;
 
