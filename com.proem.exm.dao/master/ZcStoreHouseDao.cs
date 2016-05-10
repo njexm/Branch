@@ -134,6 +134,44 @@ namespace Branch.com.proem.exm.dao.master
             }
 
         }
+
+        /// <summary>
+        /// 如果查询到存在，更新库存量 和库存的价格，更新时间（状态是什么鬼，不知道要不要更新）
+        /// </summary>
+        /// <param name="obj"></param>
+        public void updateZcStoreHouse(ZcStoreHouse obj)
+        {
+            string sql = "update  ZC_STOREHOUSE set  UPDATETIME = :UPDATETIME, store = :store, storemoney = :storemoney where id = :id";
+            OracleConnection conn = null;
+            OracleTransaction tran = null;
+            OracleCommand cmd = new OracleCommand();
+            try
+            {
+                conn = OracleUtil.OpenConn();
+                tran = conn.BeginTransaction();
+                cmd.CommandText = sql;
+                cmd.Connection = conn;
+                
+                cmd.Parameters.Add(":updateTime", DateTime.Now);
+                cmd.Parameters.Add(":store", obj.Store);
+                cmd.Parameters.Add(":storemoney", obj.StoreMoney);
+                cmd.Parameters.Add(":id", obj.Id);
+                cmd.ExecuteNonQuery();
+                tran.Commit();
+            }
+            catch (Exception ex)
+            {
+                tran.Rollback();
+
+            }
+            finally
+            {
+                tran.Dispose();
+                cmd.Dispose();
+                OracleUtil.CloseConn(conn);
+            }
+
+        }
       
     }
 }

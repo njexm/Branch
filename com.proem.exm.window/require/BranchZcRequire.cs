@@ -849,7 +849,40 @@ namespace Branch.com.proem.exm.window.require
                 zcRequireItemService.DeleteRequireItemById(zcRequire);
             }
         }
-
+        /// <summary>
+        /// 确认收货的方法
+        /// </summary>
+        /// <param name="obj"></param>
+        public void commitReceiveGoods(ZcRequire obj) 
+        {
+            ZcRequireItemService zcRequireItemService = new ZcRequireItemService();
+            List<ZcRequireItem> list =  zcRequireItemService.findAllRequireItemByRequireId(obj);
+            for (int i = 0; i < list.Count; i++ )
+            {
+                ZcRequireItem zcRequireItem = list[i];
+                ZcStoreHouseService zcStoreHouseService = new ZcStoreHouseService();
+                ZcStoreHouse zcStoreHouse =  zcStoreHouseService.FindByBranchIdAndGoodFilesId(zcRequireItem);
+                if (zcStoreHouse != null)
+                {
+                    float beginStore = float.Parse(zcStoreHouse.Store.ToString());
+                    float addStore = float.Parse(zcRequireItem.nums.ToString());
+                    string newStore = (beginStore + addStore).ToString();
+                    float beginStoreMoney = float.Parse(zcStoreHouse.StoreMoney.ToString());
+                    float addStoreMoney = float.Parse(zcRequireItem.money.ToString());
+                    string newStoreMoney = (beginStoreMoney + addStoreMoney).ToString();
+                    ZcStoreHouse updateZcStoreHouse = new ZcStoreHouse();
+                    updateZcStoreHouse.Store = newStore;
+                    updateZcStoreHouse.StoreMoney = newStoreMoney;
+                    updateZcStoreHouse.Id = zcStoreHouse.Id;
+                    zcStoreHouseService.updateZcStoreHouse(updateZcStoreHouse);
+                }
+                else
+                {
+                    zcStoreHouseService.AddZcStoreHouse(zcStoreHouse);
+                }
+                
+            }
+        }
         
         /// <summary>
         /// 确认收货，需要改变状态，查询的框只有已经审核完毕的单据
@@ -877,7 +910,7 @@ namespace Branch.com.proem.exm.window.require
                 zcRequireService.commitCheckedOrder(ZcRequire);
                 MessageBox.Show("确认收货成功");
                 commitgoodsbutton.Text = "收货单据";
-
+                commitReceiveGoods(ZcRequire);
                 cleanTheWindow();
 
             }
