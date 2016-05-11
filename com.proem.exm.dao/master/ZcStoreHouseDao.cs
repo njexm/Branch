@@ -25,7 +25,7 @@ namespace Branch.com.proem.exm.dao.master
             try
             {
                 conn = OracleUtil.OpenConn();
-                string sql = "select a.ID, a.CREATETIME, a.UPDATETIME, a.STATUS, a.STORE, a.STOREMONEY, a.BRANCH_ID, a.CREATEUSER_ID, a.GOODSFILE_ID  from ZC_STOREHOUSE a left join ZC_BRANCH_INFO b "
+                string sql = "select a.ID, a.CREATETIME, a.UPDATETIME, a.STATUS, a.STORE, a.STOREMONEY, a.BRANCH_ID, a.CREATEUSER_ID, a.GOODSFILE_ID, a.weight  from ZC_STOREHOUSE a left join ZC_BRANCH_INFO b "
                 +"on a.BRANCH_ID = b.id LEFT JOIN ZC_BRANCH_TOTAL c "
                 +"on b.branchtotal_id = c.id where c.id = '"+LoginUserInfo.branchId+"'";
                 OracleCommand cmd = new OracleCommand(sql, conn);
@@ -41,6 +41,7 @@ namespace Branch.com.proem.exm.dao.master
                     obj.BranchId = reader.IsDBNull(5) ? string.Empty : reader.GetString(5);
                     obj.CreateUserId = reader.IsDBNull(6) ? string.Empty : reader.GetString(6);
                     obj.GoodsFileId = reader.IsDBNull(7) ? string.Empty : reader.GetString(7);
+                    obj.weight = reader.IsDBNull(8) ? string.Empty : reader.GetString(8);
                     list.Add(obj);
                 }
             }

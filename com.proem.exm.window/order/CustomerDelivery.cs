@@ -43,6 +43,13 @@ namespace Branch.com.proem.exm.window.order
         private string WorkMode;
 
         /// <summary>
+        /// 扫码添加还是删除
+        /// true 默认添加
+        /// false 减去
+        /// </summary>
+        private bool AddOrDelete = true;
+
+        /// <summary>
         /// 待打印的商品列表
         /// </summary>
         private List<GoodsPrint> printObjectlist = new List<GoodsPrint>();
@@ -120,20 +127,10 @@ namespace Branch.com.proem.exm.window.order
 
         private void CustomerDelivery_Load(object sender, EventArgs e)
         {
-            //inNameTextBox.Text = LoginUserInfo.branchName;
+            numberTextBox.Focus();
+            resaleInit();
+
             inNameLabel.Text = LoginUserInfo.branchName;
-            //salesmanNameTextBox.Text = LoginUserInfo.name;
-            salesmanNameLabel.Text = LoginUserInfo.name;
-            ///默认提货
-            pickUp_Click(this, e);
-
-
-            //itemsInput = new ItemInput(this, log);
-            //itemsInput.TopLevel = false;
-            //this.itemInputPanel.Controls.Add(itemsInput);
-            //itemsInput.Show();
-
-
             Times times = new Times();
             times.TopLevel = false;
             this.timePanel.Controls.Add(times);
@@ -249,7 +246,8 @@ namespace Branch.com.proem.exm.window.order
             if (WorkMode == Constant.PICK_UP_GOODS)
             {
                 ///获取查询条件
-                string searchString = queryTextBox.Text.ToString().Trim();
+                //string searchString = queryTextBox.Text.ToString().Trim();
+                string searchString = "";
                 CustomerDeliveryController controller = new CustomerDeliveryController();
                 int orderCounts = controller.GetOrderCounts(searchString);
                 if (orderCounts == 0)
@@ -259,15 +257,15 @@ namespace Branch.com.proem.exm.window.order
                 }
                 else if (orderCounts == 1)
                 {
-                    controller.GetOrderInfo(searchString, this);
-                    ///直接根据orderNumber获取此订单下的商品展示
-                    DataSet ds = controller.GetGoodDataSetById(id_.Text.ToString());
-                    itemDataGridView.AutoGenerateColumns = false;
-                    itemDataGridView.DataSource = ds;
-                    itemDataGridView.DataMember = "zc_order_transit";
-                    itemDataGridView.CurrentCell = null;//不默认选中
-                    ///初始化显示份数差异
-                    initDifference();
+                    //controller.GetOrderInfo(searchString, this);
+                    /////直接根据orderNumber获取此订单下的商品展示
+                    //DataSet ds = controller.GetGoodDataSetById(id_.Text.ToString());
+                    //itemDataGridView.AutoGenerateColumns = false;
+                    //itemDataGridView.DataSource = ds;
+                    //itemDataGridView.DataMember = "zc_order_transit";
+                    //itemDataGridView.CurrentCell = null;//不默认选中
+                    /////初始化显示份数差异
+                    //initDifference();
                 }
                 else
                 {
@@ -282,7 +280,8 @@ namespace Branch.com.proem.exm.window.order
             if (WorkMode == Constant.REFUND)
             {//GetReturnOrderCounts
                 ///获取查询条件
-                string searchString = queryTextBox.Text.ToString().Trim();
+                //string searchString = queryTextBox.Text.ToString().Trim();
+                string searchString = "";
                 CustomerDeliveryController controller = new CustomerDeliveryController();
                 int orderCounts = controller.GetReturnOrderCounts(searchString);
                 if (orderCounts == 0)
@@ -294,11 +293,11 @@ namespace Branch.com.proem.exm.window.order
                 {
                     controller.GetReturnOrderInfo(searchString, this);
                     ///直接根据orderNumber获取此订单下的商品展示
-                    DataSet ds = controller.GetReturnGoodDataSetById(id_.Text.ToString());
-                    listDataGridView.AutoGenerateColumns = false;
-                    listDataGridView.DataSource = ds;
-                    listDataGridView.DataMember = "zc_order_history";
-                    listDataGridView.CurrentCell = null;//不默认选中
+                    //DataSet ds = controller.GetReturnGoodDataSetById(id_.Text.ToString());
+                    //listDataGridView.AutoGenerateColumns = false;
+                    //listDataGridView.DataSource = ds;
+                    //listDataGridView.DataMember = "zc_order_history";
+                    //listDataGridView.CurrentCell = null;//不默认选中
                 }
                 else
                 {
@@ -400,10 +399,10 @@ namespace Branch.com.proem.exm.window.order
 
                 MysqlDBHelper dbHelper = new MysqlDBHelper();
                 DataSet ds = dbHelper.GetDataSet(sql, "zc_order_history");
-                listDataGridView.AutoGenerateColumns = false;
-                listDataGridView.DataSource = ds;
-                listDataGridView.DataMember = "zc_order_history";
-                listDataGridView.CurrentCell = null;//不默认选中
+                //listDataGridView.AutoGenerateColumns = false;
+                //listDataGridView.DataSource = ds;
+                //listDataGridView.DataMember = "zc_order_history";
+                //listDataGridView.CurrentCell = null;//不默认选中
 
             }
         }
@@ -420,150 +419,196 @@ namespace Branch.com.proem.exm.window.order
             }
         }
 
+        /// <summary>
+        /// 快捷键绑定
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CustomerDelivery_KeyDown(object sender, KeyEventArgs e)
         {
+            ///快捷键F1功能提示
+            if(e.KeyCode == Keys.F1){
+                HelpMessage help = new HelpMessage();
+                help.Show();
+            }else if(e.KeyCode == Keys.T)
+            {
+                pickUp();
+            }else if(e.KeyCode == Keys.L)
+            {
+                resaleInit();
+            }else if(e.KeyCode == Keys.F2)
+            {
+                MemberChoose memberChoose = new MemberChoose(this);
+                memberChoose.Show();
+            }else if(e.KeyCode == Keys.Add)
+            {
+                AddOrDelete = true;
+            }
+            else if (e.KeyCode == Keys.Subtract)
+            {
+                AddOrDelete = false;
+            }
+            else if (e.KeyCode == Keys.Multiply)
+            {
+                openChangeNums();
+            }else if(e.KeyCode == Keys.U && WorkMode.Equals(Constant.RETAIL))
+            {
+                deleteResaleGoods();
+            }else if(e.KeyCode == Keys.Space)
+            {
+                ///按space进入结算
+                settlement();
+            }
+            ///扫码
+            if (numberTextBox.Focused == true && e.KeyCode == Keys.Enter)
+            {
+                if (WorkMode.Equals(Constant.RETAIL))
+                {
+                    AddResaleGoods();
+                }
+                else if (WorkMode.Equals(Constant.PICK_UP_GOODS))
+                {
+                    ///TODO 
+                }
+            }
             //快捷键返回上层
             if(e.KeyCode == Keys.Escape){
-                returnButton_Click(this, EventArgs.Empty);
-            }
-            ///快捷键点击结算
-            if (e.KeyCode == Keys.F1)
-            {
-                pickUp_Click(this, e);
-            }
-            ///快捷键点击退款
-            if (e.KeyCode == Keys.F2)
-            {
-                refund_Click(this, EventArgs.Empty);
-            }
-            //balance_Click(object sender, EventArgs e)
-            if (e.KeyCode == Keys.F3)
-            {
-                balance_Click(this, EventArgs.Empty);
-            }
-            //快捷键零售
-            if(e.KeyCode == Keys.F4){
-                resaleButton_Click(this, EventArgs.Empty);
-            }
-            //快捷进入会员信息选择
-            if(isResale && e.KeyCode == Keys.F5)
-            {
-                memberChooseButton_Click(this, EventArgs.Empty);
-            }
-            ///点击添加扫码的零售商品
-            if(isResale && resaleNumberTextBox.Focused && e.KeyCode == Keys.Enter){
-                AddResaleGoods();
-            }
-            if(isResale && e.KeyCode == Keys.A)
-            {
-                AddOrReduceButton_Click(this, EventArgs.Empty);
-            }
-            ///零售商品数量修改
-            if(isResale & e.KeyCode == Keys.B)
-            {
-                button1_Click(this, EventArgs.Empty);
-            }
-            ///零售商品删除
-            if (isResale & e.KeyCode == Keys.C)
-            {
-                button2_Click(this, EventArgs.Empty);
-            }
-
-            ///查询键点击查询
-            if (queryTextBox.Focused == true && e.KeyCode == Keys.Enter)
-            {
-                queryButton_Click(this, e);
-            }else if (numberTextBox.Focused == true && e.KeyCode == Keys.Enter)
-            {
-                equalButton_Click(this, EventArgs.Empty);
+                this.Close();
             }
 
 
+
+
+            /////快捷键点击结算
+            //if (e.KeyCode == Keys.F1)
+            //{
+            //    pickUp_Click(this, e);
+            //}
+            /////快捷键点击退款
+            //if (e.KeyCode == Keys.F2)
+            //{
+            //    refund_Click(this, EventArgs.Empty);
+            //}
+            ////balance_Click(object sender, EventArgs e)
+            //if (e.KeyCode == Keys.F3)
+            //{
+            //    balance_Click(this, EventArgs.Empty);
+            //}
+            ////快捷键零售
+            //if(e.KeyCode == Keys.F4){
+            //    resaleButton_Click(this, EventArgs.Empty);
+            //}
+            ////快捷进入会员信息选择
+            //if(isResale && e.KeyCode == Keys.F5)
+            //{
+            //    memberChooseButton_Click(this, EventArgs.Empty);
+            //}
+            /////点击添加扫码的零售商品
+            ////if(isResale && resaleNumberTextBox.Focused && e.KeyCode == Keys.Enter){
+            ////    AddResaleGoods();
+            ////}
+            //if(isResale && e.KeyCode == Keys.A)
+            //{
+            //    AddOrReduceButton_Click(this, EventArgs.Empty);
+            //}
+            /////零售商品数量修改
+            ////if(isResale & e.KeyCode == Keys.B)
+            ////{
+            ////    button1_Click(this, EventArgs.Empty);
+            ////}
+            /////零售商品删除
+            //if (isResale & e.KeyCode == Keys.C)
+            //{
+            //    button2_Click(this, EventArgs.Empty);
+            //}
+
+            /////查询键点击查询
+            ////if (queryTextBox.Focused == true && e.KeyCode == Keys.Enter)
+            ////{
+            ////    queryButton_Click(this, e);
+            ////}else 
+
+            //if (numberTextBox.Focused == true && e.KeyCode == Keys.Enter)
+            //{
+            //    equalButton_Click(this, EventArgs.Empty);
+            //}
+
+
+        }
+
+        /// <summary>
+        /// 结算
+        /// </summary>
+        private void settlement()
+        {
+            if(WorkMode.Equals(Constant.RETAIL))
+            {
+                PayForm pay = new PayForm();
+                pay.totalAmount = totalAmount.Text;
+                pay.memberId = associatorInfo == null ? string.Empty : associatorInfo.Id;
+                ResaleWaterNumber = "LS" + DateTime.Now.ToString("yyyyMMddhhmmss") + LoginUserInfo.street;
+                pay.orderId = ResaleWaterNumber;
+                pay.ModeFlag = 2;
+                pay.customerDelivery = this;
+                pay.ShowDialog();
+            }
         }
 
         
 
         /// <summary>
-        /// 提货点击事件
+        /// 初始化提货显示
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void pickUp_Click(object sender, EventArgs e)
+        private void pickUp()
         {
-            isResale = false;
-            printObjectlist.Clear();
+            this.WorkMode = Constant.PICK_UP_GOODS;
+            serialnumber.AutoSizeMode = DataGridViewAutoSizeColumnMode.NotSet;
+            serialnumber.Width = 90;
+            goods_name.AutoSizeMode = DataGridViewAutoSizeColumnMode.NotSet;
+            goods_name.Width = 200;
+            goods_price.AutoSizeMode = DataGridViewAutoSizeColumnMode.NotSet;
+            goods_price.Width = 90;
+            goodAmount.AutoSizeMode = DataGridViewAutoSizeColumnMode.NotSet;
+            goodAmount.Width = 120;
+            nums.Visible = true;
+            actualQuantity.Visible = true;
+            diffenence.Visible = true;
+            orderAmount.Visible = true;
+            receiveAmount.Visible = true;
+            goods_specifications.Visible = true;
+            goods_unit.Visible = true;
+            classify.Visible = true;
+            orderNum.Visible = true;
+            refuseReason.Visible = true;
+        }
 
-            orderItemGroupBox.Show();
-            itemTablePanel.Show();
-            informPanel.Show();
-            searchPanel.Show();
-            listPanel.Hide();
-            resalePanel.Hide();
+        /// <summary>
+        /// 初始化零售显示
+        /// </summary>
+        private void resaleInit()
+        {
+            this.WorkMode = Constant.RETAIL;
+            serialnumber.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            serialnumber.FillWeight = 0.2F;
+            goods_name.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            goods_name.FillWeight = 0.35F;
+            goods_price.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            goods_price.FillWeight = 0.1F;
+            goodAmount.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            goodAmount.FillWeight = 0.1F;
 
-            id_.Text = "";
-            name_label.Text = "";
-            inform_label.Text = "";
-            card_label.Text = "";
-            order_Num = "";
-            initNumberAndAmount();
-
-            //清空itemDataGridView上的信息
-            itemDataGridView.DataSource = null;
-
-            balance.Enabled = true;
-
-            ///设置当前状态为结算
-            WorkMode = Constant.PICK_UP_GOODS;
-            ///焦点移动到查询输入框
-            queryTextBox.Focus();
-
-            //点击后改变按键背景色
-            resaleButton.BackColor = Color.FromArgb(173,173,173);
-            refund.BackColor = Color.FromArgb(173, 173, 173);
-            pickUp.BackColor = Color.FromArgb(96, 133, 160);
-            //显示扫码框
-            //scanPanel.Show();
-            numberTextBox.Enabled = true;
-
-
-            //判断是否有份数差异
-            //bool prompt = false;
-            //if (itemDataGridView.Rows.Count == 0)
-            //{
-            //    MessageBox.Show("当前并无需要结算的订单！");
-            //    return;
-            //}
-            //for (int i = 0; i < itemDataGridView.Rows.Count; i++)
-            //{
-            //    if (Convert.ToInt32(itemDataGridView[4, i].Value) == 0)
-            //    {
-            //        if (MessageBox.Show("当前商品" + itemDataGridView[1, i] .Value+ "实际份数为0,是否立刻结算？", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.No)
-            //        {
-            //            return;
-            //        }
-            //    }
-            //    if (Convert.ToInt32(itemDataGridView[5, i].Value) != 0)
-            //    {
-            //        prompt = true;
-            //    }
-            //}
-            //if (prompt)
-            //{
-            //    string sInput = "";
-            //    CDPrompt cDPrompt = new CDPrompt();
-            //    if (cDPrompt.ShowDialog() == DialogResult.OK)
-            //    {//
-            //        sInput = cDPrompt.inputMess;
-            //        //MessageBox.Show(sInput);
-            //    }
-            //    if (!sInput.Equals("y"))
-            //    {
-            //        return;
-            //    }
-            //}
-
-            //CDBalance cDBalance = new CDBalance(this, totalAmountValue, keyStr, order_Num);
-            //cDBalance.ShowDialog();
+            nums.Visible = false;
+            actualQuantity.Visible = false;
+            diffenence.Visible = false;
+            orderAmount.Visible = false;
+            receiveAmount.Visible = false;
+            goods_specifications.Visible = false;
+            goods_unit.Visible = false;
+            classify.Visible = false;
+            orderNum.Visible = false;
+            refuseReason.Visible = false;
         }
 
         /// <summary>
@@ -585,10 +630,10 @@ namespace Branch.com.proem.exm.window.order
         /// <param name="card">卡号</param>
         public void setinform(string orderNum, string order_Amount, string name, string phone, string card)
         {
-            id_.Text = orderNum;
-            name_label.Text = name;
-            inform_label.Text = phone;
-            card_label.Text = card;
+            //id_.Text = orderNum;
+            //name_label.Text = name;
+            //inform_label.Text = phone;
+            //card_label.Text = card;
             //amount_TextBox.Text = order_Amount;
         }
 
@@ -840,98 +885,25 @@ namespace Branch.com.proem.exm.window.order
         {
             if (isResale)
             {
-                memberTextBox.Text = "";
-                resaletotalNumlabel.Text = "0";
-                resaletotalsum.Text = "0.00";
-                ResaleWaterNumber = "";
-                associatorInfo = null;
-                resaleDatagridView.DataSource = null;
-                resaleDatagridView.DataMember = null;
+                //memberTextBox.Text = "";
+                //resaletotalNumlabel.Text = "0";
+                //resaletotalsum.Text = "0.00";
+                //ResaleWaterNumber = "";
+                //associatorInfo = null;
+                //resaleDatagridView.DataSource = null;
+                //resaleDatagridView.DataMember = null;
             }
             else 
             {
-                queryTextBox.Text = "";
-                card_label.Text = "";
-                name_label.Text = "";
-                inform_label.Text = "";
-                id_.Text = "";
-                totalSum.Text = "";
-                totalAmount.Text = "";
+                //queryTextBox.Text = "";
+                //card_label.Text = "";
+                //name_label.Text = "";
+                //inform_label.Text = "";
+                //id_.Text = "";
+                totalSum.Text = "0";
+                totalAmount.Text = "0.00";
                 itemDataGridView.DataSource = null;
             }
-        }
-
-        private void oneButton_Click(object sender, EventArgs e)
-        {
-            numberTextBox.Text += "1";
-        }
-
-        private void twoButton_Click(object sender, EventArgs e)
-        {
-            numberTextBox.Text += "2";
-        }
-
-        private void threeButton_Click(object sender, EventArgs e)
-        {
-            numberTextBox.Text += "3";
-        }
-
-        private void fourButton_Click(object sender, EventArgs e)
-        {
-            numberTextBox.Text += "4";
-        }
-
-        private void fiveButton_Click(object sender, EventArgs e)
-        {
-            numberTextBox.Text += "5";
-        }
-
-        private void sixButton_Click(object sender, EventArgs e)
-        {
-            numberTextBox.Text += "6";
-        }
-
-        private void sevenButton_Click(object sender, EventArgs e)
-        {
-            numberTextBox.Text += "7";
-        }
-
-        private void eightButton_Click(object sender, EventArgs e)
-        {
-            numberTextBox.Text += "8";
-        }
-
-        private void nineButton_Click(object sender, EventArgs e)
-        {
-            numberTextBox.Text += "9";
-        }
-
-        private void zeroButton_Click(object sender, EventArgs e)
-        {
-            numberTextBox.Text += "0";
-        }
-
-        private void dashButton_Click(object sender, EventArgs e)
-        {
-            numberTextBox.Text += "00";
-        }
-
-        private void decimalButton_Click(object sender, EventArgs e)
-        {
-            numberTextBox.Text += ".";
-        }
-
-        private void backButton_Click(object sender, EventArgs e)
-        {
-            if (numberTextBox.Text.Length > 0)
-            {
-                numberTextBox.Text = numberTextBox.Text.Remove(numberTextBox.Text.Length - 1, 1);
-            }
-        }
-
-        private void clearBotton_Click(object sender, EventArgs e)
-        {
-            numberTextBox.Text = "";
         }
 
         private void equalButton_Click(object sender, EventArgs e)
@@ -1034,7 +1006,7 @@ namespace Branch.com.proem.exm.window.order
                         if (Convert.ToInt32(itemDataGridView[4, i].Value == null ? "0" : itemDataGridView[4, i].Value.ToString()) == 0)
                         {
                             MessageBox.Show("此商品的份数为0，无法进行减去扫码操作!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            addReduceButton_Click(this, EventArgs.Empty);
+                            //addReduceButton_Click(this, EventArgs.Empty);
                             return;
                         }
                         bool isDone = false;
@@ -1071,7 +1043,7 @@ namespace Branch.com.proem.exm.window.order
                         if( !isDone)
                         {
                             MessageBox.Show("此商品之前未曾进行过扫码操作，无法执行减去扫码操作!", "提示", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
-                            addReduceButton_Click(this, EventArgs.Empty);
+                            //addReduceButton_Click(this, EventArgs.Empty);
                             return;
                         }
                         itemDataGridView[4, i].Value = Convert.ToInt32(itemDataGridView[4, i].Value == null ? "0" : itemDataGridView[4, i].Value.ToString()) - 1;
@@ -1086,7 +1058,7 @@ namespace Branch.com.proem.exm.window.order
                             itemDataGridView[8, i].Value = (float.Parse(itemDataGridView[8, i].Value == null ? "0" : itemDataGridView[8, i].Value.ToString()) - 1).ToString("0.000");
                         }
                         ///itemDataGridView[8, i].Value = (float.Parse(itemDataGridView[8, i].Value == null ? "0" : itemDataGridView[8, i].Value.ToString()) - weigth).ToString("0.000");
-                        addReduceButton_Click(this, EventArgs.Empty);
+                        //addReduceButton_Click(this, EventArgs.Empty);
                     }
                     Calculate();
                     //this.itemDataGridView.CurrentCell = itemDataGridView[4, row]; //单元格设置可编辑状态-
@@ -1128,38 +1100,38 @@ namespace Branch.com.proem.exm.window.order
         /// <param name="e"></param>
         private void refund_Click(object sender, EventArgs e)
         {
-            isResale = false;
+            //isResale = false;
 
-            orderItemGroupBox.Show();
-            listPanel.Show();
-            informPanel.Show();
-            searchPanel.Show();
-            itemTablePanel.Hide();
-            resalePanel.Hide();
-            //itemCountPanel.Hide();
-            //listTablePanel.Show();
-            //listCountPanel.Show();
-            //清空页面信息
-            id_.Text = "";
-            name_label.Text = "";
-            inform_label.Text = "";
-            card_label.Text = "";
-            order_Num = "";
-            initNumberAndAmount();
-            //清空listDataGridView上的信息
-            listDataGridView.DataSource = null;
-            ///焦点移动到查询输入框
-            queryTextBox.Focus();
-            //点击后改变按键背景色
-            refund.BackColor = Color.FromArgb(96, 133, 160);
-            pickUp.BackColor = Color.FromArgb(173, 173, 173);
-            resaleButton.BackColor = Color.FromArgb(173, 173, 173);
-            //隐藏扫码框
-            //scanPanel.Hide();
-            numberTextBox.Enabled = false;
+            //orderItemGroupBox.Show();
+            //listPanel.Show();
+            //informPanel.Show();
+            //searchPanel.Show();
+            //itemTablePanel.Hide();
+            //resalePanel.Hide();
+            ////itemCountPanel.Hide();
+            ////listTablePanel.Show();
+            ////listCountPanel.Show();
+            ////清空页面信息
+            //id_.Text = "";
+            //name_label.Text = "";
+            //inform_label.Text = "";
+            //card_label.Text = "";
+            //order_Num = "";
+            //initNumberAndAmount();
+            ////清空listDataGridView上的信息
+            //listDataGridView.DataSource = null;
+            /////焦点移动到查询输入框
+            //queryTextBox.Focus();
+            ////点击后改变按键背景色
+            //refund.BackColor = Color.FromArgb(96, 133, 160);
+            //pickUp.BackColor = Color.FromArgb(173, 173, 173);
+            //resaleButton.BackColor = Color.FromArgb(173, 173, 173);
+            ////隐藏扫码框
+            ////scanPanel.Hide();
+            //numberTextBox.Enabled = false;
 
-            WorkMode = Constant.REFUND;
-            balance.Enabled = false;
+            //WorkMode = Constant.REFUND;
+            //balance.Enabled = false;
         }
 
         /// <summary>
@@ -1208,8 +1180,8 @@ namespace Branch.com.proem.exm.window.order
                     ///不存在拒收情况，直接进入结算  
                     PayForm pay = new PayForm();
                     pay.totalAmount = totalAmount.Text.ToString();
-                    pay.memberCardId = card_label.Text.ToString();
-                    pay.orderId = id_.Text.ToString();
+                    //pay.memberCardId = card_label.Text.ToString();
+                    //pay.orderId = id_.Text.ToString();
                     pay.ModeFlag = 0;
                     pay.customerDelivery = this;
                     pay.ShowDialog();
@@ -1261,8 +1233,8 @@ namespace Branch.com.proem.exm.window.order
                             ///先结算  
                             PayForm pay = new PayForm();
                             pay.totalAmount = totalAmount.Text.ToString();
-                            pay.memberCardId = card_label.Text.ToString();
-                            pay.orderId = id_.Text.ToString();
+                            //pay.memberCardId = card_label.Text.ToString();
+                            //pay.orderId = id_.Text.ToString();
                             pay.ModeFlag = 1;
                             pay.customerDelivery = this;
                             pay.ShowDialog();
@@ -1274,8 +1246,8 @@ namespace Branch.com.proem.exm.window.order
             else  ///零售进入结算
             {
                 PayForm pay = new PayForm();
-                pay.totalAmount = resaletotalsum.Text.ToString();
-                pay.memberCardId =associatorInfo == null ? string.Empty : associatorInfo.CardNumber;
+                //pay.totalAmount = resaletotalsum.Text.ToString();
+                pay.memberId =associatorInfo == null ? string.Empty : associatorInfo.CardNumber;
                 ResaleWaterNumber = "LS" + DateTime.Now.ToString("yyyyMMddhhmmss") + LoginUserInfo.street;
                 pay.orderId = ResaleWaterNumber;
                 pay.ModeFlag = 2;
@@ -1301,15 +1273,15 @@ namespace Branch.com.proem.exm.window.order
 
         //listDataGridView
 
-        private void listDataGridView_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
-        {
-            //行号
-            using (SolidBrush b = new SolidBrush(this.listDataGridView.RowHeadersDefaultCellStyle.ForeColor))
-            {
-                e.Graphics.DrawString(Convert.ToString(e.RowIndex + 1),
-                e.InheritedRowStyle.Font, b, e.RowBounds.Location.X + 20, e.RowBounds.Location.Y + 4);
-            }
-        }
+        //private void listDataGridView_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
+        //{
+        //    //行号
+        //    using (SolidBrush b = new SolidBrush(this.listDataGridView.RowHeadersDefaultCellStyle.ForeColor))
+        //    {
+        //        e.Graphics.DrawString(Convert.ToString(e.RowIndex + 1),
+        //        e.InheritedRowStyle.Font, b, e.RowBounds.Location.X + 20, e.RowBounds.Location.Y + 4);
+        //    }
+        //}
 
         private void listDataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -1332,9 +1304,9 @@ namespace Branch.com.proem.exm.window.order
             {
                 try
                 {
-                    int num = listDataGridView.Rows[e.RowIndex].Cells[5].Value == null ? 0 : Convert.ToInt32(listDataGridView.Rows[e.RowIndex].Cells[5].Value.ToString());
-                    Double price = Convert.ToDouble(listDataGridView.Rows[e.RowIndex].Cells[3].Value.ToString());
-                    listDataGridView.Rows[e.RowIndex].Cells[7].Value = Math.Round(num * price, 2).ToString("0.00");
+                    //int num = listDataGridView.Rows[e.RowIndex].Cells[5].Value == null ? 0 : Convert.ToInt32(listDataGridView.Rows[e.RowIndex].Cells[5].Value.ToString());
+                    //Double price = Convert.ToDouble(listDataGridView.Rows[e.RowIndex].Cells[3].Value.ToString());
+                    //listDataGridView.Rows[e.RowIndex].Cells[7].Value = Math.Round(num * price, 2).ToString("0.00");
                 }
                 catch (Exception ex)
                 {
@@ -1343,26 +1315,26 @@ namespace Branch.com.proem.exm.window.order
             }
             if (e.RowIndex != -1 && e.ColumnIndex == 5)
             {
-                //int cot = Convert.ToInt32(listDataGridView.Rows[e.RowIndex].Cells[5].Value.ToString());
-                int cot = Convert.ToInt32(listDataGridView.Rows[e.RowIndex].Cells[5].Value == null ? 0 : Convert.ToInt32(listDataGridView.Rows[e.RowIndex].Cells[5].Value.ToString()));
-                int actualQuantity_list = listDataGridView.Rows[e.RowIndex].Cells[4].Value == null ? 0 : Convert.ToInt32(listDataGridView.Rows[e.RowIndex].Cells[4].Value.ToString());
-                if (cot > actualQuantity_list)
-                {
-                    MessageBox.Show("退款商品份数超过当前提货份数，请重新输入！");
-                    listDataGridView.Rows[e.RowIndex].Cells[5].Value = 0;
-                    return;
-                }
-                if (cot != 0)
-                {
-                    this.listDataGridView.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.FromArgb(201, 67, 65);//Color.Red;
-                    //this.listDataGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.White;
-                }
-                else
-                {
-                    this.listDataGridView.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.White;
-                    //this.listDataGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.Black;
-                    listDataGridView.Rows[e.RowIndex].Cells[0].Value = false;
-                }
+                ////int cot = Convert.ToInt32(listDataGridView.Rows[e.RowIndex].Cells[5].Value.ToString());
+                //int cot = Convert.ToInt32(listDataGridView.Rows[e.RowIndex].Cells[5].Value == null ? 0 : Convert.ToInt32(listDataGridView.Rows[e.RowIndex].Cells[5].Value.ToString()));
+                //int actualQuantity_list = listDataGridView.Rows[e.RowIndex].Cells[4].Value == null ? 0 : Convert.ToInt32(listDataGridView.Rows[e.RowIndex].Cells[4].Value.ToString());
+                //if (cot > actualQuantity_list)
+                //{
+                //    MessageBox.Show("退款商品份数超过当前提货份数，请重新输入！");
+                //    listDataGridView.Rows[e.RowIndex].Cells[5].Value = 0;
+                //    return;
+                //}
+                //if (cot != 0)
+                //{
+                //    this.listDataGridView.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.FromArgb(201, 67, 65);//Color.Red;
+                //    //this.listDataGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.White;
+                //}
+                //else
+                //{
+                //    this.listDataGridView.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.White;
+                //    //this.listDataGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.Black;
+                //    listDataGridView.Rows[e.RowIndex].Cells[0].Value = false;
+                //}
             }
 
             //160309
@@ -1371,15 +1343,15 @@ namespace Branch.com.proem.exm.window.order
             float amount = 0;
             try
             {
-                for (int i = 0; i < listDataGridView.RowCount; i++)
-                {
-                    string _selectValue = listDataGridView.Rows[i].Cells[0].EditedFormattedValue.ToString();
-                    if (_selectValue == "True")
-                    {
-                        sum += Convert.ToInt32((listDataGridView[5, i].Value == null || listDataGridView[5, i].Value.ToString().Trim() == "") ? "0" : listDataGridView[5, i].Value.ToString());
-                        amount += float.Parse((listDataGridView[7, i].Value == null || listDataGridView[7, i].Value.ToString().Trim() == "") ? "0" : listDataGridView[7, i].Value.ToString());
-                    }
-                }
+                //for (int i = 0; i < listDataGridView.RowCount; i++)
+                //{
+                //    string _selectValue = listDataGridView.Rows[i].Cells[0].EditedFormattedValue.ToString();
+                //    if (_selectValue == "True")
+                //    {
+                //        sum += Convert.ToInt32((listDataGridView[5, i].Value == null || listDataGridView[5, i].Value.ToString().Trim() == "") ? "0" : listDataGridView[5, i].Value.ToString());
+                //        amount += float.Parse((listDataGridView[7, i].Value == null || listDataGridView[7, i].Value.ToString().Trim() == "") ? "0" : listDataGridView[7, i].Value.ToString());
+                //    }
+                //}
                 totalSum.Text = sum.ToString();
                 totalAmount.Text = amount.ToString();
             }
@@ -1408,108 +1380,108 @@ namespace Branch.com.proem.exm.window.order
 
             //for (int i = 0; i < itemDataGridView.Rows.Count; i++)
             //{
-            string _selectValue = listDataGridView.Rows[e.RowIndex].Cells[0].EditedFormattedValue.ToString();
-            if (_selectValue == "True")
-            {
-                listDataGridView.Rows[e.RowIndex].Cells[0].Value = false;
-                //listDataGridView.Rows[e.RowIndex].Cells[7].Value = 0;
-            }
-            if (_selectValue == "False")
-            {
-                listDataGridView.Rows[e.RowIndex].Cells[0].Value = true;
-                //int num = Convert.ToInt32(listDataGridView.Rows[e.RowIndex].Cells[5].Value);
-                //listDataGridView.Rows[e.RowIndex].Cells[7].Value = num;
-                this.listDataGridView.CurrentCell = listDataGridView[5, e.RowIndex];
-                listDataGridView.BeginEdit(true);
-            }
-            //}
-        }
-
-        private void listDataGridView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
-        {
-            if (listDataGridView.CurrentCell.ColumnIndex == 5)
-            {
-                e.Control.KeyPress -= new KeyPressEventHandler(checkInput);
-                e.Control.KeyPress += new KeyPressEventHandler(checkInput);
-            }
-        }
-
-        private void listDataGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
-        {
-
-            if (listDataGridView.Columns[e.ColumnIndex].Name == "goods_specifications_list")
-            {
-                if (e.Value == null || e.Value.ToString() == "")
-                {
-                    return;
-                }
-                string str = e.Value.ToString();
-                e.Value = str.Replace("商品规格：", "");
-            }
-            if (listDataGridView.Columns[e.ColumnIndex].Name == "g_price_list")
-            {
-                if (e.Value == null || e.Value.ToString() == "")
-                {
-                    return;
-                }
-                double price = Convert.ToDouble(e.Value.ToString());
-                e.Value = price.ToString("0.00");
-            }
-        }
-
-        private void returnOrderButton_Click(object sender, EventArgs e)
-        {
-            if (id_.Text.Equals(""))
-            {
-                MessageBox.Show("当前暂无需退款的订单!");
-                return;
-            }
-
-            //if (MessageBox.Show("当前订单内商品是否确定退款？", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.No)
+            //string _selectValue = listDataGridView.Rows[e.RowIndex].Cells[0].EditedFormattedValue.ToString();
+            //if (_selectValue == "True")
             //{
-            //    return;
+            //    listDataGridView.Rows[e.RowIndex].Cells[0].Value = false;
+            //    //listDataGridView.Rows[e.RowIndex].Cells[7].Value = 0;
             //}
-            for (int i = 0; i < listDataGridView.RowCount; i++)
-            {
-                //string _selectValue = listDataGridView.Rows[i].Cells[0].EditedFormattedValue.ToString();
-                //if (_selectValue == "False")
-                //{
-                //listDataGridView.Rows[i].Cells[0].Value = true;
-                int num = Convert.ToInt32(listDataGridView.Rows[i].Cells[4].Value);//actualQuantity_list
-                listDataGridView.Rows[i].Cells[5].Value = num;
-                //MessageBox.Show(listDataGridView.Rows[i].Cells[0].Value.ToString());
-                //}
-            }
-            foreach (DataGridViewRow dr in this.listDataGridView.Rows)
-            {
-                dr.Cells["chooseCheckbox"].Value = true;
-                //MessageBox.Show(dr.Cells["chooseCheckbox"].Value.ToString());
-            }
-            bool flag = refundcount();//展示退款商品份数及总金额
-            if (!flag)
-            {
-                return;
-            }
-
-            string constant = Constant.ORDER_STATUS_ALL_REFUND;
-            //判断该订单付款方式
-            bool mode_flag = returnModeFlag(constant);
-            if (!mode_flag)
-            {
-                return;
-            }
-
-            saveReturnInform(constant);
-            MessageBox.Show("退款信息已提交！");
+            //if (_selectValue == "False")
+            //{
+            //    listDataGridView.Rows[e.RowIndex].Cells[0].Value = true;
+            //    //int num = Convert.ToInt32(listDataGridView.Rows[e.RowIndex].Cells[5].Value);
+            //    //listDataGridView.Rows[e.RowIndex].Cells[7].Value = num;
+            //    this.listDataGridView.CurrentCell = listDataGridView[5, e.RowIndex];
+            //    listDataGridView.BeginEdit(true);
+            //}
+            //}
         }
+
+        //private void listDataGridView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
+        //{
+        //    if (listDataGridView.CurrentCell.ColumnIndex == 5)
+        //    {
+        //        e.Control.KeyPress -= new KeyPressEventHandler(checkInput);
+        //        e.Control.KeyPress += new KeyPressEventHandler(checkInput);
+        //    }
+        //}
+
+        //private void listDataGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        //{
+
+        //    if (listDataGridView.Columns[e.ColumnIndex].Name == "goods_specifications_list")
+        //    {
+        //        if (e.Value == null || e.Value.ToString() == "")
+        //        {
+        //            return;
+        //        }
+        //        string str = e.Value.ToString();
+        //        e.Value = str.Replace("商品规格：", "");
+        //    }
+        //    if (listDataGridView.Columns[e.ColumnIndex].Name == "g_price_list")
+        //    {
+        //        if (e.Value == null || e.Value.ToString() == "")
+        //        {
+        //            return;
+        //        }
+        //        double price = Convert.ToDouble(e.Value.ToString());
+        //        e.Value = price.ToString("0.00");
+        //    }
+        //}
+
+        //private void returnOrderButton_Click(object sender, EventArgs e)
+        //{
+        //    if (id_.Text.Equals(""))
+        //    {
+        //        MessageBox.Show("当前暂无需退款的订单!");
+        //        return;
+        //    }
+
+        //    //if (MessageBox.Show("当前订单内商品是否确定退款？", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.No)
+        //    //{
+        //    //    return;
+        //    //}
+        //    for (int i = 0; i < listDataGridView.RowCount; i++)
+        //    {
+        //        //string _selectValue = listDataGridView.Rows[i].Cells[0].EditedFormattedValue.ToString();
+        //        //if (_selectValue == "False")
+        //        //{
+        //        //listDataGridView.Rows[i].Cells[0].Value = true;
+        //        int num = Convert.ToInt32(listDataGridView.Rows[i].Cells[4].Value);//actualQuantity_list
+        //        listDataGridView.Rows[i].Cells[5].Value = num;
+        //        //MessageBox.Show(listDataGridView.Rows[i].Cells[0].Value.ToString());
+        //        //}
+        //    }
+        //    foreach (DataGridViewRow dr in this.listDataGridView.Rows)
+        //    {
+        //        dr.Cells["chooseCheckbox"].Value = true;
+        //        //MessageBox.Show(dr.Cells["chooseCheckbox"].Value.ToString());
+        //    }
+        //    bool flag = refundcount();//展示退款商品份数及总金额
+        //    if (!flag)
+        //    {
+        //        return;
+        //    }
+
+        //    string constant = Constant.ORDER_STATUS_ALL_REFUND;
+        //    //判断该订单付款方式
+        //    bool mode_flag = returnModeFlag(constant);
+        //    if (!mode_flag)
+        //    {
+        //        return;
+        //    }
+
+        //    saveReturnInform(constant);
+        //    MessageBox.Show("退款信息已提交！");
+        //}
 
         private void returnGoodsButton_Click(object sender, EventArgs e)
         {
-            if (id_.Text.Equals(""))
-            {
-                MessageBox.Show("当前暂无需退款的订单!");
-                return;
-            }
+            //if (id_.Text.Equals(""))
+            //{
+            //    MessageBox.Show("当前暂无需退款的订单!");
+            //    return;
+            //}
             //if (MessageBox.Show("所选商品是否确定退款？", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.No)
             //{
             //    return;
@@ -1654,127 +1626,127 @@ namespace Branch.com.proem.exm.window.order
         /// </summary>
         public void saveReturnInform(string constant)
         {
-            //直接将退款信息及明细存入本地
-            //查询历史订单信息
-            BranchZcOrderHistoryService branchZcOrderHistoryService = new BranchZcOrderHistoryService();
-            ZcOrderHistory zcOrderHistory = branchZcOrderHistoryService.FindById(id_.Text.ToString());
+            ////直接将退款信息及明细存入本地
+            ////查询历史订单信息
+            //BranchZcOrderHistoryService branchZcOrderHistoryService = new BranchZcOrderHistoryService();
+            //ZcOrderHistory zcOrderHistory = branchZcOrderHistoryService.FindById(id_.Text.ToString());
 
-            ////查询该订单现金付款金额
-            //BranchPayInfoService payService = new BranchPayInfoService();
-            //string cashPay = payService.FindCashPayment(idTextBox.Text.ToString());
+            //////查询该订单现金付款金额
+            ////BranchPayInfoService payService = new BranchPayInfoService();
+            ////string cashPay = payService.FindCashPayment(idTextBox.Text.ToString());
 
-            ZcOrderRefund zcOrderRefund = new ZcOrderRefund();
-            zcOrderRefund.Id = Guid.NewGuid().ToString();
-            zcOrderRefund.CreateTime = DateTime.Now;
-            zcOrderRefund.UpdateTime = DateTime.Now;
-            zcOrderRefund.Order_id = zcOrderHistory.Id;
-            zcOrderRefund.Order_amount = zcOrderHistory.OrderAmount.ToString("0.00");
-            zcOrderRefund.Actual_amount = (float.Parse(zcOrderHistory.ActualMoney == null ? "0" : zcOrderHistory.ActualMoney) - returnAmount).ToString("0.00");
-            //zcOrderRefund.Actual_amount = (zcOrderHistory.OrderAmount - returnAmount).ToString("0.00");//实际金额
-            zcOrderRefund.Order_refund_status = "1";//退款单未审批
-            zcOrderRefund.Hand_date = DateTime.Now;
+            //ZcOrderRefund zcOrderRefund = new ZcOrderRefund();
+            //zcOrderRefund.Id = Guid.NewGuid().ToString();
+            //zcOrderRefund.CreateTime = DateTime.Now;
+            //zcOrderRefund.UpdateTime = DateTime.Now;
+            //zcOrderRefund.Order_id = zcOrderHistory.Id;
+            //zcOrderRefund.Order_amount = zcOrderHistory.OrderAmount.ToString("0.00");
+            //zcOrderRefund.Actual_amount = (float.Parse(zcOrderHistory.ActualMoney == null ? "0" : zcOrderHistory.ActualMoney) - returnAmount).ToString("0.00");
+            ////zcOrderRefund.Actual_amount = (zcOrderHistory.OrderAmount - returnAmount).ToString("0.00");//实际金额
+            //zcOrderRefund.Order_refund_status = "1";//退款单未审批
+            //zcOrderRefund.Hand_date = DateTime.Now;
 
-            //MessageBox.Show("‘ID’:" + zcOrderRefund.Id + "‘UpdateTime’:" + zcOrderRefund.UpdateTime + "‘Order_id’:" + zcOrderRefund.Order_id + "‘Order_amount’:" + zcOrderRefund.Order_amount + "‘Actual_amount’:" + zcOrderRefund.Actual_amount);
-
-
-            List<ZcOrderRefundItem> refundlist = new List<ZcOrderRefundItem>();
-            for (int i = 0; i < listDataGridView.RowCount; i++)
-            {
-                //MessageBox.Show(listDataGridView.Rows[i].Cells[0].Value.ToString());
-                string _selectValue = listDataGridView.Rows[i].Cells[0].EditedFormattedValue.ToString();
-                if (_selectValue == "True")
-                {
-                    ZcOrderRefundItem zcOrderRefundItem = new ZcOrderRefundItem();
-                    zcOrderRefundItem.Id = Guid.NewGuid().ToString();
-                    zcOrderRefundItem.CreateTime = DateTime.Now;
-                    zcOrderRefundItem.UpdateTime = DateTime.Now;
-                    zcOrderRefundItem.SerialNumber = listDataGridView[1, i].Value == null ? "" : listDataGridView[1, i].Value.ToString();
-                    zcOrderRefundItem.Order_id = listDataGridView[12, i].Value == null ? "" : listDataGridView[12, i].Value.ToString();
-                    zcOrderRefundItem.Order_nums = listDataGridView[4, i].Value == null ? "" : listDataGridView[4, i].Value.ToString();//实际数量
-                    zcOrderRefundItem.Refund_nums = listDataGridView[5, i].Value == null ? "" : listDataGridView[5, i].Value.ToString();
-                    zcOrderRefundItem.Price = listDataGridView[3, i].Value == null ? "" : listDataGridView[3, i].Value.ToString();
-                    zcOrderRefundItem.Refund_amount = listDataGridView[7, i].Value == null ? "" : listDataGridView[7, i].Value.ToString();
-                    zcOrderRefundItem.Salesman_id = LoginUserInfo.id;
-                    //zcOrderRefundItem.Hand_date = DateTime.Now;
-                    zcOrderRefundItem.Street = LoginUserInfo.street;
-                    zcOrderRefundItem.GoodsFile_id = listDataGridView[13, i].Value == null ? "" : listDataGridView[13, i].Value.ToString();//商品ID
-                    zcOrderRefundItem.Refund_id = zcOrderRefund.Id;
-                    zcOrderRefundItem.Refund_reason = listDataGridView[14, i].Value == null ? "" : listDataGridView[14, i].Value.ToString();//退回原因
-                    //MessageBox.Show("‘ID’:" + zcOrderRefundItem.Id + "‘UpdateTime’:" + zcOrderRefundItem.UpdateTime + "‘Order_id’:" + zcOrderRefundItem.Order_id + "‘Order_amount’:" + zcOrderRefundItem.Refund_nums + "‘Actual_amount’:" + zcOrderRefundItem.Refund_amount);
-
-                    refundlist.Add(zcOrderRefundItem);
-                }
-            }
-
-            //添加退款明细
-            BranchZcOrderRefundService branchZcOrderRefundService = new BranchZcOrderRefundService();
-            BranchZcOrderRefundItemService branchZcOrderRefundItemService = new BranchZcOrderRefundItemService();
-            branchZcOrderRefundService.AddZcOrderRefund(zcOrderRefund);
-            branchZcOrderRefundItemService.AddZcOrderRefundItem(refundlist);
-            //修改本地历史订单状态
-            branchZcOrderHistoryService.UpdateOrderStatusByIds(id_.Text.ToString(), constant);
-            //
-            MessageBox.Show("退款单已生成，请等待处理！");
-
-            List<UploadInfo> uploadList = new List<UploadInfo>();
-            UploadDao uploadDao = new UploadDao();
-            if (PingTask.IsConnected)
-            {
-                //上传退款表数据
-                RefundInfoService refundInfoService = new RefundInfoService();
-                refundInfoService.AddZcOrderRefund(zcOrderRefund);
-                refundInfoService.AddZcOrderRefundItem(refundlist);
-                //上传历史表状态更新
-                ZcOrderHistoryService zcOrderHistoryService = new ZcOrderHistoryService();
-                zcOrderHistoryService.UpdateOrderStatusByIds(id_.Text.ToString(), constant);
-            }
-            else
-            {
-                UploadInfo obj1 = new UploadInfo();
-                obj1.Id = zcOrderRefund.Id;
-                obj1.CreateTime = DateTime.Now;
-                obj1.UpdateTime = DateTime.Now;
-                obj1.Type = Constant.ZC_ORDER_REFUND;
-                uploadList.Add(obj1);
-                foreach (ZcOrderRefundItem obj in refundlist)
-                {
-                    UploadInfo obj2 = new UploadInfo();
-                    obj2.Id = obj.Id;
-                    obj2.CreateTime = DateTime.Now;
-                    obj2.UpdateTime = DateTime.Now;
-                    obj2.Type = Constant.ZC_ORDER_REFUND_ITEM;
-                    uploadList.Add(obj2);
-                }
-                UploadInfo obj3 = new UploadInfo();
-                obj3.Id = zcOrderRefund.Id;
-                obj3.CreateTime = DateTime.Now;
-                obj3.UpdateTime = DateTime.Now;
-                obj3.Type = Constant.ZC_ORDER_HISTORY_UPDATE;
-                uploadList.Add(obj3);
-                uploadDao.AddUploadInfo(uploadList);
-            }
+            ////MessageBox.Show("‘ID’:" + zcOrderRefund.Id + "‘UpdateTime’:" + zcOrderRefund.UpdateTime + "‘Order_id’:" + zcOrderRefund.Order_id + "‘Order_amount’:" + zcOrderRefund.Order_amount + "‘Actual_amount’:" + zcOrderRefund.Actual_amount);
 
 
-            //清空listDataGridView上的信息
-            listDataGridView.DataSource = null;
-            //初始化信息
-            queryTextBox.Text = "";
-            card_label.Text = "";
-            name_label.Text = "";
-            inform_label.Text = "";
-            id_.Text = "";
-            this.order_Num = null;
+            //List<ZcOrderRefundItem> refundlist = new List<ZcOrderRefundItem>();
+            //for (int i = 0; i < listDataGridView.RowCount; i++)
+            //{
+            //    //MessageBox.Show(listDataGridView.Rows[i].Cells[0].Value.ToString());
+            //    string _selectValue = listDataGridView.Rows[i].Cells[0].EditedFormattedValue.ToString();
+            //    if (_selectValue == "True")
+            //    {
+            //        ZcOrderRefundItem zcOrderRefundItem = new ZcOrderRefundItem();
+            //        zcOrderRefundItem.Id = Guid.NewGuid().ToString();
+            //        zcOrderRefundItem.CreateTime = DateTime.Now;
+            //        zcOrderRefundItem.UpdateTime = DateTime.Now;
+            //        zcOrderRefundItem.SerialNumber = listDataGridView[1, i].Value == null ? "" : listDataGridView[1, i].Value.ToString();
+            //        zcOrderRefundItem.Order_id = listDataGridView[12, i].Value == null ? "" : listDataGridView[12, i].Value.ToString();
+            //        zcOrderRefundItem.Order_nums = listDataGridView[4, i].Value == null ? "" : listDataGridView[4, i].Value.ToString();//实际数量
+            //        zcOrderRefundItem.Refund_nums = listDataGridView[5, i].Value == null ? "" : listDataGridView[5, i].Value.ToString();
+            //        zcOrderRefundItem.Price = listDataGridView[3, i].Value == null ? "" : listDataGridView[3, i].Value.ToString();
+            //        zcOrderRefundItem.Refund_amount = listDataGridView[7, i].Value == null ? "" : listDataGridView[7, i].Value.ToString();
+            //        zcOrderRefundItem.Salesman_id = LoginUserInfo.id;
+            //        //zcOrderRefundItem.Hand_date = DateTime.Now;
+            //        zcOrderRefundItem.Street = LoginUserInfo.street;
+            //        zcOrderRefundItem.GoodsFile_id = listDataGridView[13, i].Value == null ? "" : listDataGridView[13, i].Value.ToString();//商品ID
+            //        zcOrderRefundItem.Refund_id = zcOrderRefund.Id;
+            //        zcOrderRefundItem.Refund_reason = listDataGridView[14, i].Value == null ? "" : listDataGridView[14, i].Value.ToString();//退回原因
+            //        //MessageBox.Show("‘ID’:" + zcOrderRefundItem.Id + "‘UpdateTime’:" + zcOrderRefundItem.UpdateTime + "‘Order_id’:" + zcOrderRefundItem.Order_id + "‘Order_amount’:" + zcOrderRefundItem.Refund_nums + "‘Actual_amount’:" + zcOrderRefundItem.Refund_amount);
+
+            //        refundlist.Add(zcOrderRefundItem);
+            //    }
+            //}
+
+            ////添加退款明细
+            //BranchZcOrderRefundService branchZcOrderRefundService = new BranchZcOrderRefundService();
+            //BranchZcOrderRefundItemService branchZcOrderRefundItemService = new BranchZcOrderRefundItemService();
+            //branchZcOrderRefundService.AddZcOrderRefund(zcOrderRefund);
+            //branchZcOrderRefundItemService.AddZcOrderRefundItem(refundlist);
+            ////修改本地历史订单状态
+            //branchZcOrderHistoryService.UpdateOrderStatusByIds(id_.Text.ToString(), constant);
+            ////
+            //MessageBox.Show("退款单已生成，请等待处理！");
+
+            //List<UploadInfo> uploadList = new List<UploadInfo>();
+            //UploadDao uploadDao = new UploadDao();
+            //if (PingTask.IsConnected)
+            //{
+            //    //上传退款表数据
+            //    RefundInfoService refundInfoService = new RefundInfoService();
+            //    refundInfoService.AddZcOrderRefund(zcOrderRefund);
+            //    refundInfoService.AddZcOrderRefundItem(refundlist);
+            //    //上传历史表状态更新
+            //    ZcOrderHistoryService zcOrderHistoryService = new ZcOrderHistoryService();
+            //    zcOrderHistoryService.UpdateOrderStatusByIds(id_.Text.ToString(), constant);
+            //}
+            //else
+            //{
+            //    UploadInfo obj1 = new UploadInfo();
+            //    obj1.Id = zcOrderRefund.Id;
+            //    obj1.CreateTime = DateTime.Now;
+            //    obj1.UpdateTime = DateTime.Now;
+            //    obj1.Type = Constant.ZC_ORDER_REFUND;
+            //    uploadList.Add(obj1);
+            //    foreach (ZcOrderRefundItem obj in refundlist)
+            //    {
+            //        UploadInfo obj2 = new UploadInfo();
+            //        obj2.Id = obj.Id;
+            //        obj2.CreateTime = DateTime.Now;
+            //        obj2.UpdateTime = DateTime.Now;
+            //        obj2.Type = Constant.ZC_ORDER_REFUND_ITEM;
+            //        uploadList.Add(obj2);
+            //    }
+            //    UploadInfo obj3 = new UploadInfo();
+            //    obj3.Id = zcOrderRefund.Id;
+            //    obj3.CreateTime = DateTime.Now;
+            //    obj3.UpdateTime = DateTime.Now;
+            //    obj3.Type = Constant.ZC_ORDER_HISTORY_UPDATE;
+            //    uploadList.Add(obj3);
+            //    uploadDao.AddUploadInfo(uploadList);
+            //}
+
+
+            ////清空listDataGridView上的信息
+            ////listDataGridView.DataSource = null;
+            ////初始化信息
+            ////queryTextBox.Text = "";
+            //card_label.Text = "";
+            //name_label.Text = "";
+            //inform_label.Text = "";
+            //id_.Text = "";
+            //this.order_Num = null;
         }
 
         public void returnPay()
         {
-            PayForm pay = new PayForm();
-            pay.totalAmount = totalAmount.Text.ToString();
-            pay.memberCardId = card_label.Text.ToString();
-            pay.orderId = id_.Text.ToString();
-            pay.ModeFlag = 0;
-            pay.customerDelivery = this;
-            pay.ShowDialog();
+            //PayForm pay = new PayForm();
+            //pay.totalAmount = totalAmount.Text.ToString();
+            //pay.memberCardId = card_label.Text.ToString();
+            //pay.orderId = id_.Text.ToString();
+            //pay.ModeFlag = 0;
+            //pay.customerDelivery = this;
+            //pay.ShowDialog();
         }
 
         public bool refundcount()
@@ -1785,15 +1757,15 @@ namespace Branch.com.proem.exm.window.order
             initNumberAndAmount();
             try
             {
-                for (int i = 0; i < listDataGridView.RowCount; i++)
-                {
-                    string _selectValue = listDataGridView.Rows[i].Cells[0].EditedFormattedValue.ToString();
-                    if (_selectValue == "True")
-                    {
-                        returnSum += Convert.ToInt32((listDataGridView[5, i].Value == null || listDataGridView[5, i].Value.ToString().Trim() == "") ? "0" : listDataGridView[5, i].Value.ToString());
-                        returnAmount += float.Parse((listDataGridView[7, i].Value == null || listDataGridView[7, i].Value.ToString().Trim() == "") ? "0" : listDataGridView[7, i].Value.ToString());
-                    }
-                }
+                //for (int i = 0; i < listDataGridView.RowCount; i++)
+                //{
+                //    string _selectValue = listDataGridView.Rows[i].Cells[0].EditedFormattedValue.ToString();
+                //    if (_selectValue == "True")
+                //    {
+                //        returnSum += Convert.ToInt32((listDataGridView[5, i].Value == null || listDataGridView[5, i].Value.ToString().Trim() == "") ? "0" : listDataGridView[5, i].Value.ToString());
+                //        returnAmount += float.Parse((listDataGridView[7, i].Value == null || listDataGridView[7, i].Value.ToString().Trim() == "") ? "0" : listDataGridView[7, i].Value.ToString());
+                //    }
+                //}
                 totalSum.Text = returnSum.ToString();
                 totalAmount.Text = returnAmount.ToString();
             }
@@ -1820,8 +1792,8 @@ namespace Branch.com.proem.exm.window.order
         public void saveRefuseInform(string orderstatus)
         {
             BranchZcOrderTransitService transitService = new BranchZcOrderTransitService();
-            ZcOrderTransit tran = transitService.FindById(id_.Text.ToString());
-
+            //ZcOrderTransit tran = transitService.FindById(id_.Text.ToString());
+            ZcOrderTransit tran = null;
             ZcOrderRefuse refuse = new ZcOrderRefuse();
             refuse.id = Guid.NewGuid().ToString();
             refuse.createTime = DateTime.Now;
@@ -1982,7 +1954,8 @@ namespace Branch.com.proem.exm.window.order
         public void saveAllPay(string orderstatus)
         {
             BranchZcOrderTransitService transitService = new BranchZcOrderTransitService();
-            ZcOrderTransit tran = transitService.FindById(id_.Text.ToString());
+           // ZcOrderTransit tran = transitService.FindById(id_.Text.ToString());
+            ZcOrderTransit tran = null;
             BranchZcOrderTransitItemService itemService = new BranchZcOrderTransitItemService();
             List<ZcOrderTransitItem> transitItemlist = itemService.FindByOrderId(tran.Id);
             BranchZcOrderHistoryItemService historyItemService = new BranchZcOrderHistoryItemService();
@@ -2138,7 +2111,7 @@ namespace Branch.com.proem.exm.window.order
                 saleID = ResaleWaterNumber;
             }
             else {
-                saleID = id_.Text;
+                //saleID = id_.Text;
             }
             
 
@@ -2219,7 +2192,7 @@ namespace Branch.com.proem.exm.window.order
             sb.Append("-----------------------------------------------------------------\n");
             if(isResale)
             {
-                sb.Append("数量: " + resaletotalNumlabel.Text + "\t\t 合计: " + resaletotalsum.Text + "\n");
+                //sb.Append("数量: " + resaletotalNumlabel.Text + "\t\t 合计: " + resaletotalsum.Text + "\n");
             }else
             {
                 sb.Append("数量: " + totalSum.Text + "\t\t 合计: " + totalAmount.Text + "\n");
@@ -2262,83 +2235,8 @@ namespace Branch.com.proem.exm.window.order
             e.HasMorePages = false;
         }
 
-        private void itemInputButton_Click(object sender, EventArgs e)
-        {
-            if (itemInputPanel.Visible == true)
-            {
-                //MessageBox.Show("true");
-                itemInputPanel.Hide();
-                itemInputButton.Text = "显示按键";
-            }
-            else
-            {
-                //MessageBox.Show("false");
-                itemInputPanel.Show();
-                itemInputButton.Text = "隐藏按键";
-            }
-        }
-
         private string addOrReduceFlag = "add";
 
-        private void addReduceButton_Click(object sender, EventArgs e)
-        {
-            if ("add".Equals(addOrReduceFlag))
-            {
-                addReduceButton.Text = "减（-）";
-                addOrReduceFlag = "reduce";
-            }
-            else if ("reduce".Equals(addOrReduceFlag))
-            {
-                addReduceButton.Text = "加（+）";
-                addOrReduceFlag = "add";
-            }
-        }
-
-        /// <summary>
-        /// row paint时 添加行号
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void resaleDatagridView_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
-        {
-            //行号
-            using (SolidBrush b = new SolidBrush(this.resaleDatagridView.RowHeadersDefaultCellStyle.ForeColor))
-            {
-                e.Graphics.DrawString(Convert.ToString(e.RowIndex + 1),
-                e.InheritedRowStyle.Font, b, e.RowBounds.Location.X + 5, e.RowBounds.Location.Y + 4);
-            }
-        }
-
-        /// <summary>
-        /// 点击零售按钮
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void resaleButton_Click(object sender, EventArgs e)
-        {
-            isResale = true;
-            printObjectlist.Clear();
-
-            resalePanel.Show();
-            informPanel.Hide();
-            searchPanel.Hide();
-            orderItemGroupBox.Hide();
-            resaleNumberTextBox.Focus();
-            resaleButton.BackColor = Color.FromArgb(96, 133, 160);
-            pickUp.BackColor = Color.FromArgb(173, 173, 173);
-            refund.BackColor = Color.FromArgb(173, 173, 173);
-        }
-
-        /// <summary>
-        /// 弹出会员信息选择框
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void memberChooseButton_Click(object sender, EventArgs e)
-        {
-            MemberChoose memberChoose = new MemberChoose(this);
-            memberChoose.Show();
-        }
 
         /// <summary>
         /// 设置会员信息类
@@ -2347,7 +2245,9 @@ namespace Branch.com.proem.exm.window.order
         public void SetAssociatorInfo(AssociatorInfo obj)
         {
             associatorInfo = obj;
-            memberTextBox.Text = obj.Name;
+            memberName.Text = obj.Name;
+            memberCard.Text = obj.CardNumber;
+            memberPhone.Text = obj.MobilePhone;
         }
 
         /// <summary>
@@ -2355,8 +2255,8 @@ namespace Branch.com.proem.exm.window.order
         /// </summary>
         private void AddResaleGoods()
         {
-            string numberString = resaleNumberTextBox.Text;
-            resaleNumberTextBox.Text = "";
+            string numberString = numberTextBox.Text;
+            numberTextBox.Text = "";
             if (string.IsNullOrEmpty(numberString) || (!numberString.StartsWith("28") && !numberString.StartsWith("69")) || (numberString.Length != 18 && numberString.Length != 13))
             {
                 MessageBox.Show("扫描的条码不正确，请重新扫描", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -2367,50 +2267,60 @@ namespace Branch.com.proem.exm.window.order
             if (numberString.Length == 18)
             {
                 serial = numberString.Substring(2, 5);
-                weight = float.Parse(numberString.Substring(12, 5).Insert(2, ".")).ToString();
             }
             else if (numberString.StartsWith("28"))
             {
                 serial = numberString.Substring(2, 5);
-                weight = float.Parse(numberString.Substring(12, 5).Insert(2, ".")).ToString();
             }
             else
             {
                 serial = numberString;
             }
-
             BranchZcGoodsMasterService branchGoodsService = new BranchZcGoodsMasterService();
             ZcGoodsMaster obj = branchGoodsService.FindBySerialNumber(serial);
-            if(obj == null)
+            if (obj == null)
             {
                 MessageBox.Show("没有此货号对应的商品信息，请检查后重新操作!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+            bool isWeightGoods = branchGoodsService.IsWeightGoods(obj.Id);
+            if (isWeightGoods)
+            {
+                if (numberString.Length == 18)
+                {
+                    weight = float.Parse(numberString.Substring(12, 5).Insert(2, ".")).ToString();
+                }
+                else 
+                {
+                    weight = float.Parse(numberString.Substring(12, 5).Insert(2, ".")).ToString();
+                }
+            }
+
 
             //TODO 
 
             GoodsPrint goodsPrint = new GoodsPrint();
             bool isExist = false;
-            for (int i = 0; i < resaleDatagridView.Rows.Count; i++ )
+            for (int i = 0; i < itemDataGridView.Rows.Count; i++)
             {
-                if(serial.Equals(resaleDatagridView[0, i].Value.ToString()))
+                if (serial.Equals(itemDataGridView[0, i].Value.ToString()))
                 {
                     isExist = true;
-                    if (resaleAdd)
+                    if (AddOrDelete)
                     {
-                        int nums = Int32.Parse(resaleDatagridView[2, i].Value.ToString());
-                        float price = float.Parse(resaleDatagridView[4, i].Value == null ? "0" : resaleDatagridView[4, i].Value.ToString());
-                        if(! serial.StartsWith("69"))
+                        float nums = float.Parse(itemDataGridView[15, i].Value.ToString());
+                        float price = float.Parse(itemDataGridView[2, i].Value == null ? "0" : itemDataGridView[2, i].Value.ToString());
+                        if (!string.IsNullOrEmpty(weight))
                         {
-                            float old_weight = string.IsNullOrEmpty(resaleDatagridView[3, i].Value.ToString()) ? 0 : float.Parse(resaleDatagridView[3, i].Value.ToString());
-                            resaleDatagridView[3, i].Value = old_weight + float.Parse(weight);
+                            float old_weight = string.IsNullOrEmpty(itemDataGridView[8, i].Value.ToString()) ? 0 : float.Parse(itemDataGridView[8, i].Value.ToString());
+                            itemDataGridView[8, i].Value = old_weight + float.Parse(weight);
                         }
-                        resaleDatagridView[2, i].Value = nums + 1;
-                        resaleDatagridView[5, i].Value = (nums + 1) * price;
-                        resaleDatagridView.Rows[i].Selected = true;
-                        resaleDatagridView.CurrentCell = resaleDatagridView.Rows[i].Cells[0];
+                        itemDataGridView[15, i].Value = nums + 1;
+                        itemDataGridView[16, i].Value = (nums + 1) * price;
+                        itemDataGridView.Rows[i].Selected = true;
+                        itemDataGridView.CurrentCell = itemDataGridView.Rows[i].Cells[0];
 
-                        if (serial.StartsWith("69"))
+                        if (string.IsNullOrEmpty(weight))
                         {
                             foreach (GoodsPrint gp in printObjectlist)
                             {
@@ -2427,16 +2337,17 @@ namespace Branch.com.proem.exm.window.order
                             goodsPrint.Name = obj.GoodsName;
                             goodsPrint.Nums = 1;
                             goodsPrint.Price = obj.GoodsPrice;
-                            goodsPrint.Weight = string.IsNullOrEmpty(weight) ? 0 : float.Parse(weight);
+                            goodsPrint.Weight = float.Parse(weight);
                             printObjectlist.Add(goodsPrint);
                         }
                         break;
                     }
                     else
                     {
-                        int nums = Int32.Parse(resaleDatagridView[2, i].Value.ToString());
-                        float old_weight = string.IsNullOrEmpty(resaleDatagridView[3, i].Value.ToString()) ? 0 : float.Parse(resaleDatagridView[3, i].Value.ToString());
-                        if(!serial.StartsWith("69")){
+                        float nums = float.Parse(itemDataGridView[15, i].Value.ToString());
+                        float old_weight = string.IsNullOrEmpty(itemDataGridView[8, i].Value.ToString()) ? 0 : float.Parse(itemDataGridView[8, i].Value.ToString());
+                        if (!string.IsNullOrEmpty(weight))
+                        {
                             if (float.Parse(weight) > old_weight)
                             {
                                 MessageBox.Show("扫码减去的商品重量不能大于已扫描的商品重量", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -2446,24 +2357,48 @@ namespace Branch.com.proem.exm.window.order
 
                         if (nums == 1)
                         {
-                            foreach(GoodsPrint gp in printObjectlist)
+                            bool isHave = false;
+                            foreach (GoodsPrint gp in printObjectlist)
                             {
-                                if(gp.SerialNumber.Equals(serial) && gp.Weight == float.Parse(weight))
+                                if (gp.SerialNumber.Equals(serial))
                                 {
-                                    printObjectlist.Remove(gp);
-                                    break;
-                                }else
+                                    if (string.IsNullOrEmpty(weight))
+                                    {
+                                        printObjectlist.Remove(gp);
+                                        isHave = true;
+                                        break;
+                                    }
+                                    else 
+                                    {
+                                        if (gp.Weight == float.Parse(weight))
+                                        {
+                                            printObjectlist.Remove(gp);
+                                            isHave = true;
+                                            break;
+                                        }
+                                        else 
+                                        {
+                                            break;
+                                        }
+                                    }
+                                }
+                                else
                                 {
-                                    MessageBox.Show("没有此商品对应的扫码销售信息", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                    return;
+                                    continue;
+                                    
                                 }
                             }
-                            resaleDatagridView.Rows.RemoveAt(i);
-                            AddOrReduceButton_Click(this, EventArgs.Empty);
+                            if( !isHave)
+                            {
+                                MessageBox.Show("没有此商品对应的扫码销售信息", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return;
+                            }
+                            itemDataGridView.Rows.RemoveAt(i);
+                            AddOrDelete = true;
                         }
                         else
                         {
-                            if(serial.StartsWith("69"))
+                            if (string.IsNullOrEmpty(weight))
                             {
                                 foreach (GoodsPrint gp in printObjectlist)
                                 {
@@ -2473,7 +2408,8 @@ namespace Branch.com.proem.exm.window.order
                                         break;
                                     }
                                 }
-                            }else
+                            }
+                            else
                             {
                                 bool isHaveResaleGoods = false;
                                 foreach (GoodsPrint gp in printObjectlist)
@@ -2491,28 +2427,28 @@ namespace Branch.com.proem.exm.window.order
                                     return;
                                 }
                             }
-                            float price = float.Parse(resaleDatagridView[4, i].Value == null ? "0" : resaleDatagridView[4, i].Value.ToString());
-                            resaleDatagridView[2, i].Value = nums - 1;
-                            if (!serial.StartsWith("69"))
+                            float price = float.Parse(itemDataGridView[2, i].Value == null ? "0" : itemDataGridView[2, i].Value.ToString());
+                            itemDataGridView[15, i].Value = nums - 1;
+                            if (!string.IsNullOrEmpty(weight))
                             {
-                                resaleDatagridView[3, i].Value = old_weight - float.Parse(weight);
+                                itemDataGridView[8, i].Value = old_weight - float.Parse(weight);
                             }
-                            resaleDatagridView[5, i].Value = (nums - 1) * price;
-                            resaleDatagridView.Rows[i].Selected = true;
-                            resaleDatagridView.CurrentCell = resaleDatagridView.Rows[i].Cells[0];
-                            AddOrReduceButton_Click(this, EventArgs.Empty);
+                            itemDataGridView[16, i].Value = ((nums - 1) * price).ToString("0.00");
+                            itemDataGridView.Rows[i].Selected = true;
+                            itemDataGridView.CurrentCell = itemDataGridView.Rows[i].Cells[0];
+                            AddOrDelete = true;
                             break;
                         }
                     }
                 }
             }
-            if(!isExist)
+            if (!isExist)
             {
-                if (resaleAdd)
+                if (AddOrDelete)
                 {
-                    resaleDatagridView.Rows.Add(new Object[] { serial, obj.GoodsName, 1 , weight, obj.GoodsPrice, obj.GoodsPrice, obj.Id });
-                    resaleDatagridView.Rows[resaleDatagridView.Rows.Count -1].Selected = true;
-                    resaleDatagridView.CurrentCell = resaleDatagridView.Rows[resaleDatagridView.Rows.Count - 1].Cells[0];
+                    itemDataGridView.Rows.Add(new Object[] { serial, obj.GoodsName, obj.GoodsPrice, "", "", "", "", "", weight, "", "", "", "", "", obj.Id, 1, obj.GoodsPrice });
+                    itemDataGridView.Rows[itemDataGridView.Rows.Count - 1].Selected = true;
+                    itemDataGridView.CurrentCell = itemDataGridView.Rows[itemDataGridView.Rows.Count - 1].Cells[0];
                     ///将待打印的商品添加进去
                     goodsPrint.SerialNumber = serial;
                     goodsPrint.Name = obj.GoodsName;
@@ -2545,37 +2481,18 @@ namespace Branch.com.proem.exm.window.order
         }
 
         /// <summary>
-        /// 零售是加还是减
-        /// </summary>
-        private bool resaleAdd = true;
-
-        private void AddOrReduceButton_Click(object sender, EventArgs e)
-        {
-            if (resaleAdd)
-            {
-                resaleAdd = false;
-                AddOrReduceButton.Text = "-减(A)";
-            }
-            else
-            {
-                resaleAdd = true;
-                AddOrReduceButton.Text = "+加(A)";
-            }
-        }
-
-        /// <summary>
         /// 点击数量修改按钮
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void button1_Click(object sender, EventArgs e)
+        private void openChangeNums()
         {
-            if (resaleDatagridView.RowCount == 0)
+            if (itemDataGridView.RowCount == 0)
             {
                 return;
             }
-            string serialNumber = resaleDatagridView.CurrentRow.Cells[0].Value.ToString();
-            if (!serialNumber.StartsWith("69"))
+            string goodsFileId = itemDataGridView.CurrentRow.Cells[14].Value.ToString();
+            BranchZcGoodsMasterService branchService = new BranchZcGoodsMasterService();
+            bool isWeightGoods = branchService.IsWeightGoods(goodsFileId);
+            if (isWeightGoods)
             {
                 ///说明是称重的商品，无法进行数量修改
                 MessageBox.Show("称重商品无法手动修改数量", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -2589,17 +2506,17 @@ namespace Branch.com.proem.exm.window.order
         }
 
         /// <summary>
-        /// 修改成本数量
+        /// 修改不需称重商品数量
         /// </summary>
         /// <param name="num"></param>
         public void ResaleChangeNums(string num)
         {
-            int index = resaleDatagridView.CurrentRow.Index;
-            resaleDatagridView.Rows[index].Cells[2].Value = num;
-            resaleDatagridView.Rows[index].Cells[5].Value = float.Parse(resaleDatagridView.Rows[index].Cells[4].Value.ToString()) * Int32.Parse(num);
+            int index = itemDataGridView.CurrentRow.Index;
+            itemDataGridView.Rows[index].Cells[15].Value = num;
+            itemDataGridView.Rows[index].Cells[16].Value = (float.Parse(itemDataGridView.Rows[index].Cells[2].Value.ToString()) * float.Parse(num)).ToString("0.00");
            foreach(GoodsPrint obj in printObjectlist)
            {
-               if (obj.SerialNumber.Equals(resaleDatagridView.Rows[index].Cells[0].Value.ToString()))
+               if (obj.SerialNumber.Equals(itemDataGridView.Rows[index].Cells[0].Value.ToString()))
                {
                    obj.Nums = float.Parse(num);
                    break;
@@ -2612,29 +2529,30 @@ namespace Branch.com.proem.exm.window.order
         /// <summary>
         /// 删除商品
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void button2_Click(object sender, EventArgs e)
+        private void deleteResaleGoods()
         {
-            if (resaleDatagridView.RowCount == 0)
+            if (itemDataGridView.RowCount == 0)
             {
                 return;
             }
-            string name = resaleDatagridView.CurrentRow.Cells[1].Value.ToString();
-            DialogResult dr = MessageBox.Show("确定删除"+name + "?", "提示",MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            string name = itemDataGridView.CurrentRow.Cells[1].Value.ToString();
+            DialogResult dr = MessageBox.Show("确定删除" + name + "?", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (dr == DialogResult.Yes)
             {
-                int index = resaleDatagridView.CurrentRow.Index;
-                ///TODO  有错误
+                int index = itemDataGridView.CurrentRow.Index;
+                List<GoodsPrint> deleteList = new List<GoodsPrint>();
                 foreach (GoodsPrint obj in printObjectlist)
                 {
-                    if (obj.SerialNumber.Equals(resaleDatagridView.Rows[index].Cells[0].Value.ToString()))
+                    if (obj.SerialNumber.Equals(itemDataGridView.Rows[index].Cells[0].Value.ToString()))
                     {
-                        printObjectlist.Remove(obj);
-                        break;
+                        deleteList.Add(obj);
                     }
                 }
-                resaleDatagridView.Rows.RemoveAt(index);
+                foreach(GoodsPrint obj in deleteList)
+                {
+                    printObjectlist.Remove(obj);
+                }
+                itemDataGridView.Rows.RemoveAt(index);
                 //计算总的数量和金额的算法
                 ResaleCalculate();
             }
@@ -2645,25 +2563,28 @@ namespace Branch.com.proem.exm.window.order
         /// </summary>
         private void ResaleCalculate()
         {
-            int totalSum = 0;
+            float totalSum = 0;
             float totalMoney = 0;
-            for (int i = 0; i < resaleDatagridView.RowCount; i++)
+            for (int i = 0; i < itemDataGridView.RowCount; i++)
             {
-                int nums = Int32.Parse(resaleDatagridView.Rows[i].Cells[2].Value.ToString());
-                float money = float.Parse(resaleDatagridView.Rows[i].Cells[5].Value.ToString());
+                float nums = float.Parse(itemDataGridView.Rows[i].Cells[15].Value.ToString());
+                float money = float.Parse(itemDataGridView.Rows[i].Cells[16].Value.ToString());
                 totalSum += nums;
                 totalMoney += money;
             }
 
-            resaletotalNumlabel.Text = totalSum.ToString();
-            resaletotalsum.Text = totalMoney.ToString("0.00");
+            this.totalSum.Text = totalSum.ToString("0.00");
+            this.totalAmount.Text = totalMoney.ToString("0.00");
         }
 
         /// <summary>
         /// 保存零售信息
         /// </summary>
         /// <param name="waterNumber"></param>
-        public void saveResaleInform(string waterNumber)
+        /// <param name="payInfoId">
+        /// 支付主表id
+        /// </param>
+        public void saveResaleInform(string waterNumber, string payInfoId)
         {
             ///零售主表
             Resale resale = new Resale();
@@ -2671,21 +2592,29 @@ namespace Branch.com.proem.exm.window.order
             resale.CreateTime = DateTime.Now;
             resale.UpdateTime = DateTime.Now;
             resale.WaterNumber = waterNumber;
-            resale.Nums = resaletotalNumlabel.Text;
-            resale.Money = resaletotalsum.Text;
+            resale.Nums = totalSum.Text;
+            resale.Money = totalAmount.Text;
+            ///TODO  暂时未加入折扣，优惠金额等算法
+            resale.ActualMoney = totalAmount.Text;
             resale.BranchId = LoginUserInfo.branchId;
+            resale.SaleManId = LoginUserInfo.id;
             resale.memberId = associatorInfo == null ? string.Empty : associatorInfo.Id;
+            resale.WaterNumber = waterNumber;
+            resale.PayInfoId = payInfoId;
+            
             List<ResaleItem> list = new List<ResaleItem>();
-            for (int i = 0; i < resaleDatagridView.RowCount; i++)
+            for (int i = 0; i < itemDataGridView.RowCount; i++)
             {
                 ResaleItem obj = new ResaleItem();
                 obj.Id = Guid.NewGuid().ToString();
                 obj.CreateTime = DateTime.Now;
                 obj.UpdateTime = DateTime.Now;
-                obj.GoodsFileId = resaleDatagridView.Rows[i].Cells[6].Value.ToString();
-                obj.Nums = resaleDatagridView.Rows[i].Cells[2].Value.ToString();
-                obj.Money = resaleDatagridView.Rows[i].Cells[5].Value.ToString();
                 obj.ResaleId = resale.Id;
+                obj.GoodsFileId = itemDataGridView.Rows[i].Cells[14].Value.ToString();
+                obj.Nums = itemDataGridView.Rows[i].Cells[15].Value.ToString();
+                obj.Money = itemDataGridView.Rows[i].Cells[16].Value.ToString();
+                ///TODO  暂时未加入折扣，优惠金额等算法
+                obj.ActualMoney = obj.Money;
                 list.Add(obj);
             }
             BranchResaleItemService branchItemService = new BranchResaleItemService();
@@ -2702,7 +2631,7 @@ namespace Branch.com.proem.exm.window.order
                 service.AddResale(resale);
             }
             else
-            { 
+            {
                 //断网状态
                 List<UploadInfo> uploadList = new List<UploadInfo>();
                 UploadInfo obj1 = new UploadInfo();
@@ -2724,6 +2653,27 @@ namespace Branch.com.proem.exm.window.order
                 uploadDao.AddUploadInfo(uploadList);
             }
             ///TODO  库存的减少
+            
+        }
+
+        /// <summary>
+        /// 焦点离开numberTextbox事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void numberTextBox_Leave(object sender, EventArgs e)
+        {
+            numberTextBox.Focus();
+        }
+
+        /// <summary>
+        /// 窗体激活事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CustomerDelivery_Activated(object sender, EventArgs e)
+        {
+            numberTextBox.Focus();
         }
     }
 }

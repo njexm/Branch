@@ -27,7 +27,7 @@ namespace Branch.com.proem.exm.dao.branch
         /// <param name="obj"></param>
         public void AddPayInfo(PayInfo obj)
         {
-            string sql = "insert into zc_payInfo values (@id,@createTime, @updateTime, @resaleId, @memberId, @money, @branchId, @salemanId)";
+            string sql = "insert into zc_payInfo values (@id,@createTime, @updateTime, @memberId, @money, @branchId, @salemanId)";
             MySqlConnection conn = null;
             MySqlTransaction tran = null;
             MySqlCommand cmd = new MySqlCommand();
@@ -40,7 +40,6 @@ namespace Branch.com.proem.exm.dao.branch
                 cmd.Parameters.AddWithValue("@id", obj.Id);
                 cmd.Parameters.AddWithValue("@createTime", obj.CreateTime);
                 cmd.Parameters.AddWithValue("@updateTime", obj.UpdateTime);
-                cmd.Parameters.AddWithValue("@resaleId", obj.ResaleId);
                 cmd.Parameters.AddWithValue("@memberId", obj.MemberId);
                 cmd.Parameters.AddWithValue("@money", obj.Money);
                 cmd.Parameters.AddWithValue("@branchId", obj.BranchId);

@@ -27,6 +27,11 @@ namespace Branch.com.proem.exm.window.order
         private string OrderNumber;
 
         /// <summary>
+        /// 支付主表Id
+        /// </summary>
+        private string PayInfoId;
+
+        /// <summary>
         /// 支付首页
         /// </summary>
         private PayForm payForm;
@@ -41,12 +46,13 @@ namespace Branch.com.proem.exm.window.order
             InitializeComponent();
         }
 
-        public ZFBPay(string orderNumber, PayForm payForm, string money)
+        public ZFBPay(string orderNumber, PayForm payForm, string money, string id)
         {
             InitializeComponent();
             this.OrderNumber = orderNumber;
             this.payForm = payForm;
             this.needPayMoney = money;
+            this.PayInfoId = id;
         }
 
         private void ZFBPay_Load(object sender, EventArgs e)
@@ -159,28 +165,15 @@ namespace Branch.com.proem.exm.window.order
             //result = payResult.response.Body;
 
             MessageBox.Show("支付成功!");
-            PayInfo obj = new PayInfo();
-            //obj.Id = Guid.NewGuid().ToString();
-            //obj.CreateTime = DateTime.Now;
-            //obj.UpdateTime = DateTime.Now;
-            //obj.PayAmount = WIDtotal_fee.Text.Trim();
-            //obj.orderId = this.OrderNumber;
-            //obj.salesmanId = LoginUserInfo.id;
-            //obj.payDate = DateTime.Now;
-            //obj.PayMode = BranchPay.ZFBPay;
-            //obj.MemberId = memberCardId;
-            obj.BranchId = LoginUserInfo.branchId;
+            PayInfoItem obj = new PayInfoItem();
 
-            //BranchPayInfoService service = new BranchPayInfoService();
-            //service.AddPayInfo(obj);
-            ////上传支付信息
-            //PayInfoService masterPayInfoService = new PayInfoService();
-            //masterPayInfoService.AddPayInfo(obj);
-
+            obj.Id = Guid.NewGuid().ToString();
+            obj.CreateTime = DateTime.Now;
+            obj.UpdateTime = DateTime.Now;
+            obj.Money = WIDtotal_fee.Text.Trim(); ;
+            obj.PayInfoId = PayInfoId;
+            obj.PayMode = BranchPay.ZFBPay;
             this.payForm.AddPayInfo(obj);
-
-           // payForm.AddPaidAmount(obj.PayAmount);
-
             this.Close();
         }
 

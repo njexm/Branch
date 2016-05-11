@@ -25,7 +25,7 @@ namespace Branch.com.proem.exm.dao.branch
         /// <param name="obj"></param>
         public void AddResale(Resale obj)
         {
-            string sql = "insert into zc_resale values (@id, @createTime, @updateTime, @nums , @money,@discount_money, @preferential_money, @actual_money , @branchId, @saleman_id, @memberId , @order_id, @number)";
+            string sql = "insert into zc_resale values (@id, @createTime, @updateTime, @nums , @money,@discount_money, @preferential_money, @actual_money , @branchId, @saleman_id, @memberId , @order_id, @number, @payInfoId)";
             MySqlConnection conn = null;
             MySqlTransaction tran = null;
             MySqlCommand cmd = new MySqlCommand();
@@ -48,6 +48,7 @@ namespace Branch.com.proem.exm.dao.branch
                 cmd.Parameters.AddWithValue("@memberId", obj.memberId);
                 cmd.Parameters.AddWithValue("@order_id", obj.OrderId);
                 cmd.Parameters.AddWithValue("@number", obj.WaterNumber);
+                cmd.Parameters.AddWithValue("@payInfoId", obj.PayInfoId);
                 cmd.ExecuteNonQuery();
                 tran.Commit();
             }

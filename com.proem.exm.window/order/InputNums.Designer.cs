@@ -29,10 +29,10 @@
         private void InitializeComponent()
         {
             this.main = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.main.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -49,29 +49,22 @@
             this.main.Size = new System.Drawing.Size(284, 211);
             this.main.TabIndex = 0;
             // 
-            // label1
+            // button2
             // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("宋体", 12F);
-            this.label1.Location = new System.Drawing.Point(20, 20);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(128, 16);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "请输入商品数量!";
-            // 
-            // textBox1
-            // 
-            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox1.Font = new System.Drawing.Font("宋体", 16F);
-            this.textBox1.Location = new System.Drawing.Point(20, 60);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(200, 32);
-            this.textBox1.TabIndex = 1;
-            this.textBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox1_KeyPress);
+            this.button2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(201)))), ((int)(((byte)(67)))), ((int)(((byte)(65)))));
+            this.button2.FlatAppearance.BorderSize = 0;
+            this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button2.Font = new System.Drawing.Font("宋体", 12F);
+            this.button2.ForeColor = System.Drawing.Color.White;
+            this.button2.Location = new System.Drawing.Point(169, 158);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(90, 30);
+            this.button2.TabIndex = 3;
+            this.button2.Text = "取消(Esc)";
+            this.button2.UseVisualStyleBackColor = false;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // button1
             // 
@@ -90,22 +83,29 @@
             this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // button2
+            // textBox1
             // 
-            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.button2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(201)))), ((int)(((byte)(67)))), ((int)(((byte)(65)))));
-            this.button2.FlatAppearance.BorderSize = 0;
-            this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button2.Font = new System.Drawing.Font("宋体", 12F);
-            this.button2.ForeColor = System.Drawing.Color.White;
-            this.button2.Location = new System.Drawing.Point(169, 158);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(90, 30);
-            this.button2.TabIndex = 3;
-            this.button2.Text = "取消(Esc)";
-            this.button2.UseVisualStyleBackColor = false;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.textBox1.Font = new System.Drawing.Font("宋体", 16F);
+            this.textBox1.Location = new System.Drawing.Point(20, 60);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(200, 32);
+            this.textBox1.TabIndex = 1;
+            this.textBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox1_KeyPress);
+            // 
+            // label1
+            // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("宋体", 12F);
+            this.label1.Location = new System.Drawing.Point(20, 20);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(128, 16);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "请输入商品数量!";
             // 
             // InputNums
             // 

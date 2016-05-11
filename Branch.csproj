@@ -178,6 +178,7 @@
     <Compile Include="com.proem.exm.service\branch\BranchAssociatorInfoService.cs" />
     <Compile Include="com.proem.exm.service\branch\BranchDailyReceiveGoodsService.cs" />
     <Compile Include="com.proem.exm.service\branch\BranchDeliverAmountInfoService.cs" />
+    <Compile Include="com.proem.exm.service\branch\BranchPayInfoItemService.cs" />
     <Compile Include="com.proem.exm.service\branch\BranchPayInfoService.cs" />
     <Compile Include="com.proem.exm.service\branch\BranchRelUserRoleService.cs" />
     <Compile Include="com.proem.exm.service\branch\BranchResaleItemService.cs" />
@@ -208,6 +209,7 @@
     <Compile Include="com.proem.exm.service\master\AssociatorInfoService.cs" />
     <Compile Include="com.proem.exm.service\master\DailyReceiveGoodsService.cs" />
     <Compile Include="com.proem.exm.service\master\DeliverAmountInfoService.cs" />
+    <Compile Include="com.proem.exm.service\master\PayInfoItemService.cs" />
     <Compile Include="com.proem.exm.service\master\PayInfoService.cs" />
     <Compile Include="com.proem.exm.service\master\RefundInfoService.cs" />
     <Compile Include="com.proem.exm.service\master\RelUserRoleService.cs" />
@@ -341,6 +343,12 @@
     </Compile>
     <Compile Include="com.proem.exm.window\order\CustomerDelivery.Designer.cs">
       <DependentUpon>CustomerDelivery.cs</DependentUpon>
+    </Compile>
+    <Compile Include="com.proem.exm.window\order\HelpMessage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="com.proem.exm.window\order\HelpMessage.Designer.cs">
+      <DependentUpon>HelpMessage.cs</DependentUpon>
     </Compile>
     <Compile Include="com.proem.exm.window\order\InputNums.cs">
       <SubType>Form</SubType>
@@ -605,6 +613,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="com.proem.exm.window\order\CustomerDelivery.resx">
       <DependentUpon>CustomerDelivery.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="com.proem.exm.window\order\HelpMessage.resx">
+      <DependentUpon>HelpMessage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="com.proem.exm.window\order\InputNums.resx">
       <DependentUpon>InputNums.cs</DependentUpon>

@@ -26,12 +26,14 @@ namespace Branch.com.proem.exm.window.order
         /// <summary>
         /// 支付信息列表
         /// </summary>
-        private List<PayInfo> payList = new List<PayInfo>();
+        private List<PayInfoItem> payList = new List<PayInfoItem>();
+
+        private PayInfo payInfo;
 
         /// <summary>
         /// 向支付信息列表添加数据
         /// </summary>
-        public void AddPayInfo(PayInfo obj)
+        public void AddPayInfo(PayInfoItem obj)
         {
             payList.Add(obj);
         }
@@ -44,7 +46,7 @@ namespace Branch.com.proem.exm.window.order
         /// <summary>
         /// 会员卡号
         /// </summary>
-        public string memberCardId;
+        public string memberId;
 
         /// <summary>
         /// 订单号
@@ -86,6 +88,8 @@ namespace Branch.com.proem.exm.window.order
         public PayForm()
         {
             InitializeComponent();
+            payInfo = new PayInfo();
+            payInfo.Id = Guid.NewGuid().ToString();
         }
 
         /// <summary>
@@ -96,7 +100,7 @@ namespace Branch.com.proem.exm.window.order
         private void button2_Click(object sender, EventArgs e)
         {
             CardPay cardPay = new CardPay();
-            cardPay.memberCardId = memberCardId;
+            cardPay.memberCardId = memberId;
             cardPay.orderId = orderId;
             cardPay.payForm = this;
             cardPay.needMoney = (float.Parse(textBox4.Text) - float.Parse(textBox5.Text)).ToString();
@@ -151,17 +155,13 @@ namespace Branch.com.proem.exm.window.order
                 flag = true;
                 if (float.Parse(textBox4.Text) - this.cardpayment > 0)
                 {
-                    PayInfo obj = new PayInfo();
-                    //obj.Id = Guid.NewGuid().ToString();
-                    //obj.CreateTime = DateTime.Now;
-                    //obj.UpdateTime = DateTime.Now;
-                    //obj.PayAmount = (float.Parse(textBox4.Text) - this.cardpayment).ToString("0.00");
-                    //obj.orderId = orderId;
-                    //obj.salesmanId = LoginUserInfo.id;
-                    //obj.payDate = DateTime.Now;
-                    //obj.PayMode = BranchPay.money;
-                    //obj.MemberId = memberCardId;
-                    //obj.BranchId = LoginUserInfo.branchId;
+                    PayInfoItem obj = new PayInfoItem();
+                    obj.Id = Guid.NewGuid().ToString();
+                    obj.CreateTime = DateTime.Now;
+                    obj.UpdateTime = DateTime.Now;
+                    obj.Money = (float.Parse(textBox4.Text) - this.cardpayment).ToString("0.00");
+                    obj.PayInfoId = payInfo.Id;
+                    obj.PayMode = BranchPay.money;
                     AddPayInfo(obj);
                 }
             }
@@ -173,26 +173,41 @@ namespace Branch.com.proem.exm.window.order
 
             if (flag)
             {
+                payInfo.CreateTime = DateTime.Now;
+                payInfo.UpdateTime = DateTime.Now;
+                payInfo.MemberId = memberId ;
+                payInfo.Money = textBox4.Text;
+                payInfo.BranchId = LoginUserInfo.branchId;
+                payInfo.salesmanId = LoginUserInfo.id;
                 BranchPayInfoService payService = new BranchPayInfoService();
-
-                //payService.AddPayInfo(payList);
+                payService.AddPayInfo(payInfo);
+                BranchPayInfoItemService payItemService = new BranchPayInfoItemService();
+                payItemService.AddPayInfoItem(payList);
 
                 //上传支付信息
                 if (PingTask.IsConnected)
                 {
                     PayInfoService masterPayInfoService = new PayInfoService();
-                    masterPayInfoService.AddPayInfo(payList);
+                    masterPayInfoService.AddPayInfo(payInfo);
+                    PayInfoItemService masterPayInfoItemService = new PayInfoItemService();
+                    masterPayInfoItemService.AddPayInfoItem(payList);
                 }
                 else 
                 {
                     List<UploadInfo> list = new List<UploadInfo>();
-                    foreach(PayInfo obj in payList)
+                    UploadInfo uploadInfo1 = new UploadInfo();
+                    uploadInfo1.Id = payInfo.Id;
+                    uploadInfo1.CreateTime = DateTime.Now;
+                    uploadInfo1.UpdateTime = DateTime.Now;
+                    uploadInfo1.Type = Constant.PAY_INFO;
+                    list.Add(uploadInfo1);
+                    foreach(PayInfoItem obj in payList)
                     {
                         UploadInfo uploadInfo = new UploadInfo();
                         uploadInfo.Id = obj.Id;
                         uploadInfo.CreateTime = DateTime.Now;
                         uploadInfo.UpdateTime = DateTime.Now;
-                        uploadInfo.Type = Constant.PAY_INFO;
+                        uploadInfo.Type = Constant.PAY_INFO_ITEM;
                         list.Add(uploadInfo);
                     }
                     UploadDao uploadDao = new UploadDao();
@@ -210,7 +225,7 @@ namespace Branch.com.proem.exm.window.order
                     customerDelivery.saveAllPay(Constant.ORDER_STATUS_FININSH);
                 }else if(ModeFlag == 2)
                 {
-                    customerDelivery.saveResaleInform(orderId);
+                    customerDelivery.saveResaleInform(orderId, payInfo.Id);
                 }
                 clFlag = true;
                 ///打印小票的代码
@@ -716,7 +731,7 @@ namespace Branch.com.proem.exm.window.order
                 return;
             }
             string needMoney = (float.Parse(textBox4.Text) - float.Parse(textBox5.Text)).ToString();
-            WxPayForm wxPayForm = new WxPayForm(orderId, this, needMoney);
+            WxPayForm wxPayForm = new WxPayForm(orderId, this, needMoney, payInfo.Id);
             wxPayForm.ShowDialog();
         }
 
@@ -733,8 +748,7 @@ namespace Branch.com.proem.exm.window.order
                 return;
             }
             string needMoney = (float.Parse(textBox4.Text) - float.Parse(textBox5.Text)).ToString();
-            //ZFBPay zFBPay = new ZFBPay();
-            ZFBPay zFBPay = new ZFBPay(orderId, this, needMoney);
+            ZFBPay zFBPay = new ZFBPay(orderId, this, needMoney, payInfo.Id);
             zFBPay.ShowDialog();
         }
 

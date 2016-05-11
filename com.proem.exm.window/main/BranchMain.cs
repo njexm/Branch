@@ -58,9 +58,9 @@ namespace Branch.com.proem.exm.window.main
 
         private void customerDeliveryButton_Click(object sender, EventArgs e)
         {
-            DownloadData p = new DownloadData(Constant.DOWNLOAD_RESALE);
-            p.StartPosition = FormStartPosition.CenterScreen;
-            p.Show();
+            //DownloadData p = new DownloadData(Constant.DOWNLOAD_RESALE);
+            //p.StartPosition = FormStartPosition.CenterScreen;
+            //p.Show();
             CustomerDelivery customerDelivery = new CustomerDelivery();
             customerDelivery.customer += new CustomerDelivery.child_close(this.closethis);
             customerDelivery.Show();//CustomerDelivery客户提货

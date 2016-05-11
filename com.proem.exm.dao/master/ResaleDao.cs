@@ -23,8 +23,8 @@ namespace Branch.com.proem.exm.dao.master
         /// <param name="obj"></param>
         public void AddResale(Resale obj) 
         {
-            string sql = "insert into zc_resale (id, createTime, updateTime, nums, money, discount_money, preferential_money, actual_money, branch_id, saleman_id ,member_id, order_id, water_number) "
-                + " values (:id, :createTime, :updateTime, :nums, :money,:discount_money,:preferential_money, :actual_money, :branchId,:saleman_id, :memberId, :order_id, :water_number)";
+            string sql = "insert into zc_resale (id, createTime, updateTime, nums, money, discount_money, preferential_money, actual_money, branch_id, saleman_id ,member_id, order_id, water_number, payInfo_id) "
+                + " values (:id, :createTime, :updateTime, :nums, :money,:discount_money,:preferential_money, :actual_money, :branchId,:saleman_id, :memberId, :order_id, :water_number, :payInfo_id)";
             OracleConnection conn = null;
             OracleTransaction tran = null;
             OracleCommand cmd = new OracleCommand();
@@ -47,6 +47,7 @@ namespace Branch.com.proem.exm.dao.master
                 cmd.Parameters.Add(":memberId", obj.memberId);
                 cmd.Parameters.Add(":order_id", obj.OrderId);
                 cmd.Parameters.Add(":water_number", obj.WaterNumber);
+                cmd.Parameters.Add(":payInfo_id", obj.PayInfoId);
                 cmd.ExecuteNonQuery();
                 tran.Commit();
             }

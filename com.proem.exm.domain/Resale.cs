@@ -61,5 +61,10 @@ namespace Branch.com.proem.exm.domain
         /// 流水单号 格式：LS + yyyyMMddhhmmss + street
         /// </summary>
         public string WaterNumber { get; set; }
+
+        /// <summary>
+        /// 支付主表id
+        /// </summary>
+        public string PayInfoId { get; set; }
     }
 }

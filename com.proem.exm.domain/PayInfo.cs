@@ -18,11 +18,6 @@ namespace Branch.com.proem.exm.domain
         public DateTime UpdateTime { get; set; }
 
         /// <summary>
-        /// 流水主表Id
-        /// </summary>
-        public string ResaleId;
-
-        /// <summary>
         /// 会员卡号
         /// </summary>
         public string MemberId { get; set; }

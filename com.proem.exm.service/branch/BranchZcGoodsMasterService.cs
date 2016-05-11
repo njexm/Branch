@@ -32,5 +32,16 @@ namespace Branch.com.proem.exm.service.branch
             BranchZcGoodsMasterDao dao = new BranchZcGoodsMasterDao();
             return dao.FindBySerialNumber(serial);
         }
+
+        /// <summary>
+        /// 判断商品是不是称重商品
+        /// </summary>
+        /// <param name="id">商品id</param>
+        /// <returns></returns>
+        public bool IsWeightGoods(string id)
+        {
+            BranchZcGoodsMasterDao dao = new BranchZcGoodsMasterDao();
+            return dao.IsWeightGoods(id);
+        }
     }
 }

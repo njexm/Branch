@@ -207,5 +207,38 @@ namespace Branch.com.proem.exm.dao.branch
             }
             return obj;
         }
+
+        /// <summary>
+        /// 查看商品有没有对应的原材料
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public bool IsWeightGoods(string id)
+        {
+            bool isWeightGoods = false;
+            string sql = "select id from zc_goods_master where PRODUCTGOODSID = '"+id+"'";
+            MySqlCommand cmd = new MySqlCommand();
+            MySqlConnection conn = null;
+            try
+            {
+                conn = GetConnection();
+                cmd.Connection = conn;
+                cmd.CommandText = sql;
+                var reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    isWeightGoods = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("根据id查询原材料失败", ex);
+            }
+            finally
+            {
+                CloseConnection(conn);
+            }
+            return isWeightGoods;
+        }
     }
 }

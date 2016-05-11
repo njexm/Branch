@@ -30,7 +30,7 @@ namespace Branch.com.proem.exm.dao.branch
             {
                 conn = GetConnection();
                 tran = conn.BeginTransaction();
-                string sql = "insert into zc_storehouse values(@id, @create, @update, @status, @store, @branchId, @createUserId, @goodsFileId)";
+                string sql = "insert into zc_storehouse values(@id, @create, @update, @status, @store, @storeMoney, @branchId, @createUserId, @goodsFileId, @weight)";
                 cmd.Connection = conn;
                 cmd.CommandText = sql;
                 foreach (ZcStoreHouse obj in list)
@@ -40,9 +40,11 @@ namespace Branch.com.proem.exm.dao.branch
                     cmd.Parameters.AddWithValue("@update", obj.UpdateTime);
                     cmd.Parameters.AddWithValue("@status", obj.Status);
                     cmd.Parameters.AddWithValue("@store", obj.Store);
+                    cmd.Parameters.AddWithValue("@storeMoney", obj.StoreMoney);
                     cmd.Parameters.AddWithValue("@branchId", obj.BranchId);
                     cmd.Parameters.AddWithValue("@createUserId", obj.CreateUserId);
                     cmd.Parameters.AddWithValue("@goodsFileId", obj.GoodsFileId);
+                    cmd.Parameters.AddWithValue("@weight", obj.weight);
                     cmd.ExecuteNonQuery();
                     cmd.Parameters.Clear();
                 }
