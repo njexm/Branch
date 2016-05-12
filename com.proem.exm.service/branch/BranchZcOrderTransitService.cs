@@ -72,5 +72,26 @@ namespace Branch.com.proem.exm.service.branch
             return dao.FindAll();
         }
 
+        /// <summary>
+        /// 根据会员id获取待提货数量
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        public int GetOrderCount(string p)
+        {
+            BranchZcOrderTransitDao dao = new BranchZcOrderTransitDao();
+            return dao.GetOrderCount(p);
+        }
+
+        /// <summary>
+        /// 根据会员id获取待提货订单
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        public List<ZcOrderTransit> FindByMemberId(string p)
+        {
+            BranchZcOrderTransitDao dao = new BranchZcOrderTransitDao();
+            return dao.FindByMemberId(p);
+        }
     }
 }

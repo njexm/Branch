@@ -1,4 +1,6 @@
-﻿using Branch.com.proem.exm.util;
+﻿using Branch.com.proem.exm.domain;
+using Branch.com.proem.exm.service.branch;
+using Branch.com.proem.exm.util;
 using log4net;
 using System;
 using System.Collections.Generic;
@@ -21,6 +23,8 @@ namespace Branch.com.proem.exm.window.order
         /// 日志
         /// </summary>
         private readonly ILog log = LogManager.GetLogger(typeof(CDQueryList));
+
+        private MemberChoose memberChoose;
 
         private CustomerDelivery customerDelivery;
         /// <summary>
@@ -57,9 +61,17 @@ namespace Branch.com.proem.exm.window.order
             this.keyStr = keyStr;
         }
 
-        public CDQueryList(CustomerDelivery obj, string keyStr, string WorkMode)
+        /// <summary>
+        /// 重载
+        /// </summary>
+        /// <param name="choose">会员信息选择winform</param>
+        /// <param name="keyStr">会员id</param>
+        /// <param name="WorkMode">工作模式</param>
+        /// <param name="obj">customerDelivery winform</param>
+        public CDQueryList(MemberChoose choose, string keyStr, string WorkMode, CustomerDelivery obj)
         {
             InitializeComponent();
+            this.memberChoose = choose;
             this.customerDelivery = obj;
             this.keyStr = keyStr;
             this.WorkMode = WorkMode;
@@ -74,18 +86,13 @@ namespace Branch.com.proem.exm.window.order
                 try
                 {
                     //string sql = "select e.CONSIGNEE AS '姓名',e.CANSIGNPHONE AS '电话',f.ASSOCIATOR_CARDNUMBER AS '卡号',e.ORDERNUM as '订单号',e.ORDERAMOUNT as '金额'"
-                    string sql = "select e.ORDERNUM ,e.ORDERAMOUNT,e.CONSIGNEE,e.CANSIGNPHONE,f.ASSOCIATOR_CARDNUMBER "
+                    string sql = "select e.id,e.ORDERNUM ,e.ORDERAMOUNT,e.CONSIGNEE,e.CANSIGNPHONE,f.ASSOCIATOR_CARDNUMBER "
                         + " From zc_order_transit e "
                         + " LEFT JOIN zc_associator_info f on e.member_id = f.id "
-                        + " WHERE 1=1 ";
-                    sql += " and e.orderstatus = '" + Constant.ORDER_STATUS_RECEIPT + "' ";
-                    if (!keyStr.Equals(""))
-                    {
-                        sql += " and ( f.associator_cardnumber like '%" + keyStr + "%' or e.consignee like '%" + keyStr + "%' or e.cansignphone like '%" + keyStr + "%' ) ";
-                    }
-                    //MessageBox.Show(sql); 
+                        + " WHERE member_id = '"+keyStr+"' and e.orderstatus = '" + Constant.ORDER_STATUS_RECEIPT + "' ";
                     MysqlDBHelper dbHelper = new MysqlDBHelper();
-                    DataSet ds = dbHelper.GetDataSet(sql, "zc_goods_master"); ;
+                    DataSet ds = dbHelper.GetDataSet(sql, "zc_goods_master");
+                    listDataGridView.AutoGenerateColumns = false;
                     listDataGridView.DataSource = ds;
                     listDataGridView.DataMember = "zc_goods_master";
                 }
@@ -100,7 +107,7 @@ namespace Branch.com.proem.exm.window.order
                 try
                 {
                     //string sql = "select e.CONSIGNEE AS '姓名',e.CANSIGNPHONE AS '电话',f.ASSOCIATOR_CARDNUMBER AS '卡号',e.ORDERNUM as '订单号',e.ORDERAMOUNT as '金额'"
-                    string sql = "select e.ORDERNUM ,e.ORDERAMOUNT,e.CONSIGNEE,e.CANSIGNPHONE,f.ASSOCIATOR_CARDNUMBER,e.ACTUAL_MONEY "
+                    string sql = "select e.id,e.ORDERNUM ,e.ORDERAMOUNT,e.CONSIGNEE,e.CANSIGNPHONE,f.ASSOCIATOR_CARDNUMBER,e.ACTUAL_MONEY "
                         + " From zc_order_history e "
                         + " LEFT JOIN zc_associator_info f on e.member_id = f.id "
                         + " WHERE  e.orderstatus not in ('" + Constant.ORDER_STATUS_ALL_REFUSE + "','" + Constant.ORDER_STATUS_ALL_REFUND + "','" + Constant.ORDER_STATUS_PART_REFUND + "') ";
@@ -111,7 +118,8 @@ namespace Branch.com.proem.exm.window.order
                     }
                     //MessageBox.Show(sql); 
                     MysqlDBHelper dbHelper = new MysqlDBHelper();
-                    DataSet ds = dbHelper.GetDataSet(sql, "zc_goods_master"); ;
+                    DataSet ds = dbHelper.GetDataSet(sql, "zc_goods_master");
+                    listDataGridView.AutoGenerateColumns = false;
                     listDataGridView.DataSource = ds;
                     listDataGridView.DataMember = "zc_goods_master";
                 }
@@ -141,6 +149,7 @@ namespace Branch.com.proem.exm.window.order
         private void okButton_Click(object sender, EventArgs e)
         {
             chooseDocket();
+            memberChoose.Close();
             this.Close();
         }
 
@@ -189,18 +198,14 @@ namespace Branch.com.proem.exm.window.order
         private void chooseDocket()
         {
             customerDelivery.initNumberAndAmount();
-
-            string order_Num = listDataGridView.CurrentRow.Cells[0].Value.ToString();
-            string name = listDataGridView.CurrentRow.Cells[2].Value.ToString();
-            string phone = listDataGridView.CurrentRow.Cells[3].Value.ToString();
-            string card = listDataGridView.CurrentRow.Cells[4].Value.ToString();
-            /////当前工作模式为提货状态
-            //if (WorkMode == Constant.PICK_UP_GOODS)
-            //{
-                string order_Amount = listDataGridView.CurrentRow.Cells[1].Value.ToString();
-                customerDelivery.setOrderNum(order_Num);
-                customerDelivery.setinform(order_Num, order_Amount, name, phone, card);
-            //}
+            string id = listDataGridView.CurrentRow.Cells[5].Value.ToString();
+            BranchZcOrderTransitService branchService = new BranchZcOrderTransitService();
+            ZcOrderTransit zcOrderTransit = branchService.FindById(id);
+            ///当前工作模式为提货状态
+            if (WorkMode == Constant.PICK_UP_GOODS)
+            {
+                customerDelivery.showTransitOrder(zcOrderTransit);
+            }
             /////当前工作模式为退款状态
             //if (WorkMode == Constant.REFUND)
             //{

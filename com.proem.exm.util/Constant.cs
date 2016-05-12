@@ -159,5 +159,10 @@ namespace Branch.com.proem.exm.util
         /// 要货单明细
         /// </summary>
         public const string ZC_REQUIRE_ITEM = "ZC_REQUIRE_ITEM";
+
+        /// <summary>
+        /// 库存更新
+        /// </summary>
+        public const string ZC_STOREHOUSE_UPDATE = "ZC_STOREHOUSE_UPDATE";
     }
 }

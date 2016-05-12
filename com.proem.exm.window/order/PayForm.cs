@@ -218,11 +218,11 @@ namespace Branch.com.proem.exm.window.order
                 MessageBox.Show("支付完成!");
                 if (ModeFlag == 1)
                 {
-                    customerDelivery.saveRefuseInform(Constant.ORDER_STATUS_PART_REFUSE);
+                    customerDelivery.saveRefuseInform(Constant.ORDER_STATUS_PART_REFUSE, orderId, payInfo.Id);
                 }
                 else if(ModeFlag == 0)
                 {
-                    customerDelivery.saveAllPay(Constant.ORDER_STATUS_FININSH);
+                    customerDelivery.saveAllPay(Constant.ORDER_STATUS_FININSH, orderId, payInfo.Id);
                 }else if(ModeFlag == 2)
                 {
                     customerDelivery.saveResaleInform(orderId, payInfo.Id);

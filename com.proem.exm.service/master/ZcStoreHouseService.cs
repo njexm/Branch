@@ -44,5 +44,16 @@ namespace Branch.com.proem.exm.service.master
             ZcStoreHouseDao dao = new ZcStoreHouseDao();
             dao.updateZcStoreHouse(obj);
         }
+
+        /// <summary>
+        /// 更新库存
+        /// 上传
+        /// </summary>
+        /// <param name="storeList"></param>
+        public void updateStoreHouse(List<ZcStoreHouse> storeList)
+        {
+            ZcStoreHouseDao dao = new ZcStoreHouseDao();
+            dao.updateZcStoreHouse(storeList);
+        }
     }
 }

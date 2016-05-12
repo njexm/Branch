@@ -7,6 +7,7 @@ using Branch.com.proem.exm.domain;
 using Branch.com.proem.exm.util;
 using log4net;
 using Oracle.ManagedDataAccess.Client;
+using Branch.com.proem.exm.dao.branch;
 
 namespace Branch.com.proem.exm.dao.master
 {
@@ -173,6 +174,57 @@ namespace Branch.com.proem.exm.dao.master
             }
 
         }
-      
+
+        /// <summary>
+        /// 更新库存
+        /// </summary>
+        /// <param name="storeList"></param>
+        public void updateZcStoreHouse(List<ZcStoreHouse> storeList)
+        {
+            string sql = "update zc_storehouse set updateTime = :updateTime, store = :store, storeMoney = :storeMoney, weight = :weight where id = :id";
+            OracleCommand cmd = new OracleCommand();
+            OracleConnection conn = null;
+            OracleTransaction tran = null;
+            try
+            {
+                conn = OracleUtil.OpenConn();
+                tran = conn.BeginTransaction();
+                cmd.Connection = conn;
+                cmd.CommandText = sql;
+                for (int i = 0; i < storeList.Count; i++)
+                {
+                    ZcStoreHouse obj = storeList[i];
+                    cmd.Parameters.Add(":updateTime", obj.UpdateTime);
+                    cmd.Parameters.Add(":store", obj.Store);
+                    cmd.Parameters.Add(":storeMoney", obj.StoreMoney);
+                    cmd.Parameters.Add(":weight", obj.weight);
+                    cmd.Parameters.Add(":id", obj.Id);
+                    cmd.ExecuteNonQuery();
+                }
+                tran.Commit();
+            }
+            catch (Exception ex)
+            {
+                tran.Rollback();
+                List<UploadInfo> upList = new List<UploadInfo>();
+                for (int i = 0; i < storeList.Count; i++)
+                {
+                    ZcStoreHouse obj = storeList[i];
+                    UploadInfo info = new UploadInfo();
+                    info.Id = obj.Id;
+                    info.CreateTime = DateTime.Now;
+                    info.UpdateTime = DateTime.Now;
+                    info.Type = Constant.ZC_STOREHOUSE_UPDATE;
+                    upList.Add(info);
+                }
+                UploadDao dao = new UploadDao();
+                dao.AddUploadInfo(upList);
+                log.Error("批量更新商品库存信息失败", ex);
+            }
+            finally
+            {
+                OracleUtil.CloseConn(conn);
+            }
+        }
     }
 }

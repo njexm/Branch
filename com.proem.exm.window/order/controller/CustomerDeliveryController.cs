@@ -30,7 +30,7 @@ namespace Branch.com.proem.exm.window.order.controller
             int count = 0;
             MysqlDBHelper dbHelper = new MysqlDBHelper();
             string sql = "select count(1) from zc_order_transit a left join zc_associator_info b on a.member_id = b.id where a.orderstatus = '"+Constant.ORDER_STATUS_RECEIPT+"' ";
-            if(searchString != "")
+            if(string.IsNullOrEmpty(searchString))
             {
                 ///根据条件查询
                 sql += " and ( a.consignee like '%" + searchString + "%' or a.cansignphone like '%" + searchString + "%' or b.associator_cardnumber like '%"+searchString+"%' ) ";
@@ -233,6 +233,40 @@ namespace Branch.com.proem.exm.window.order.controller
                 cmd.Dispose();
                 dbHelper.CloseConnection(conn);
             }
+        }
+
+        /// <summary>
+        /// 根据会员id查询会员待提货的订单数
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        public int GetOrderCount(string p)
+        {
+            int count = 0;
+            MysqlDBHelper dbHelper = new MysqlDBHelper();
+            string sql = "select count(1) from zc_order_transit where member_id = '"+p+"' ";
+            MySqlConnection conn = null;
+            MySqlCommand cmd = new MySqlCommand();
+            try
+            {
+                conn = dbHelper.GetConnection();
+                cmd.Connection = conn;
+                cmd.CommandText = sql;
+                MySqlDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    count = reader.IsDBNull(0) ? default(int) : reader.GetInt32(0);
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("获取条件查询的订单数量发生异常", ex);
+            }
+            finally
+            {
+                dbHelper.CloseConnection(conn);
+            }
+            return count;
         }
     }
 }

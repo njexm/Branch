@@ -34,13 +34,14 @@
             this.cDQueryListPanel = new System.Windows.Forms.Panel();
             this.listTablePanel = new System.Windows.Forms.Panel();
             this.listDataGridView = new System.Windows.Forms.DataGridView();
+            this.leaveButton = new System.Windows.Forms.Button();
+            this.okButton = new System.Windows.Forms.Button();
             this.ORDERNUM = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ORDERAMOUNT = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CONSIGNEE = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CANSIGNPHONE = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ASSOCIATOR_CARDNUMBER = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.leaveButton = new System.Windows.Forms.Button();
-            this.okButton = new System.Windows.Forms.Button();
+            this.id = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cDQueryListPanel.SuspendLayout();
             this.listTablePanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.listDataGridView)).BeginInit();
@@ -100,7 +101,8 @@
             this.ORDERAMOUNT,
             this.CONSIGNEE,
             this.CANSIGNPHONE,
-            this.ASSOCIATOR_CARDNUMBER});
+            this.ASSOCIATOR_CARDNUMBER,
+            this.id});
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
             dataGridViewCellStyle3.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
@@ -123,6 +125,36 @@
             this.listDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.listDataGridView_CellClick);
             this.listDataGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.listDataGridView_CellDoubleClick);
             this.listDataGridView.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.listDataGridView_RowPostPaint);
+            // 
+            // leaveButton
+            // 
+            this.leaveButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.leaveButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(173)))), ((int)(((byte)(173)))), ((int)(((byte)(173)))));
+            this.leaveButton.FlatAppearance.BorderSize = 0;
+            this.leaveButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.leaveButton.ForeColor = System.Drawing.Color.White;
+            this.leaveButton.Location = new System.Drawing.Point(407, 390);
+            this.leaveButton.Name = "leaveButton";
+            this.leaveButton.Size = new System.Drawing.Size(80, 35);
+            this.leaveButton.TabIndex = 1;
+            this.leaveButton.Text = "退出(L)";
+            this.leaveButton.UseVisualStyleBackColor = false;
+            this.leaveButton.Click += new System.EventHandler(this.leaveButton_Click);
+            // 
+            // okButton
+            // 
+            this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.okButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(201)))), ((int)(((byte)(67)))), ((int)(((byte)(65)))));
+            this.okButton.FlatAppearance.BorderSize = 0;
+            this.okButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.okButton.ForeColor = System.Drawing.Color.White;
+            this.okButton.Location = new System.Drawing.Point(297, 390);
+            this.okButton.Name = "okButton";
+            this.okButton.Size = new System.Drawing.Size(80, 35);
+            this.okButton.TabIndex = 0;
+            this.okButton.Text = "确定(Y)";
+            this.okButton.UseVisualStyleBackColor = false;
+            this.okButton.Click += new System.EventHandler(this.okButton_Click);
             // 
             // ORDERNUM
             // 
@@ -164,35 +196,13 @@
             this.ASSOCIATOR_CARDNUMBER.ReadOnly = true;
             this.ASSOCIATOR_CARDNUMBER.Width = 180;
             // 
-            // leaveButton
+            // id
             // 
-            this.leaveButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.leaveButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(173)))), ((int)(((byte)(173)))), ((int)(((byte)(173)))));
-            this.leaveButton.FlatAppearance.BorderSize = 0;
-            this.leaveButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.leaveButton.ForeColor = System.Drawing.Color.White;
-            this.leaveButton.Location = new System.Drawing.Point(407, 390);
-            this.leaveButton.Name = "leaveButton";
-            this.leaveButton.Size = new System.Drawing.Size(80, 35);
-            this.leaveButton.TabIndex = 1;
-            this.leaveButton.Text = "退出(L)";
-            this.leaveButton.UseVisualStyleBackColor = false;
-            this.leaveButton.Click += new System.EventHandler(this.leaveButton_Click);
-            // 
-            // okButton
-            // 
-            this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.okButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(201)))), ((int)(((byte)(67)))), ((int)(((byte)(65)))));
-            this.okButton.FlatAppearance.BorderSize = 0;
-            this.okButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.okButton.ForeColor = System.Drawing.Color.White;
-            this.okButton.Location = new System.Drawing.Point(297, 390);
-            this.okButton.Name = "okButton";
-            this.okButton.Size = new System.Drawing.Size(80, 35);
-            this.okButton.TabIndex = 0;
-            this.okButton.Text = "确定(Y)";
-            this.okButton.UseVisualStyleBackColor = false;
-            this.okButton.Click += new System.EventHandler(this.okButton_Click);
+            this.id.DataPropertyName = "id";
+            this.id.HeaderText = "id";
+            this.id.Name = "id";
+            this.id.ReadOnly = true;
+            this.id.Visible = false;
             // 
             // CDQueryList
             // 
@@ -229,5 +239,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn CONSIGNEE;
         private System.Windows.Forms.DataGridViewTextBoxColumn CANSIGNPHONE;
         private System.Windows.Forms.DataGridViewTextBoxColumn ASSOCIATOR_CARDNUMBER;
+        private System.Windows.Forms.DataGridViewTextBoxColumn id;
     }
 }

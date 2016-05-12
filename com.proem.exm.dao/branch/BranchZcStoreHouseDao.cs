@@ -30,7 +30,8 @@ namespace Branch.com.proem.exm.dao.branch
             {
                 conn = GetConnection();
                 tran = conn.BeginTransaction();
-                string sql = "insert into zc_storehouse values(@id, @create, @update, @status, @store, @storeMoney, @branchId, @createUserId, @goodsFileId, @weight)";
+                string sql = "insert into zc_storehouse (id, createTime, updateTime, status, store, storemoney, branch_id, createuser_id,goodsFile_id ,weight) "
+                    +" values(@id, @create, @update, @status, @store, @storeMoney, @branchId, @createUserId, @goodsFileId, @weight)";
                 cmd.Connection = conn;
                 cmd.CommandText = sql;
                 foreach (ZcStoreHouse obj in list)
@@ -63,6 +64,89 @@ namespace Branch.com.proem.exm.dao.branch
             }
         }
 
-        
+
+        /// <summary>
+        /// 根据商品id和分店id获取该商品对应分店库存
+        /// </summary>
+        /// <param name="goodsFileId">商品id</param>
+        /// <param name="p">分店id</param>
+        /// <returns></returns>
+        public ZcStoreHouse FindByGoodsFileIdAndBranchId(string goodsFileId, string p)
+        {
+            ZcStoreHouse obj = null;
+            string sql = "select a.id, a.createTime, a.updateTime, a.status, a.store,a.storemoney ,a.branch_id, a.createUser_id,a.goodsfile_id, a.weight " 
+                +" from zc_storehouse a left join zc_branch_info b on a.BRANCH_ID = b.ID left join zc_branch_total c on b.BRANCHTOTAL_ID = c.ID "
+                +" where a.goodsFile_id = '"+goodsFileId+"' and c.id = '"+p+"'";
+            MySqlConnection conn = null;
+            MySqlCommand cmd = new MySqlCommand();
+            try
+            {
+                conn = GetConnection();
+                cmd.Connection = conn;
+                cmd.CommandText = sql;
+                MySqlDataReader reader = cmd.ExecuteReader();
+                if(reader.Read()){
+                    obj = new ZcStoreHouse();
+                    obj.Id = reader.IsDBNull(0) ? string.Empty : reader.GetString(0);
+                    obj.CreateTime = reader.IsDBNull(1) ? default(DateTime) : reader.GetDateTime(1);
+                    obj.UpdateTime = reader.IsDBNull(2) ? default(DateTime) : reader.GetDateTime(2);
+                    obj.Status = reader.IsDBNull(3) ? default(int) : reader.GetInt32(3);
+                    obj.Store = reader.IsDBNull(4) ? string.Empty : reader.GetString(4);
+                    obj.StoreMoney = reader.IsDBNull(5) ? string.Empty : reader.GetString(5);
+                    obj.BranchId = reader.IsDBNull(6) ? string.Empty : reader.GetString(6);
+                    obj.CreateUserId = reader.IsDBNull(7) ? string.Empty : reader.GetString(7);
+                    obj.GoodsFileId = reader.IsDBNull(8) ? string.Empty : reader.GetString(8);
+                    obj.weight = reader.IsDBNull(9) ? string.Empty : reader.GetString(9);
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("根据商品id和分店id查找该商品对应分店库存发生错误", ex);
+            }
+            finally
+            {
+                CloseConnection(conn);
+            }
+            return obj;
+        }
+
+        /// <summary>
+        /// 更新库存
+        /// </summary>
+        /// <param name="storeList"></param>
+        public void updateStoreHouse(List<ZcStoreHouse> storeList)
+        {
+            string sql = "update zc_storehouse set updateTime = @updateTime, store = @store, storeMoney = @storeMoney, weight = @weight where id = @id";
+            MySqlCommand cmd = new MySqlCommand();
+            MySqlConnection conn = null;
+            MySqlTransaction tran = null;
+            try
+            {
+                conn = GetConnection();
+                tran = conn.BeginTransaction();
+                cmd.Connection = conn;
+                cmd.CommandText = sql;
+                for (int i = 0; i < storeList.Count; i++) 
+                {
+                    ZcStoreHouse obj = storeList[i];
+                    cmd.Parameters.AddWithValue("@updateTime", obj.UpdateTime);
+                    cmd.Parameters.AddWithValue("@store", obj.Store);
+                    cmd.Parameters.AddWithValue("@storeMoney", obj.StoreMoney);
+                    cmd.Parameters.AddWithValue("@weight", obj.weight);
+                    cmd.Parameters.AddWithValue("@id", obj.Id);
+                    cmd.ExecuteNonQuery();
+                }
+                tran.Commit();
+            }
+            catch (Exception ex)
+            {
+                tran.Rollback();
+                log.Error("批量更新商品库存信息失败", ex);
+            }
+            finally
+            {
+                CloseConnection(conn);
+            }
+        }
     }
 }

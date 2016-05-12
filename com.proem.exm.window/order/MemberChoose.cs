@@ -1,5 +1,7 @@
 ﻿using Branch.com.proem.exm.domain;
+using Branch.com.proem.exm.service.branch;
 using Branch.com.proem.exm.util;
+using Branch.com.proem.exm.window.order.controller;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -22,6 +24,11 @@ namespace Branch.com.proem.exm.window.order
         private CustomerDelivery customerDelivery;
 
         /// <summary>
+        /// 工作模式
+        /// </summary>
+        private string workMode;
+
+        /// <summary>
         /// 构造函数
         /// </summary>
         public MemberChoose()
@@ -33,10 +40,11 @@ namespace Branch.com.proem.exm.window.order
         /// 重载构造函数
         /// </summary>
         /// <param name="customerDelivery"></param>
-        public MemberChoose(CustomerDelivery customerDelivery) 
+        public MemberChoose(CustomerDelivery customerDelivery, string workMode) 
         {
             InitializeComponent();
             this.customerDelivery = customerDelivery;
+            this.workMode = workMode;
         }
 
         /// <summary>
@@ -125,6 +133,29 @@ namespace Branch.com.proem.exm.window.order
             obj.CardNumber = dataGridView1.CurrentRow.Cells[1].Value == null ? string.Empty : dataGridView1.CurrentRow.Cells[1].Value.ToString();
             obj.Name = dataGridView1.CurrentRow.Cells[2].Value == null ? string.Empty : dataGridView1.CurrentRow.Cells[2].Value.ToString();
             obj.MobilePhone = dataGridView1.CurrentRow.Cells[3].Value == null ? string.Empty : dataGridView1.CurrentRow.Cells[3].Value.ToString();
+            if(workMode.Equals(Constant.RETAIL)){
+                ///nothing todo 
+            }else if(workMode.Equals(Constant.PICK_UP_GOODS)){
+                ///查询该用户的订单有几条
+                BranchZcOrderTransitService branchTransitService = new BranchZcOrderTransitService();
+                int orderCounts = branchTransitService.GetOrderCount(obj.Id);
+                if (orderCounts == 0)
+                {
+                    MessageBox.Show("暂无" + obj.Name + "提货的订单!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                else if (orderCounts == 1)
+                {
+                    List<ZcOrderTransit> list = branchTransitService.FindByMemberId(obj.Id);
+                    ZcOrderTransit zcOrderTransit = list[0];
+                    customerDelivery.showTransitOrder(zcOrderTransit);
+                }
+                else
+                {
+                    CDQueryList cdQueryList = new CDQueryList(this, obj.Id, workMode, customerDelivery);
+                    cdQueryList.ShowDialog();
+                }
+            }
             customerDelivery.SetAssociatorInfo(obj);
             this.Close();
         }
