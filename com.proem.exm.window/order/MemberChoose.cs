@@ -155,6 +155,25 @@ namespace Branch.com.proem.exm.window.order
                     CDQueryList cdQueryList = new CDQueryList(this, obj.Id, workMode, customerDelivery);
                     cdQueryList.ShowDialog();
                 }
+            }else if(workMode.Equals(Constant.REFUND))
+            {
+                BranchResaleService branchResaleService = new BranchResaleService();
+                int count = branchResaleService.FindCountByMemberId(obj.Id);
+                if(count == 0){
+                    MessageBox.Show("暂无" + obj.Name + "的销售流水信息!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                else if (count == 1)
+                {
+                    List<Resale> list = branchResaleService.FindByMemberId(obj.Id);
+                    Resale resale = list[0];
+                    customerDelivery.showRefundInfo(resale);
+                }
+                else 
+                {
+                    ResaleList resaleListForm = new ResaleList(this, obj.Id, customerDelivery);
+                    resaleListForm.ShowDialog();
+                }
             }
             customerDelivery.SetAssociatorInfo(obj);
             this.Close();

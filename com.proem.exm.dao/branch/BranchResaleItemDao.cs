@@ -24,7 +24,7 @@ namespace Branch.com.proem.exm.dao.branch
         /// </summary>
         /// <param name="list"></param>
         public void AddResaleItem(List<ResaleItem> list){
-            string sql = "insert into zc_resale_item values (@id, @createTime, @updateTime, @resaleId, @GoodsFileId, @nums ,@money, @discount_amount, @actual_money)";
+            string sql = "insert into zc_resale_item values (@id, @createTime, @updateTime, @resaleId, @GoodsFileId, @nums , @weight,@money, @discount_amount, @actual_money)";
             MySqlConnection conn = null;
             MySqlTransaction tran = null;
             MySqlCommand cmd = new MySqlCommand();
@@ -41,6 +41,7 @@ namespace Branch.com.proem.exm.dao.branch
                     cmd.Parameters.AddWithValue("@resaleId", obj.ResaleId);
                     cmd.Parameters.AddWithValue("@GoodsFileId", obj.GoodsFileId);
                     cmd.Parameters.AddWithValue("@nums", obj.Nums);
+                    cmd.Parameters.AddWithValue("@weight", obj.weight);
                     cmd.Parameters.AddWithValue("@money", obj.Money);
                     cmd.Parameters.AddWithValue("@discount_amount", obj.DiscountMoney);
                     cmd.Parameters.AddWithValue("@actual_money", obj.ActualMoney);

@@ -92,6 +92,7 @@
             this.goodsFileId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.resale_nums = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.resale_money = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.refundReason = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.customerDeliveryPanel.SuspendLayout();
             this.logoPanel.SuspendLayout();
             this.informPanel.SuspendLayout();
@@ -572,7 +573,8 @@
             this.refuseReason,
             this.goodsFileId,
             this.resale_nums,
-            this.resale_money});
+            this.resale_money,
+            this.refundReason});
             dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle12.BackColor = System.Drawing.SystemColors.Window;
             dataGridViewCellStyle12.Font = new System.Drawing.Font("宋体", 13F);
@@ -700,6 +702,7 @@
             // 
             // goodAmount
             // 
+            this.goodAmount.DataPropertyName = "weight";
             dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
             this.goodAmount.DefaultCellStyle = dataGridViewCellStyle9;
             this.goodAmount.HeaderText = "重量";
@@ -768,12 +771,22 @@
             // resale_money
             // 
             this.resale_money.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.resale_money.DataPropertyName = "money";
             dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
             this.resale_money.DefaultCellStyle = dataGridViewCellStyle11;
             this.resale_money.FillWeight = 0.15F;
             this.resale_money.HeaderText = "小计";
             this.resale_money.Name = "resale_money";
             this.resale_money.ReadOnly = true;
+            // 
+            // refundReason
+            // 
+            this.refundReason.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.refundReason.FillWeight = 0.16F;
+            this.refundReason.HeaderText = "退货原因";
+            this.refundReason.Name = "refundReason";
+            this.refundReason.ReadOnly = true;
+            this.refundReason.Visible = false;
             // 
             // CustomerDelivery
             // 
@@ -869,6 +882,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn goodsFileId;
         private System.Windows.Forms.DataGridViewTextBoxColumn resale_nums;
         private System.Windows.Forms.DataGridViewTextBoxColumn resale_money;
+        private System.Windows.Forms.DataGridViewTextBoxColumn refundReason;
 
     }
 }

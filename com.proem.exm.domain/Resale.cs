@@ -6,7 +6,7 @@ using System.Text;
 namespace Branch.com.proem.exm.domain
 {
     /// <summary>
-    /// 零售信息
+    /// 流水信息
     /// </summary>
     public class Resale
     {
