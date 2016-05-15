@@ -374,6 +374,12 @@
     <Compile Include="com.proem.exm.window\order\RefuseReason.Designer.cs">
       <DependentUpon>RefuseReason.cs</DependentUpon>
     </Compile>
+    <Compile Include="com.proem.exm.window\order\ResaleList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="com.proem.exm.window\order\ResaleList.Designer.cs">
+      <DependentUpon>ResaleList.cs</DependentUpon>
+    </Compile>
     <Compile Include="com.proem.exm.window\order\WxPayForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -628,6 +634,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="com.proem.exm.window\order\RefuseReason.resx">
       <DependentUpon>RefuseReason.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="com.proem.exm.window\order\ResaleList.resx">
+      <DependentUpon>ResaleList.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="com.proem.exm.window\order\WxPayForm.resx">
       <DependentUpon>WxPayForm.cs</DependentUpon>

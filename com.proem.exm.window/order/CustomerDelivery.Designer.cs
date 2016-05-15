@@ -92,6 +92,9 @@
             this.goodsFileId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.resale_nums = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.resale_money = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.refund_weight = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.receive_money = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.refund_money = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.refundReason = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.customerDeliveryPanel.SuspendLayout();
             this.logoPanel.SuspendLayout();
@@ -574,6 +577,9 @@
             this.goodsFileId,
             this.resale_nums,
             this.resale_money,
+            this.refund_weight,
+            this.receive_money,
+            this.refund_money,
             this.refundReason});
             dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle12.BackColor = System.Drawing.SystemColors.Window;
@@ -779,14 +785,37 @@
             this.resale_money.Name = "resale_money";
             this.resale_money.ReadOnly = true;
             // 
+            // refund_weight
+            // 
+            this.refund_weight.HeaderText = "退货重量";
+            this.refund_weight.Name = "refund_weight";
+            this.refund_weight.ReadOnly = true;
+            this.refund_weight.Visible = false;
+            this.refund_weight.Width = 120;
+            // 
+            // receive_money
+            // 
+            this.receive_money.DataPropertyName = "receive_money";
+            this.receive_money.HeaderText = "销售金额";
+            this.receive_money.Name = "receive_money";
+            this.receive_money.ReadOnly = true;
+            this.receive_money.Visible = false;
+            // 
+            // refund_money
+            // 
+            this.refund_money.HeaderText = "退货金额";
+            this.refund_money.Name = "refund_money";
+            this.refund_money.ReadOnly = true;
+            this.refund_money.Visible = false;
+            // 
             // refundReason
             // 
-            this.refundReason.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.refundReason.FillWeight = 0.16F;
             this.refundReason.HeaderText = "退货原因";
             this.refundReason.Name = "refundReason";
             this.refundReason.ReadOnly = true;
             this.refundReason.Visible = false;
+            this.refundReason.Width = 200;
             // 
             // CustomerDelivery
             // 
@@ -882,6 +911,9 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn goodsFileId;
         private System.Windows.Forms.DataGridViewTextBoxColumn resale_nums;
         private System.Windows.Forms.DataGridViewTextBoxColumn resale_money;
+        private System.Windows.Forms.DataGridViewTextBoxColumn refund_weight;
+        private System.Windows.Forms.DataGridViewTextBoxColumn receive_money;
+        private System.Windows.Forms.DataGridViewTextBoxColumn refund_money;
         private System.Windows.Forms.DataGridViewTextBoxColumn refundReason;
 
     }

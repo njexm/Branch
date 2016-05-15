@@ -40,15 +40,20 @@ namespace Branch.com.proem.exm.util
         /// </summary>
         public const string ORDER_STATUS_PART_REFUSE = "10";
 
-        /// <summary>
-        /// 订单状态：全部退款
-        /// </summary>
-        public const string ORDER_STATUS_ALL_REFUND = "11";
+        ///// <summary>
+        ///// 订单状态：全部退款
+        ///// </summary>
+        //public const string ORDER_STATUS_ALL_REFUND = "11";
+
+        ///// <summary>
+        ///// 订单状态：部分退款
+        ///// </summary>
+        //public const string ORDER_STATUS_PART_REFUND = "12";
 
         /// <summary>
-        /// 订单状态：部分退款
+        /// 订单状态：退款
         /// </summary>
-        public const string ORDER_STATUS_PART_REFUND = "12";
+        public const string ORDER_STATUS_REFUND = "11";
 
         /// <summary>
         /// 亭点收获状态：已收获

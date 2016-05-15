@@ -124,7 +124,7 @@ namespace Branch.com.proem.exm.window.order
         /// <param name="e"></param>
         private void confirmButton_Click(object sender, EventArgs e)
         {
-            if (dataGridView1.DataSource == null)
+            if (dataGridView1.DataSource == null || dataGridView1.RowCount == 0)
             {
                 return;
             }
