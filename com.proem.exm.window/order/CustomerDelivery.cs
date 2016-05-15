@@ -466,7 +466,18 @@ namespace Branch.com.proem.exm.window.order
             }else if(e.KeyCode == Keys.A){
                 //退货
                 returnOfGoodsInit();
+            }else if(e.KeyCode == Keys.R && (WorkMode.Equals(Constant.PICK_UP_GOODS) || WorkMode.Equals(Constant.REFUND))){
+                if (itemDataGridView.CurrentCell == null)
+                {
+                    return;
+                }
+                else 
+                {
+                    InputReason inputReason = new InputReason(this.WorkMode, this);
+                    inputReason.Show();
+                }
             }
+
             ///扫码
             if (numberTextBox.Focused == true && e.KeyCode == Keys.Enter)
             {
@@ -2160,14 +2171,16 @@ namespace Branch.com.proem.exm.window.order
                 BranchResaleService branchService = new BranchResaleService();
                 ResaleItemService itemServcie = new ResaleItemService();
                 ResaleService service = new ResaleService();
-                branchItemService.AddResaleItem(list);
                 branchService.AddResale(resale);
+                branchItemService.AddResaleItem(list);
+                
                 ///上传零售信息
                 if (PingTask.IsConnected)
                 {
                     ///连网状态
-                    itemServcie.AddResaleItem(list);
                     service.AddResale(resale);
+                    itemServcie.AddResaleItem(list);
+                    
                 }
                 else
                 {
@@ -2444,15 +2457,15 @@ namespace Branch.com.proem.exm.window.order
             BranchResaleService branchService = new BranchResaleService();
             ResaleItemService itemServcie = new ResaleItemService();
             ResaleService service = new ResaleService();
-            branchItemService.AddResaleItem(list);
             branchService.AddResale(resale);
+            branchItemService.AddResaleItem(list);
             List<UploadInfo> uploadList = new List<UploadInfo>();
             ///上传零售信息
             if (PingTask.IsConnected)
             {
                 ///连网状态
-                itemServcie.AddResaleItem(list);
                 service.AddResale(resale);
+                itemServcie.AddResaleItem(list);
             }
             else
             {
@@ -3215,7 +3228,6 @@ namespace Branch.com.proem.exm.window.order
                 obj.Nums = itemDataGridView.Rows[i].Cells[15].Value.ToString();
                 obj.weight = itemDataGridView.Rows[i].Cells[8].Value == null ? string.Empty : itemDataGridView.Rows[i].Cells[8].Value.ToString();
                 obj.Money = itemDataGridView.Rows[i].Cells[16].Value.ToString();
-                obj.Id = itemDataGridView.Rows[i].Cells[8].Value == null ? string.Empty : itemDataGridView.Rows[i].Cells[8].Value.ToString();
                 ///TODO  暂时未加入折扣，优惠金额等算法
                 obj.ActualMoney = obj.Money;
                 list.Add(obj);
@@ -3224,14 +3236,14 @@ namespace Branch.com.proem.exm.window.order
             BranchResaleService branchService = new BranchResaleService();
             ResaleItemService itemServcie = new ResaleItemService();
             ResaleService service = new ResaleService();
-            branchItemService.AddResaleItem(list);
             branchService.AddResale(resale);
+            branchItemService.AddResaleItem(list);
             ///上传零售信息
             if (PingTask.IsConnected)
             {
                 ///连网状态
-                itemServcie.AddResaleItem(list);
                 service.AddResale(resale);
+                itemServcie.AddResaleItem(list);
             }
             else
             {
@@ -3600,6 +3612,18 @@ namespace Branch.com.proem.exm.window.order
             }
             ///初始化数据
             returnOfGoodsInit();
+        }
+
+        public void writeReason(string reason)
+        {
+            if (this.WorkMode.Equals(Constant.PICK_UP_GOODS))
+            {
+                itemDataGridView.CurrentRow.Cells[13].Value = reason;
+            }
+            else if (this.WorkMode.Equals(Constant.REFUND))
+            {
+                itemDataGridView.CurrentRow.Cells[20].Value = reason;
+            }
         }
     }
 }

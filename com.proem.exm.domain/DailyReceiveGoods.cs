@@ -87,6 +87,9 @@ namespace Branch.com.proem.exm.domain
         /// </summary>
         public DateTime receiveDate { get; set; }
 
-
+        /// <summary>
+        /// 商品id
+        /// </summary>
+        public string GoodsFileId { get; set; }
     }
 }

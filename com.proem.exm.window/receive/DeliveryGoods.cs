@@ -292,6 +292,7 @@ namespace Branch.com.proem.exm.window.receive
                 obj.Salesman = LoginUserInfo.id;
                 obj.BranchId = LoginUserInfo.branchId;
                 obj.receiveDate = DateTime.Now;
+                obj.GoodsFileId = dc.Cells[12].Value == null ? "" : dc.Cells[12].Value.ToString();
                 list.Add(obj);
             }
             BranchDailyReceiveGoodsService branchservice = new BranchDailyReceiveGoodsService();
@@ -342,6 +343,83 @@ namespace Branch.com.proem.exm.window.receive
                 uploadDao.AddUploadInfo(uploadList);
             }
 
+            ///库存的减少
+            BranchZcGoodsMasterService branchGoodsService = new BranchZcGoodsMasterService();
+            BranchZcStoreHouseService branchStoreService = new BranchZcStoreHouseService();
+            List<ZcStoreHouse> storeList = new List<ZcStoreHouse>();
+            ZcStoreHouseService storeService = new ZcStoreHouseService();
+            foreach(DailyReceiveGoods dg in list)
+            {
+                String goodsFileId = dg.GoodsFileId;
+                float nums = float.Parse(dg.Nums);
+                bool isGoodsWeight = branchGoodsService.IsWeightGoods(dg.GoodsFileId);
+                ZcStoreHouse storeHouse = branchStoreService.FindByGoodsFileIdAndBranchId(goodsFileId, LoginUserInfo.branchId);
+                if (storeHouse != null)
+                {
+                    float oldNums = float.Parse(storeHouse.Store);
+                    float oldMoney = float.Parse(storeHouse.StoreMoney);
+                    storeHouse.UpdateTime = DateTime.Now;
+                    storeHouse.Store = (oldNums - nums).ToString();
+                    storeHouse.StoreMoney = (oldMoney * (oldNums - nums) / oldNums).ToString();
+                    //if (isGoodsWeight)
+                    //{
+                    //    float oldWeight = float.Parse(dg.weight);
+                    //    storeHouse.weight = (oldWeight - float.Parse(weightString)).ToString();
+                    //}
+                    storeList.Add(storeHouse);
+                }
+                else
+                {
+                    ///TODO
+                    BranchZcBranchInfoService branchInfoService = new BranchZcBranchInfoService();
+                    storeHouse = new ZcStoreHouse();
+                    storeHouse.Id = Guid.NewGuid().ToString();
+                    storeHouse.CreateTime = DateTime.Now;
+                    storeHouse.UpdateTime = DateTime.Now;
+                    storeHouse.StoreMoney = (nums * (float.Parse(dg.GooodsPrice))).ToString();
+                    storeHouse.BranchId = branchInfoService.FindIdByBranchTotalId(LoginUserInfo.branchId);
+                    storeHouse.CreateUserId = LoginUserInfo.id;
+                    storeHouse.GoodsFileId = dg.GoodsFileId;
+                    storeService.AddZcStoreHouse(storeHouse);
+                    if (PingTask.IsConnected)
+                    {
+                        storeService.AddZcStoreHouse(storeHouse);
+                    }
+                    else
+                    {
+                        UploadInfo info = new UploadInfo();
+                        info.Id = storeHouse.Id;
+                        info.CreateTime = DateTime.Now;
+                        info.UpdateTime = DateTime.Now;
+                        info.Type = Constant.ZC_STORE_HOSUE;
+                        UploadDao dao = new UploadDao();
+                        dao.AddUploadInfo(info);
+                    }
+                }
+
+            }
+            branchStoreService.updateStoreHouse(storeList);
+            
+            if (PingTask.IsConnected)
+            {
+                storeService.updateStoreHouse(storeList);
+            }
+            else
+            {
+                List<UploadInfo> uploadList = new List<UploadInfo>();
+                for (int i = 0; i < storeList.Count; i++)
+                {
+                    ZcStoreHouse obj = storeList[i];
+                    UploadInfo info = new UploadInfo();
+                    info.Id = obj.Id;
+                    info.CreateTime = DateTime.Now;
+                    info.UpdateTime = DateTime.Now;
+                    info.Type = Constant.ZC_STOREHOUSE_UPDATE;
+                    uploadList.Add(info);
+                }
+                UploadDao uploadDao = new UploadDao();
+                uploadDao.AddUploadInfo(uploadList);
+            }
 
             MessageBox.Show("收货成功！");
             this.branchMain.Show();
@@ -354,7 +432,7 @@ namespace Branch.com.proem.exm.window.receive
         private void loadGoods()
         {
             string sql = "select sum(nums) as nums,name,sum(g_price*nums) as totalprice,classify_name,goods_unit,delFlag,goods_specifications,serialNumber,g_price as actualnums,goodsfile_id,goods_class_id,g_price, sortenum, address_id  from "
-                + " (select a.goods_state, a.nums, b.goods_name as name ,b.goods_specifications,b.goods_unit,a.g_price,b.id as goodsfile_id,b.delFlag,b.serialNumber,c.classify_name,b.goods_class_id,b.goods_supplier_id ,e.sortenum, e.address as address_id  "
+                + " (select a.goods_state, a.nums ,b.goods_name as name ,b.goods_specifications,b.goods_unit,a.g_price,b.id as goodsfile_id,b.delFlag,b.serialNumber,c.classify_name,b.goods_class_id,b.goods_supplier_id ,e.sortenum, e.address as address_id  "
                 + " from zc_order_transit_item a left join zc_goods_master b on a.goodsfile_id = b.id left join zc_classify_info c on b.goods_class_id = c.id  left join (select sum(sortenum) as sortenum, address, goods_id from zc_order_sorte group by goods_id) e on a.GOODSFILE_ID = e.goods_id  "
                 + " ) as d where address_id ='" + LoginUserInfo.street + "' group by name,delFlag,classify_name,goods_unit,goods_specifications,serialNumber,g_price,goodsfile_id,goods_class_id ";
             try

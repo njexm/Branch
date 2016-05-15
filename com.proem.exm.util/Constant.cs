@@ -169,5 +169,7 @@ namespace Branch.com.proem.exm.util
         /// 库存更新
         /// </summary>
         public const string ZC_STOREHOUSE_UPDATE = "ZC_STOREHOUSE_UPDATE";
+
+        public const string ZC_STORE_HOSUE = "ZC_STORE_HOSUE";
     }
 }

@@ -356,6 +356,12 @@
     <Compile Include="com.proem.exm.window\order\InputNums.Designer.cs">
       <DependentUpon>InputNums.cs</DependentUpon>
     </Compile>
+    <Compile Include="com.proem.exm.window\order\InputReason.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="com.proem.exm.window\order\InputReason.Designer.cs">
+      <DependentUpon>InputReason.cs</DependentUpon>
+    </Compile>
     <Compile Include="com.proem.exm.window\order\MemberChoose.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -625,6 +631,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="com.proem.exm.window\order\InputNums.resx">
       <DependentUpon>InputNums.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="com.proem.exm.window\order\InputReason.resx">
+      <DependentUpon>InputReason.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="com.proem.exm.window\order\MemberChoose.resx">
       <DependentUpon>MemberChoose.cs</DependentUpon>

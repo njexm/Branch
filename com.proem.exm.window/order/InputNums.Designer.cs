@@ -39,6 +39,7 @@
             // main
             // 
             this.main.BackgroundImage = global::Branch.Properties.Resources.login_bg_0;
+            this.main.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.main.Controls.Add(this.button2);
             this.main.Controls.Add(this.button1);
             this.main.Controls.Add(this.textBox1);
@@ -111,7 +112,6 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(284, 211);
             this.Controls.Add(this.main);
             this.KeyPreview = true;

@@ -59,5 +59,32 @@ namespace Branch.com.proem.exm.dao.branch
             }
         }
 
+
+        public string FindIdByBranchTotalId(string p)
+        {
+            string id = "";
+            string sql = "select id from zc_branch_info where branchTotal_id = '"+p+"'";
+            MySqlConnection conn = null;
+            MySqlCommand cmd = new MySqlCommand();
+            try
+            {
+                conn = GetConnection();
+                cmd.Connection = conn;
+                cmd.CommandText = sql;
+                MySqlDataReader reader = cmd.ExecuteReader();
+                if(reader.Read()){
+                    id = reader.IsDBNull(0) ? string.Empty : reader.GetString(0);
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("根据分店id获取分店仓库id失败", ex);
+            }
+            finally
+            {
+                CloseConnection(conn);
+            }
+            return id;
+        }
     }
 }

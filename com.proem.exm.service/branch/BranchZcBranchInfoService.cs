@@ -22,5 +22,11 @@ namespace Branch.com.proem.exm.service.branch
             dao.DeleteAll("zc_branch_info");
         }
 
+
+        public string FindIdByBranchTotalId(string p)
+        {
+            BranchZcBranchInfoDao dao = new BranchZcBranchInfoDao();
+            return dao.FindIdByBranchTotalId(p);
+        }
     }
 }
