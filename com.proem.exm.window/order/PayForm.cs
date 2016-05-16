@@ -306,6 +306,9 @@ namespace Branch.com.proem.exm.window.order
             if(cashTextbox.Focused == true && e.KeyCode == Keys.Enter)
             {
                 equalButton_Click(this, EventArgs.Empty);
+            }else if(e.KeyCode == Keys.Escape)
+            {
+                button4_Click(this, EventArgs.Empty);
             }
         }
 
@@ -760,6 +763,16 @@ namespace Branch.com.proem.exm.window.order
         private void PayForm_Activated(object sender, EventArgs e)
         {
             cashTextbox.Focus();
+        }
+
+        /// <summary>
+        /// 微信支付
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button2_Click_1(object sender, EventArgs e)
+        {
+
         }
     }
 }
