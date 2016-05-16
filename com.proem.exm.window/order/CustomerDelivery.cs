@@ -586,6 +586,7 @@ namespace Branch.com.proem.exm.window.order
         /// <param name="e"></param>
         private void pickUp()
         {
+            this.workModelabel.Text = "客户提货";
             this.WorkMode = Constant.PICK_UP_GOODS;
             zc_order_transit_id = "";
             serialnumber.AutoSizeMode = DataGridViewAutoSizeColumnMode.NotSet;
@@ -639,6 +640,7 @@ namespace Branch.com.proem.exm.window.order
         /// </summary>
         private void resaleInit()
         {
+            this.workModelabel.Text = "零售";
             this.WorkMode = Constant.RETAIL;
             zc_order_transit_id = "";
             serialnumber.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
@@ -686,6 +688,7 @@ namespace Branch.com.proem.exm.window.order
         /// </summary>
         private void returnOfGoodsInit()
         {
+            this.workModelabel.Text = "退货";
             this.WorkMode = Constant.REFUND;
             zc_order_transit_id = "";
 
@@ -3181,8 +3184,8 @@ namespace Branch.com.proem.exm.window.order
             float totalMoney = 0;
             for (int i = 0; i < itemDataGridView.RowCount; i++)
             {
-                float nums = float.Parse(itemDataGridView.Rows[i].Cells[4].Value.ToString());
-                float money = float.Parse(itemDataGridView.Rows[i].Cells[19].Value.ToString());
+                float nums = itemDataGridView.Rows[i].Cells[4].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[4].Value.ToString());
+                float money = itemDataGridView.Rows[i].Cells[19].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[19].Value.ToString());
                 totalSum += nums;
                 totalMoney += money;
             }

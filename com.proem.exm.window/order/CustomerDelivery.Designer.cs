@@ -28,19 +28,19 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle66 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle67 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle77 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle78 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle68 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle69 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle70 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle71 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle72 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle73 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle74 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle75 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle76 = new System.Windows.Forms.DataGridViewCellStyle();
             this.customerDeliveryPanel = new System.Windows.Forms.Panel();
             this.logoPanel = new System.Windows.Forms.Panel();
             this.timePanel = new System.Windows.Forms.Panel();
@@ -96,6 +96,7 @@
             this.receive_money = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.refund_money = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.refundReason = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.workModelabel = new System.Windows.Forms.Label();
             this.customerDeliveryPanel.SuspendLayout();
             this.logoPanel.SuspendLayout();
             this.informPanel.SuspendLayout();
@@ -138,6 +139,7 @@
             this.logoPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
             this.logoPanel.BackgroundImage = global::Branch.Properties.Resources.login_bg_2;
             this.logoPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.logoPanel.Controls.Add(this.workModelabel);
             this.logoPanel.Controls.Add(this.timePanel);
             this.logoPanel.Controls.Add(this.panel4);
             this.logoPanel.Controls.Add(this.salesmanNameLabel);
@@ -151,7 +153,7 @@
             // timePanel
             // 
             this.timePanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.timePanel.Location = new System.Drawing.Point(750, 8);
+            this.timePanel.Location = new System.Drawing.Point(870, 8);
             this.timePanel.Name = "timePanel";
             this.timePanel.Size = new System.Drawing.Size(119, 32);
             this.timePanel.TabIndex = 31;
@@ -170,7 +172,7 @@
             // 
             this.salesmanNameLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.salesmanNameLabel.AutoSize = true;
-            this.salesmanNameLabel.Location = new System.Drawing.Point(828, 51);
+            this.salesmanNameLabel.Location = new System.Drawing.Point(948, 51);
             this.salesmanNameLabel.Name = "salesmanNameLabel";
             this.salesmanNameLabel.Size = new System.Drawing.Size(41, 12);
             this.salesmanNameLabel.TabIndex = 25;
@@ -180,7 +182,7 @@
             // 
             this.salesmanLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.salesmanLabel.AutoSize = true;
-            this.salesmanLabel.Location = new System.Drawing.Point(750, 51);
+            this.salesmanLabel.Location = new System.Drawing.Point(870, 51);
             this.salesmanLabel.Name = "salesmanLabel";
             this.salesmanLabel.Size = new System.Drawing.Size(77, 12);
             this.salesmanLabel.TabIndex = 22;
@@ -372,9 +374,8 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.messageTableLayoutPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(250)))), ((int)(((byte)(250)))));
             this.messageTableLayoutPanel.ColumnCount = 2;
-            this.messageTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.messageTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.messageTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.messageTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40F));
+            this.messageTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 60F));
             this.messageTableLayoutPanel.Controls.Add(this.tableLayoutPanel1, 1, 0);
             this.messageTableLayoutPanel.Controls.Add(this.numstableLayoutPanel, 0, 0);
             this.messageTableLayoutPanel.Location = new System.Drawing.Point(3, 3);
@@ -390,16 +391,16 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 30F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 60F));
             this.tableLayoutPanel1.Controls.Add(this.panel1, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.panel2, 0, 0);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(247, 0);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(197, 0);
             this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(247, 84);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(297, 84);
             this.tableLayoutPanel1.TabIndex = 2;
             // 
             // panel1
@@ -408,17 +409,17 @@
             this.panel1.Controls.Add(this.totalAmount);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.ForeColor = System.Drawing.Color.White;
-            this.panel1.Location = new System.Drawing.Point(74, 0);
+            this.panel1.Location = new System.Drawing.Point(118, 0);
             this.panel1.Margin = new System.Windows.Forms.Padding(0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(173, 84);
+            this.panel1.Size = new System.Drawing.Size(179, 84);
             this.panel1.TabIndex = 10;
             // 
             // totalAmount
             // 
             this.totalAmount.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.totalAmount.Font = new System.Drawing.Font("宋体", 28F, System.Drawing.FontStyle.Bold);
-            this.totalAmount.Location = new System.Drawing.Point(0, 23);
+            this.totalAmount.Location = new System.Drawing.Point(3, 23);
             this.totalAmount.Name = "totalAmount";
             this.totalAmount.Size = new System.Drawing.Size(173, 38);
             this.totalAmount.TabIndex = 9;
@@ -434,19 +435,18 @@
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Margin = new System.Windows.Forms.Padding(0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(74, 84);
+            this.panel2.Size = new System.Drawing.Size(118, 84);
             this.panel2.TabIndex = 3;
             // 
             // label3
             // 
-            this.label3.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("宋体", 20F);
-            this.label3.Location = new System.Drawing.Point(4, 29);
+            this.label3.Location = new System.Drawing.Point(22, 29);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(66, 27);
+            this.label3.Size = new System.Drawing.Size(93, 27);
             this.label3.TabIndex = 8;
-            this.label3.Text = "金额";
+            this.label3.Text = "金额￥";
             // 
             // numstableLayoutPanel
             // 
@@ -463,7 +463,7 @@
             this.numstableLayoutPanel.Name = "numstableLayoutPanel";
             this.numstableLayoutPanel.RowCount = 1;
             this.numstableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.numstableLayoutPanel.Size = new System.Drawing.Size(247, 84);
+            this.numstableLayoutPanel.Size = new System.Drawing.Size(197, 84);
             this.numstableLayoutPanel.TabIndex = 1;
             // 
             // nums_Panel
@@ -472,18 +472,19 @@
             this.nums_Panel.Controls.Add(this.totalSum);
             this.nums_Panel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.nums_Panel.ForeColor = System.Drawing.Color.White;
-            this.nums_Panel.Location = new System.Drawing.Point(123, 0);
+            this.nums_Panel.Location = new System.Drawing.Point(98, 0);
             this.nums_Panel.Margin = new System.Windows.Forms.Padding(0);
             this.nums_Panel.Name = "nums_Panel";
-            this.nums_Panel.Size = new System.Drawing.Size(124, 84);
+            this.nums_Panel.Size = new System.Drawing.Size(99, 84);
             this.nums_Panel.TabIndex = 10;
             // 
             // totalSum
             // 
+            this.totalSum.Dock = System.Windows.Forms.DockStyle.Fill;
             this.totalSum.Font = new System.Drawing.Font("宋体", 28F, System.Drawing.FontStyle.Bold);
-            this.totalSum.Location = new System.Drawing.Point(0, 20);
+            this.totalSum.Location = new System.Drawing.Point(0, 0);
             this.totalSum.Name = "totalSum";
-            this.totalSum.Size = new System.Drawing.Size(124, 38);
+            this.totalSum.Size = new System.Drawing.Size(99, 84);
             this.totalSum.TabIndex = 9;
             this.totalSum.Text = "0";
             this.totalSum.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -497,7 +498,7 @@
             this.numspanel.Location = new System.Drawing.Point(0, 0);
             this.numspanel.Margin = new System.Windows.Forms.Padding(0);
             this.numspanel.Name = "numspanel";
-            this.numspanel.Size = new System.Drawing.Size(123, 84);
+            this.numspanel.Size = new System.Drawing.Size(98, 84);
             this.numspanel.TabIndex = 3;
             // 
             // label1
@@ -505,7 +506,7 @@
             this.label1.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("宋体", 20F);
-            this.label1.Location = new System.Drawing.Point(28, 29);
+            this.label1.Location = new System.Drawing.Point(16, 29);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(66, 27);
             this.label1.TabIndex = 8;
@@ -543,20 +544,20 @@
             this.itemDataGridView.AllowUserToDeleteRows = false;
             this.itemDataGridView.AllowUserToResizeColumns = false;
             this.itemDataGridView.AllowUserToResizeRows = false;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(250)))), ((int)(((byte)(250)))));
-            this.itemDataGridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle66.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(250)))), ((int)(((byte)(250)))));
+            this.itemDataGridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle66;
             this.itemDataGridView.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
             this.itemDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(250)))), ((int)(((byte)(250)))));
             this.itemDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.itemDataGridView.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(247)))), ((int)(((byte)(247)))), ((int)(((byte)(247)))));
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("宋体", 13F);
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.itemDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle67.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle67.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(247)))), ((int)(((byte)(247)))), ((int)(((byte)(247)))));
+            dataGridViewCellStyle67.Font = new System.Drawing.Font("宋体", 13F);
+            dataGridViewCellStyle67.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle67.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle67.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle67.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.itemDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle67;
             this.itemDataGridView.ColumnHeadersHeight = 30;
             this.itemDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.itemDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -581,14 +582,14 @@
             this.receive_money,
             this.refund_money,
             this.refundReason});
-            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle12.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle12.Font = new System.Drawing.Font("宋体", 13F);
-            dataGridViewCellStyle12.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle12.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(236)))), ((int)(((byte)(139)))));
-            dataGridViewCellStyle12.SelectionForeColor = System.Drawing.Color.Black;
-            dataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.itemDataGridView.DefaultCellStyle = dataGridViewCellStyle12;
+            dataGridViewCellStyle77.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle77.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle77.Font = new System.Drawing.Font("宋体", 13F);
+            dataGridViewCellStyle77.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle77.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(236)))), ((int)(((byte)(139)))));
+            dataGridViewCellStyle77.SelectionForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle77.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.itemDataGridView.DefaultCellStyle = dataGridViewCellStyle77;
             this.itemDataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.itemDataGridView.EnableHeadersVisualStyles = false;
             this.itemDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(250)))), ((int)(((byte)(250)))));
@@ -597,14 +598,14 @@
             this.itemDataGridView.Name = "itemDataGridView";
             this.itemDataGridView.ReadOnly = true;
             this.itemDataGridView.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle13.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle13.Font = new System.Drawing.Font("宋体", 13F);
-            dataGridViewCellStyle13.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle13.SelectionBackColor = System.Drawing.Color.Transparent;
-            dataGridViewCellStyle13.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.itemDataGridView.RowHeadersDefaultCellStyle = dataGridViewCellStyle13;
+            dataGridViewCellStyle78.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle78.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle78.Font = new System.Drawing.Font("宋体", 13F);
+            dataGridViewCellStyle78.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle78.SelectionBackColor = System.Drawing.Color.Transparent;
+            dataGridViewCellStyle78.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle78.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.itemDataGridView.RowHeadersDefaultCellStyle = dataGridViewCellStyle78;
             this.itemDataGridView.RowTemplate.Height = 23;
             this.itemDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.itemDataGridView.Size = new System.Drawing.Size(962, 442);
@@ -637,10 +638,10 @@
             // goods_price
             // 
             this.goods_price.DataPropertyName = "g_price";
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle3.Format = "N2";
-            dataGridViewCellStyle3.NullValue = "0.00";
-            this.goods_price.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle68.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle68.Format = "N2";
+            dataGridViewCellStyle68.NullValue = "0.00";
+            this.goods_price.DefaultCellStyle = dataGridViewCellStyle68;
             this.goods_price.HeaderText = "单价";
             this.goods_price.Name = "goods_price";
             this.goods_price.ReadOnly = true;
@@ -650,10 +651,10 @@
             // nums
             // 
             this.nums.DataPropertyName = "nums";
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle4.Format = "N0";
-            dataGridViewCellStyle4.NullValue = "0";
-            this.nums.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle69.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle69.Format = "N0";
+            dataGridViewCellStyle69.NullValue = "0";
+            this.nums.DefaultCellStyle = dataGridViewCellStyle69;
             this.nums.HeaderText = "订单份数";
             this.nums.Name = "nums";
             this.nums.ReadOnly = true;
@@ -662,10 +663,10 @@
             // 
             // actualQuantity
             // 
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle5.Format = "N0";
-            dataGridViewCellStyle5.NullValue = "0";
-            this.actualQuantity.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle70.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle70.Format = "N0";
+            dataGridViewCellStyle70.NullValue = "0";
+            this.actualQuantity.DefaultCellStyle = dataGridViewCellStyle70;
             this.actualQuantity.HeaderText = "实际份数";
             this.actualQuantity.Name = "actualQuantity";
             this.actualQuantity.ReadOnly = true;
@@ -673,10 +674,10 @@
             // 
             // diffenence
             // 
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle6.Format = "N0";
-            dataGridViewCellStyle6.NullValue = "0";
-            this.diffenence.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle71.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle71.Format = "N0";
+            dataGridViewCellStyle71.NullValue = "0";
+            this.diffenence.DefaultCellStyle = dataGridViewCellStyle71;
             this.diffenence.HeaderText = "份数差异";
             this.diffenence.Name = "diffenence";
             this.diffenence.ReadOnly = true;
@@ -685,10 +686,10 @@
             // orderAmount
             // 
             this.orderAmount.DataPropertyName = "totalprice";
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle7.Format = "N2";
-            dataGridViewCellStyle7.NullValue = "0.00";
-            this.orderAmount.DefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle72.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle72.Format = "N2";
+            dataGridViewCellStyle72.NullValue = "0.00";
+            this.orderAmount.DefaultCellStyle = dataGridViewCellStyle72;
             this.orderAmount.HeaderText = "订单金额";
             this.orderAmount.Name = "orderAmount";
             this.orderAmount.ReadOnly = true;
@@ -697,10 +698,10 @@
             // 
             // receiveAmount
             // 
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle8.Format = "N2";
-            dataGridViewCellStyle8.NullValue = "0.00";
-            this.receiveAmount.DefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle73.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle73.Format = "N2";
+            dataGridViewCellStyle73.NullValue = "0.00";
+            this.receiveAmount.DefaultCellStyle = dataGridViewCellStyle73;
             this.receiveAmount.HeaderText = "收货金额";
             this.receiveAmount.Name = "receiveAmount";
             this.receiveAmount.ReadOnly = true;
@@ -709,8 +710,8 @@
             // goodAmount
             // 
             this.goodAmount.DataPropertyName = "weight";
-            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.goodAmount.DefaultCellStyle = dataGridViewCellStyle9;
+            dataGridViewCellStyle74.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.goodAmount.DefaultCellStyle = dataGridViewCellStyle74;
             this.goodAmount.HeaderText = "重量";
             this.goodAmount.Name = "goodAmount";
             this.goodAmount.ReadOnly = true;
@@ -767,8 +768,8 @@
             // resale_nums
             // 
             this.resale_nums.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.resale_nums.DefaultCellStyle = dataGridViewCellStyle10;
+            dataGridViewCellStyle75.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.resale_nums.DefaultCellStyle = dataGridViewCellStyle75;
             this.resale_nums.FillWeight = 0.1F;
             this.resale_nums.HeaderText = "份数";
             this.resale_nums.Name = "resale_nums";
@@ -778,8 +779,8 @@
             // 
             this.resale_money.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.resale_money.DataPropertyName = "money";
-            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.resale_money.DefaultCellStyle = dataGridViewCellStyle11;
+            dataGridViewCellStyle76.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.resale_money.DefaultCellStyle = dataGridViewCellStyle76;
             this.resale_money.FillWeight = 0.15F;
             this.resale_money.HeaderText = "小计";
             this.resale_money.Name = "resale_money";
@@ -816,6 +817,18 @@
             this.refundReason.ReadOnly = true;
             this.refundReason.Visible = false;
             this.refundReason.Width = 200;
+            // 
+            // workModelabel
+            // 
+            this.workModelabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.workModelabel.Font = new System.Drawing.Font("宋体", 20F);
+            this.workModelabel.Location = new System.Drawing.Point(697, 25);
+            this.workModelabel.Name = "workModelabel";
+            this.workModelabel.Size = new System.Drawing.Size(160, 27);
+            this.workModelabel.TabIndex = 32;
+            this.workModelabel.Text = "工作模式";
+            this.workModelabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // CustomerDelivery
             // 
@@ -915,6 +928,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn receive_money;
         private System.Windows.Forms.DataGridViewTextBoxColumn refund_money;
         private System.Windows.Forms.DataGridViewTextBoxColumn refundReason;
+        private System.Windows.Forms.Label workModelabel;
 
     }
 }
