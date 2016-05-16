@@ -226,5 +226,119 @@ namespace Branch.com.proem.exm.dao.master
                 OracleUtil.CloseConn(conn);
             }
         }
+
+        public bool AddZcStoreHouseI(ZcStoreHouse obj)
+        {
+            bool flag = true;
+            string sql = "insert into ZC_STOREHOUSE (id, CREATETIME, UPDATETIME, status, store, storemoney,branch_id,createuser_id,goodsfile_id,weight) values (:id, :createTime, :updateTime, :status, :store, :storemoney,:branch_id,:createuser_id,:goodsfile_id,:weight)";
+            OracleConnection conn = null;
+            OracleTransaction tran = null;
+            OracleCommand cmd = new OracleCommand();
+            try
+            {
+                conn = OracleUtil.OpenConn();
+                tran = conn.BeginTransaction();
+                cmd.CommandText = sql;
+                cmd.Connection = conn;
+                cmd.Parameters.Add(":id", obj.Id);
+                cmd.Parameters.Add(":createTime", obj.CreateTime);
+                cmd.Parameters.Add(":updateTime", obj.UpdateTime);
+                cmd.Parameters.Add(":status", obj.Status);
+                cmd.Parameters.Add(":storemoney", obj.StoreMoney);
+                cmd.Parameters.Add(":branch_id", obj.BranchId);
+                cmd.Parameters.Add(":createuser_id", obj.CreateUserId);
+                cmd.Parameters.Add(":goodsfile_id", obj.GoodsFileId);
+                cmd.Parameters.Add(":weight", obj.weight);
+                cmd.ExecuteNonQuery();
+                tran.Commit();
+            }
+            catch (Exception ex)
+            {
+                tran.Rollback();
+                flag = false;
+                log.Error("上传库存信息发生错误", ex);
+            }
+            finally
+            {
+                OracleUtil.CloseConn(conn);
+            }
+            return flag;
+        }
+
+        public bool UpdateStoreHouseI(ZcStoreHouse obj)
+        {
+            bool flag = true;
+            string sql = "update zc_storehouse set updateTime = :updateTime, store = :store, storeMoney = :storeMoney, weight = :weight where id = :id";
+            OracleCommand cmd = new OracleCommand();
+            OracleConnection conn = null;
+            OracleTransaction tran = null;
+            try
+            {
+                conn = OracleUtil.OpenConn();
+                tran = conn.BeginTransaction();
+                cmd.Connection = conn;
+                cmd.CommandText = sql;
+                cmd.Parameters.Add(":updateTime", obj.UpdateTime);
+                cmd.Parameters.Add(":store", obj.Store);
+                cmd.Parameters.Add(":storeMoney", obj.StoreMoney);
+                cmd.Parameters.Add(":weight", obj.weight);
+                cmd.Parameters.Add(":id", obj.Id);
+                cmd.ExecuteNonQuery();
+                tran.Commit();
+            }
+            catch (Exception ex)
+            {
+                tran.Rollback();
+                flag = false;
+                log.Error("更新商品库存信息失败", ex);
+            }
+            finally
+            {
+                OracleUtil.CloseConn(conn);
+            }
+            return flag;
+        }
+
+        public void AddZcStoreHouseII(ZcStoreHouse obj)
+        {
+            string sql = "insert into ZC_STOREHOUSE (id, CREATETIME, UPDATETIME, status, store, storemoney,branch_id,createuser_id,goodsfile_id,weight) values (:id, :createTime, :updateTime, :status, :store, :storemoney,:branch_id,:createuser_id,:goodsfile_id,:weight)";
+            OracleConnection conn = null;
+            OracleTransaction tran = null;
+            OracleCommand cmd = new OracleCommand();
+            try
+            {
+                conn = OracleUtil.OpenConn();
+                tran = conn.BeginTransaction();
+                cmd.CommandText = sql;
+                cmd.Connection = conn;
+                cmd.Parameters.Add(":id", obj.Id);
+                cmd.Parameters.Add(":createTime", obj.CreateTime);
+                cmd.Parameters.Add(":updateTime", obj.UpdateTime);
+                cmd.Parameters.Add(":status", obj.Status);
+                cmd.Parameters.Add(":storemoney", obj.StoreMoney);
+                cmd.Parameters.Add(":branch_id", obj.BranchId);
+                cmd.Parameters.Add(":createuser_id", obj.CreateUserId);
+                cmd.Parameters.Add(":goodsfile_id", obj.GoodsFileId);
+                cmd.Parameters.Add(":weight", obj.weight);
+                cmd.ExecuteNonQuery();
+                tran.Commit();
+            }
+            catch (Exception ex)
+            {
+                tran.Rollback();
+                UploadInfo upload = new UploadInfo();
+                upload.Id = obj.Id;
+                upload.CreateTime = DateTime.Now;
+                upload.UpdateTime = DateTime.Now;
+                upload.Type = Constant.ZC_STORE_HOSUE;
+                UploadDao dao = new UploadDao();
+                dao.AddUploadInfo(upload);
+                log.Error("上传库存信息发生错误", ex);
+            }
+            finally
+            {
+                OracleUtil.CloseConn(conn);
+            }
+        }
     }
 }

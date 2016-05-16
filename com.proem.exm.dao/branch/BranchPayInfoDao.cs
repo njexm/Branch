@@ -142,44 +142,41 @@ namespace Branch.com.proem.exm.dao.branch
         //    }
         //}
 
-        //public PayInfo FindById(string p)
-        //{
-        //    PayInfo obj = new PayInfo();
-        //    string sql = "select * from pay_info where id= @id";
-        //    MySqlConnection conn = null;
-        //    MySqlCommand cmd = new MySqlCommand();
-        //    try
-        //    {
-        //        conn = GetConnection();
-        //        cmd.Connection = conn;
-        //        cmd.CommandText = sql;
-        //        cmd.Parameters.AddWithValue("@id", p);
-        //        MySqlDataReader reader = cmd.ExecuteReader();
-        //        if (reader.Read())
-        //        {
-        //            obj.Id = reader.IsDBNull(0) ? string.Empty : reader.GetString(0);
-        //            obj.CreateTime = reader.IsDBNull(1) ? default(DateTime) : reader.GetDateTime(1);
-        //            obj.UpdateTime = reader.IsDBNull(2) ? default(DateTime) : reader.GetDateTime(2);
-        //            obj.PayAmount = reader.IsDBNull(3) ? string.Empty : reader.GetString(3);
-        //            obj.orderId = reader.IsDBNull(4) ? string.Empty : reader.GetString(4);
-        //            obj.salesmanId = reader.IsDBNull(5) ? string.Empty : reader.GetString(5);
-        //            obj.payDate = reader.IsDBNull(6) ? default(DateTime) : reader.GetDateTime(6);
-        //            obj.PayMode = reader.IsDBNull(7) ? string.Empty : reader.GetString(7);
-        //            obj.MemberId = reader.IsDBNull(8) ? string.Empty : reader.GetString(8);
-        //            obj.BranchId = reader.IsDBNull(9) ? string.Empty : reader.GetString(9);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        log.Error("根据id获取支付信息失败", ex);
-        //    }
-        //    finally
-        //    {
-        //        cmd.Dispose();
-        //        CloseConnection(conn);
-        //    }
-        //    return obj;
-        //}
+        public PayInfo FindById(string p)
+        {
+            PayInfo obj = new PayInfo();
+            string sql = "select id,createTime, updateTime, member_id, money, branch_id, saleman_id from pay_info where id= @id";
+            MySqlConnection conn = null;
+            MySqlCommand cmd = new MySqlCommand();
+            try
+            {
+                conn = GetConnection();
+                cmd.Connection = conn;
+                cmd.CommandText = sql;
+                cmd.Parameters.AddWithValue("@id", p);
+                MySqlDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    obj.Id = reader.IsDBNull(0) ? string.Empty : reader.GetString(0);
+                    obj.CreateTime = reader.IsDBNull(1) ? default(DateTime) : reader.GetDateTime(1);
+                    obj.UpdateTime = reader.IsDBNull(2) ? default(DateTime) : reader.GetDateTime(2);
+                    obj.MemberId = reader.IsDBNull(3) ? string.Empty : reader.GetString(3);
+                    obj.Money = reader.IsDBNull(4) ? string.Empty : reader.GetString(4);
+                    obj.BranchId = reader.IsDBNull(5) ? string.Empty : reader.GetString(5);
+                    obj.salesmanId = reader.IsDBNull(6) ? string.Empty : reader.GetString(6);
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("根据id获取支付信息失败", ex);
+            }
+            finally
+            {
+                cmd.Dispose();
+                CloseConnection(conn);
+            }
+            return obj;
+        }
 
         ///// <summary>
         ///// 获取该订单现金付款金额

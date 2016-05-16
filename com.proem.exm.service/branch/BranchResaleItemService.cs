@@ -15,5 +15,15 @@ namespace Branch.com.proem.exm.service.branch
             dao.AddResaleItem(list);
         }
 
+        /// <summary>
+        /// 根据id查询流水销售明细
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        public ResaleItem FindById(string p)
+        {
+            BranchResaleItemDao dao = new BranchResaleItemDao();
+            return dao.FindById(p);
+        }
     }
 }

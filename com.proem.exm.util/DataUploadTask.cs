@@ -72,14 +72,24 @@ namespace Branch.com.proem.exm.util
                     }
                     else if (obj.Type == Constant.PAY_INFO)
                     {
-                        //BranchPayInfoService service = new BranchPayInfoService();
-                        //PayInfo payInfo = service.FindById(obj.Id);
-                        //PayInfoService masterService = new PayInfoService();
-                        //bool flag = masterService.AddPayInfoI(payInfo);
-                        //if (flag)
-                        //{
-                        //    dao.DeleteByIdAndType(obj.Id, obj.Type);
-                        //}
+                        BranchPayInfoService service = new BranchPayInfoService();
+                        PayInfo payInfo = service.FindById(obj.Id);
+                        PayInfoService masterService = new PayInfoService();
+                        bool flag = masterService.AddPayInfoI(payInfo);
+                        if (flag)
+                        {
+                            dao.DeleteByIdAndType(obj.Id, obj.Type);
+                        }
+                    }
+                    else if(obj.Type == Constant.PAY_INFO_ITEM){
+                        BranchPayInfoItemService branchservice = new BranchPayInfoItemService();
+                        PayInfoItem item = branchservice.FindById(obj.Id);
+                        PayInfoItemService service = new PayInfoItemService();
+                        bool flag = service.AddPayInfoItemI(item);
+                        if (flag)
+                        {
+                            dao.DeleteByIdAndType(obj.Id, obj.Type);
+                        }
                     }
                     else if (obj.Type == Constant.ZC_ORDER_HISTORY)
                     {
@@ -176,11 +186,46 @@ namespace Branch.com.proem.exm.util
                             dao.DeleteByIdAndType(obj.Id, obj.Type);
                         }
                     }
-                    //else if (obj.Type == Constant.ZC_REQUIRE)
-                    //{
-                    //    ZcRequireItemService zcRequireItemService = new ZcRequireItemService();
-                        
-                    //}
+                    else if(obj.Type == Constant.ZC_RESALE){
+                        BranchResaleService branchService = new BranchResaleService();
+                        Resale resale = branchService.FindById(obj.Id);
+                        ResaleService service = new ResaleService();
+                        bool flag = service.AddResaleI(resale);
+                        if (flag)
+                        {
+                            dao.DeleteByIdAndType(obj.Id, obj.Type);
+                        }
+                    }
+                    else if(obj.Type == Constant.ZC_RESALE_ITME){
+                        BranchResaleItemService branchService = new BranchResaleItemService();
+                        ResaleItem item = branchService.FindById(obj.Id);
+                        ResaleItemService service = new ResaleItemService();
+                        bool flag = service.AddResaleItemI(item);
+                        if (flag)
+                        {
+                            dao.DeleteByIdAndType(obj.Id, obj.Type);
+                        }
+                    }
+                    else if(obj.Type == Constant.ZC_STORE_HOSUE){
+                        BranchZcStoreHouseService branchService = new BranchZcStoreHouseService();
+                        ZcStoreHouse house = branchService.FindById(obj.Id);
+                        ZcStoreHouseService service = new ZcStoreHouseService();
+                        bool flag = service.AddZcStoreHouseI(house);
+                        if (flag)
+                        {
+                            dao.DeleteByIdAndType(obj.Id, obj.Type);
+                        }
+                    }
+                    else if(obj.Type == Constant.ZC_STOREHOUSE_UPDATE){
+                        BranchZcStoreHouseService branchService = new BranchZcStoreHouseService();
+                        ZcStoreHouse house = branchService.FindById(obj.Id);
+                        ZcStoreHouseService service = new ZcStoreHouseService();
+                        bool flag = service.UpdateStoreHouseI(house);
+                        if (flag)
+                        {
+                            dao.DeleteByIdAndType(obj.Id, obj.Type);
+                        }
+                    }
 
 
                 }

@@ -75,5 +75,46 @@ namespace Branch.com.proem.exm.dao.master
                 OracleUtil.CloseConn(conn);
             }
         }
+
+        public bool AddResaleItemI(ResaleItem obj)
+        {
+            bool flag = true;
+            string sql = "insert into zc_resale_item (id, createTime, updateTime,resale_id,  goodsFile_id, nums, weight,money, discount_amount, actual_money) "
+                + " values(:id, :createTime, :updateTime,:resaleId, :gooodsFileId, :nums, :weight,:money, :discount_amount, :actual_money)";
+            OracleConnection conn = null;
+            OracleTransaction tran = null;
+            OracleCommand cmd = new OracleCommand();
+            try
+            {
+                conn = OracleUtil.OpenConn();
+                tran = conn.BeginTransaction();
+                cmd.CommandText = sql;
+                cmd.Connection = conn;
+                cmd.Parameters.Add(":id", obj.Id);
+                cmd.Parameters.Add(":createTime", obj.CreateTime);
+                cmd.Parameters.Add(":updateTime", obj.UpdateTime);
+                cmd.Parameters.Add(":resaleId", obj.ResaleId);
+                cmd.Parameters.Add(":gooodsFileId", obj.GoodsFileId);
+                cmd.Parameters.Add(":nums", obj.Nums);
+                cmd.Parameters.Add(":weight", obj.weight);
+                cmd.Parameters.Add(":money", obj.Money);
+                cmd.Parameters.Add(":discount_amount", obj.DiscountMoney);
+                cmd.Parameters.Add(":actual_money", obj.ActualMoney);
+                cmd.ExecuteNonQuery();
+                cmd.Parameters.Clear();
+                tran.Commit();
+            }
+            catch (Exception ex)
+            {
+                tran.Rollback();
+                flag = false;
+                log.Error("上传零售明细发生异常", ex);
+            }
+            finally
+            {
+                OracleUtil.CloseConn(conn);
+            }
+            return flag;
+        }
     }
 }

@@ -59,5 +59,37 @@ namespace Branch.com.proem.exm.dao.branch
             }
         }
 
+
+        public PayInfoItem FindById(string p)
+        {
+            PayInfoItem obj = new PayInfoItem();
+            string sql = "select id, createTime, updateTime, payInfo_id, pay_mode, money from zc_payInfo_item where id = '"+p+"'";
+            MySqlConnection conn = null;
+            MySqlCommand cmd = new MySqlCommand();
+            try
+            {
+                conn = GetConnection();
+                cmd.Connection = conn;
+                cmd.CommandText = sql;
+                MySqlDataReader reader = cmd.ExecuteReader();
+                if(reader.Read()){
+                    obj.Id = reader.IsDBNull(0) ? string.Empty : reader.GetString(0);
+                    obj.CreateTime = reader.IsDBNull(1) ? default(DateTime) : reader.GetDateTime(1);
+                    obj.UpdateTime = reader.IsDBNull(2) ? default(DateTime) : reader.GetDateTime(2);
+                    obj.PayInfoId = reader.IsDBNull(3) ? string.Empty : reader.GetString(3);
+                    obj.PayMode = reader.IsDBNull(4) ? string.Empty : reader.GetString(4);
+                    obj.Money = reader.IsDBNull(5) ? string.Empty : reader.GetString(5);
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("根据id查询支付明细发生错误", ex);
+            }
+            finally
+            {
+                CloseConnection(conn);
+            }
+            return obj;
+        }
     }
 }

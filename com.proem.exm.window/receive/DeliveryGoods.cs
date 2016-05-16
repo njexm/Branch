@@ -383,7 +383,7 @@ namespace Branch.com.proem.exm.window.receive
                     storeService.AddZcStoreHouse(storeHouse);
                     if (PingTask.IsConnected)
                     {
-                        storeService.AddZcStoreHouse(storeHouse);
+                        storeService.AddZcStoreHouseII(storeHouse);
                     }
                     else
                     {

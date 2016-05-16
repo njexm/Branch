@@ -3610,6 +3610,7 @@ namespace Branch.com.proem.exm.window.order
                    }
                }
             }
+            printTicket(float.Parse(totalAmount.Text));
             ///初始化数据
             returnOfGoodsInit();
         }

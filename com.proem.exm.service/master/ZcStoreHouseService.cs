@@ -55,5 +55,23 @@ namespace Branch.com.proem.exm.service.master
             ZcStoreHouseDao dao = new ZcStoreHouseDao();
             dao.updateZcStoreHouse(storeList);
         }
+
+        public bool AddZcStoreHouseI(ZcStoreHouse obj)
+        {
+            ZcStoreHouseDao dao = new ZcStoreHouseDao();
+            return dao.AddZcStoreHouseI(obj);
+        }
+
+        public bool UpdateStoreHouseI(ZcStoreHouse house)
+        {
+            ZcStoreHouseDao dao = new ZcStoreHouseDao();
+            return dao.UpdateStoreHouseI(house);
+        }
+
+        public void AddZcStoreHouseII(ZcStoreHouse obj)
+        {
+            ZcStoreHouseDao dao = new ZcStoreHouseDao();
+             dao.AddZcStoreHouseII(obj);
+        }
     }
 }

@@ -37,11 +37,11 @@ namespace Branch.com.proem.exm.service.branch
         //}
 
 
-        //public PayInfo FindById(string p)
-        //{
-        //    BranchPayInfoDao dao = new BranchPayInfoDao();
-        //    return dao.FindById(p);
-        //}
+        public PayInfo FindById(string p)
+        {
+            BranchPayInfoDao dao = new BranchPayInfoDao();
+            return dao.FindById(p);
+        }
 
         ///// <summary>
         ///// 获取该订单现金付款金额
@@ -64,5 +64,6 @@ namespace Branch.com.proem.exm.service.branch
         //    BranchPayInfoDao dao = new BranchPayInfoDao();
         //    return dao.FindModePayment(orderid);
         //}
+
     }
 }

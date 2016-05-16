@@ -61,5 +61,41 @@ namespace Branch.com.proem.exm.dao.branch
             }
         }
 
+
+        public ResaleItem FindById(string p)
+        {
+            ResaleItem obj = new ResaleItem();
+            string sql = "select id, createTime, updateTime, resale_id, goodsFile_id, nums, weight, money, discount_amount, actual_money from zc_resale_item where id = '"+p+"'";
+            MySqlCommand cmd = new MySqlCommand();
+            MySqlConnection conn = null;
+            try
+            {
+                conn = GetConnection();
+                cmd.Connection = conn;
+                cmd.CommandText = sql;
+                MySqlDataReader reader = cmd.ExecuteReader();
+                if(reader.Read()){
+                    obj.Id = reader.IsDBNull(0) ? string.Empty : reader.GetString(0);
+                    obj.CreateTime = reader.IsDBNull(1) ? default(DateTime) : reader.GetDateTime(1);
+                    obj.UpdateTime = reader.IsDBNull(2) ? default(DateTime) : reader.GetDateTime(2);
+                    obj.ResaleId = reader.IsDBNull(3) ? string.Empty : reader.GetString(3);
+                    obj.GoodsFileId = reader.IsDBNull(4) ? string.Empty : reader.GetString(4);
+                    obj.Nums = reader.IsDBNull(5) ? string.Empty : reader.GetString(5);
+                    obj.weight = reader.IsDBNull(6) ? string.Empty : reader.GetString(6);
+                    obj.Money = reader.IsDBNull(7) ? string.Empty : reader.GetString(7);
+                    obj.DiscountMoney = reader.IsDBNull(8) ? string.Empty : reader.GetString(8);
+                    obj.ActualMoney = reader.IsDBNull(9) ? string.Empty : reader.GetString(9);
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("根据id查询销售流水明细发生错误", ex);
+            }
+            finally
+            {
+                CloseConnection(conn);
+            }
+            return obj;
+        }
     }
 }

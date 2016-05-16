@@ -35,5 +35,16 @@ namespace Branch.com.proem.exm.service.branch
             BranchResaleDao dao = new BranchResaleDao();
             return dao.FindByMemberId(p);
         }
+
+        /// <summary>
+        /// 根据id查询销售流水信息
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        public Resale FindById(string p)
+        {
+            BranchResaleDao dao = new BranchResaleDao();
+            return dao.FindById(p);
+        }
     }
 }

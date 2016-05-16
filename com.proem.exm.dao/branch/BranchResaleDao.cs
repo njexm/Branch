@@ -144,5 +144,47 @@ namespace Branch.com.proem.exm.dao.branch
             }
             return list;
         }
+
+        public Resale FindById(string p)
+        {
+            Resale obj = new Resale();
+            string sql = "select id, createTime, updateTime, nums, money, discount_money, preferential_money, actual_money, branch_id, saleman_id, member_id, "
+                + "order_id, water_number, payInfo_id from zc_resale where id = '" + p + "'";
+            MySqlConnection conn = null;
+            MySqlCommand cmd = new MySqlCommand();
+            try
+            {
+                conn = GetConnection();
+                cmd.Connection = conn;
+                cmd.CommandText = sql;
+                MySqlDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    obj.Id = reader.IsDBNull(0) ? string.Empty : reader.GetString(0);
+                    obj.CreateTime = reader.IsDBNull(1) ? default(DateTime) : reader.GetDateTime(1);
+                    obj.UpdateTime = reader.IsDBNull(2) ? default(DateTime) : reader.GetDateTime(2);
+                    obj.Nums = reader.IsDBNull(3) ? string.Empty : reader.GetString(3);
+                    obj.Money = reader.IsDBNull(4) ? string.Empty : reader.GetString(4);
+                    obj.DiscountMoney = reader.IsDBNull(5) ? string.Empty : reader.GetString(5);
+                    obj.PreferentialMoney = reader.IsDBNull(6) ? string.Empty : reader.GetString(6);
+                    obj.ActualMoney = reader.IsDBNull(7) ? string.Empty : reader.GetString(7);
+                    obj.BranchId = reader.IsDBNull(8) ? string.Empty : reader.GetString(8);
+                    obj.SaleManId = reader.IsDBNull(9) ? string.Empty : reader.GetString(9);
+                    obj.memberId = reader.IsDBNull(10) ? string.Empty : reader.GetString(10);
+                    obj.OrderId = reader.IsDBNull(11) ? string.Empty : reader.GetString(11);
+                    obj.WaterNumber = reader.IsDBNull(12) ? string.Empty : reader.GetString(12);
+                    obj.PayInfoId = reader.IsDBNull(13) ? string.Empty : reader.GetString(13);
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("根据id查询销售流水信息列表发生错误", ex);
+            }
+            finally
+            {
+                CloseConnection(conn);
+            }
+            return obj;
+        }
     }
 }

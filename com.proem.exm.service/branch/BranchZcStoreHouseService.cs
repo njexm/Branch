@@ -46,5 +46,11 @@ namespace Branch.com.proem.exm.service.branch
             BranchZcStoreHouseDao dao = new BranchZcStoreHouseDao();
             dao.updateStoreHouse(storeList);
         }
+
+        public ZcStoreHouse FindById(string p)
+        {
+            BranchZcStoreHouseDao dao = new BranchZcStoreHouseDao();
+            return dao.FindById(p);
+        }
     }
 }

@@ -14,5 +14,11 @@ namespace Branch.com.proem.exm.service.master
             ResaleItemDao dao = new ResaleItemDao();
             dao.AddResaleItem(list);
         }
+
+        public bool AddResaleItemI(ResaleItem item)
+        {
+            ResaleItemDao dao = new ResaleItemDao();
+            return dao.AddResaleItemI(item);
+        }
     }
 }

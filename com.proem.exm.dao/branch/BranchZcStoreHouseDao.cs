@@ -148,5 +148,40 @@ namespace Branch.com.proem.exm.dao.branch
                 CloseConnection(conn);
             }
         }
+
+        public ZcStoreHouse FindById(string p)
+        {
+            ZcStoreHouse obj = new ZcStoreHouse();
+            string sql = "select a.ID, a.CREATETIME, a.UPDATETIME, a.STATUS, a.STORE, a.STOREMONEY, a.BRANCH_ID, a.CREATEUSER_ID, a.GOODSFILE_ID, a.weight  from ZC_STOREHOUSE a where a.id = '"+p+"'";
+            MySqlConnection conn = null;
+            MySqlCommand cmd = new MySqlCommand();
+            try
+            {
+                conn = GetConnection();
+                cmd.Connection = conn;
+                cmd.CommandText = sql;
+                MySqlDataReader reader = cmd.ExecuteReader();
+                if(reader.Read()){
+                    obj.Id = reader.IsDBNull(0) ? string.Empty : reader.GetString(0);
+                    obj.CreateTime = reader.IsDBNull(1) ? default(DateTime) : reader.GetDateTime(1);
+                    obj.UpdateTime = reader.IsDBNull(2) ? default(DateTime) : reader.GetDateTime(2);
+                    obj.Status = reader.IsDBNull(3) ? default(int) : reader.GetInt32(3);
+                    obj.Store = reader.IsDBNull(4) ? string.Empty : reader.GetString(4);
+                    obj.BranchId = reader.IsDBNull(5) ? string.Empty : reader.GetString(5);
+                    obj.CreateUserId = reader.IsDBNull(6) ? string.Empty : reader.GetString(6);
+                    obj.GoodsFileId = reader.IsDBNull(7) ? string.Empty : reader.GetString(7);
+                    obj.weight = reader.IsDBNull(8) ? string.Empty : reader.GetString(8);
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("根据id查询库存信息发生错误", ex);
+            }
+            finally
+            {
+                CloseConnection(conn);
+            }
+            return obj;
+        }
     }
 }
