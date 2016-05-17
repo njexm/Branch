@@ -2690,14 +2690,7 @@ namespace Branch.com.proem.exm.window.order
             string tou = "宜鲜美配送有限公司";
 
             string address = "南京市江宁区东麒路66号";
-            string saleID = "";
-            if (isResale)
-            {
-                saleID = ResaleWaterNumber;
-            }
-            else {
-                //saleID = id_.Text;
-            }
+            string saleID = ResaleWaterNumber;
             
 
             //string item = "品名";
