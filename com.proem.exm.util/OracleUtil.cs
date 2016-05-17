@@ -12,7 +12,7 @@ namespace Branch.com.proem.exm.util
         /// <summary>
         /// 日志
         /// </summary>
-        private readonly ILog log = LogManager.GetLogger(typeof(OracleUtil));
+        private static readonly ILog log = LogManager.GetLogger(typeof(OracleUtil));
 
         /// <summary>
         /// open 一个 conn
@@ -20,8 +20,16 @@ namespace Branch.com.proem.exm.util
         /// <returns></returns>
         public static OracleConnection OpenConn()
         {
-            OracleConnection conn = new OracleConnection(ConfigurationManager.ConnectionStrings["OracleDB"].ConnectionString);
-             conn.Open();
+            OracleConnection conn = null;
+            try
+            {
+                conn = new OracleConnection(ConfigurationManager.ConnectionStrings["OracleDB"].ConnectionString);
+                conn.Open();
+            }
+            catch (Exception ex)
+            {
+                log.Error("oracle数据连接错误，请简直配置!", ex);
+            }
              return conn;
          }
 

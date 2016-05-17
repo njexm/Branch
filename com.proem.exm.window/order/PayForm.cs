@@ -116,9 +116,8 @@ namespace Branch.com.proem.exm.window.order
         {
             //cashTextbox.Focus();
             ///合计金额
-            totalAmount = Convert.ToDouble(totalAmount).ToString("0.00");
+            totalAmount = MoneyFormat.Format(float.Parse(totalAmount));
             textBox1.Text = totalAmount;
-            textBox2.Text = "0.00";
             ///合计-折扣
             float amount = float.Parse(this.totalAmount);
             int count = totalAmount.IndexOf(".");
@@ -126,7 +125,7 @@ namespace Branch.com.proem.exm.window.order
             textBox3.Text = "0.0" + totalAmount.Substring(count + 2, 1);
             ///应付金额
             payableAmount = amount - float.Parse(textBox3.Text);
-            textBox4.Text = payableAmount.ToString("0.00");
+            textBox4.Text = MoneyFormat.Format(payableAmount);
             cashTextbox.Text = payableAmount.ToString("0.00");
             ///已付金额
             paidAmount = 0;
@@ -272,8 +271,7 @@ namespace Branch.com.proem.exm.window.order
         /// <param name="e"></param>
         private void textBox2_CursorChanged(object sender, EventArgs e)
         {
-            float discount = float.Parse(textBox2.Text);
-            float amount = float.Parse(totalAmount) - discount;
+            float amount = float.Parse(totalAmount);
             int count = amount.ToString("0.00").IndexOf(".");
             ///合计分舍去
             textBox3.Text = "0.0" + totalAmount.Substring(count + 1, 1);
@@ -607,7 +605,7 @@ namespace Branch.com.proem.exm.window.order
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-            textBox4.Text = (float.Parse(textBox1.Text) - float.Parse(textBox2.Text)).ToString("0.00");
+            //textBox4.Text = (float.Parse(textBox1.Text) - float.Parse(textBox2.Text)).ToString("0.00");
         }
 
         private void PayForm_FormClosing(object sender, FormClosingEventArgs e)

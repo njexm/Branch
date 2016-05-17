@@ -13,8 +13,11 @@ using log4net;
 
 namespace Branch.com.proem.exm.service.main
 {
-    class DownloadDataService
+    public class DownloadDataService
     {
+        /// <summary>
+        /// 日志
+        /// </summary>
         private readonly ILog log = LogManager.GetLogger(typeof(DownloadDataService));
 
 
@@ -118,7 +121,9 @@ namespace Branch.com.proem.exm.service.main
             a.Reset();
             p.Step();
             a.Start();
-
+            DownloadOrderDigits();
+            a.Stop();
+            p.AppendMessage("下载数据精度信息成功,耗时：" + a.ElapsedMilliseconds + "毫秒\n");
             p.Close();
         }
 
@@ -320,5 +325,15 @@ namespace Branch.com.proem.exm.service.main
              branchService.AddZcOrderSorte(list);
          }
 
+        /// <summary>
+        /// 下载精度信息表
+        /// </summary>
+         void DownloadOrderDigits()
+         {
+             BranchOrderDigitsService branchService = new BranchOrderDigitsService();
+             OrderDigitsService service = new OrderDigitsService();
+             List<OrderDigits> list = service.FindAll();
+             branchService.AddDigits(list);
+         }
     }
 }

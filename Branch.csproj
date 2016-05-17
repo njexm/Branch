@@ -77,6 +77,7 @@
     <Compile Include="com.proem.exm.dao\branch\BranchAssociatorInfoDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchDailyReceiveGoodsDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchDeliverAmountInfoDao.cs" />
+    <Compile Include="com.proem.exm.dao\branch\BranchOrderDigitsDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchPayInfoDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchPayInfoItemDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchRelUserRoleDao.cs" />
@@ -108,6 +109,7 @@
     <Compile Include="com.proem.exm.dao\master\AssociatorInfoDao.cs" />
     <Compile Include="com.proem.exm.dao\master\DailyReceiveGoodsDao.cs" />
     <Compile Include="com.proem.exm.dao\master\DeliverAmountInfoDao.cs" />
+    <Compile Include="com.proem.exm.dao\master\OrderDigitsDao.cs" />
     <Compile Include="com.proem.exm.dao\master\PayInfoDao.cs" />
     <Compile Include="com.proem.exm.dao\master\PayInfoItemDao.cs" />
     <Compile Include="com.proem.exm.dao\master\RefundInfoDao.cs" />
@@ -138,6 +140,7 @@
     <Compile Include="com.proem.exm.domain\DailyReceiveGoods.cs" />
     <Compile Include="com.proem.exm.domain\DeliverAmountInfo.cs" />
     <Compile Include="com.proem.exm.domain\DownloadIdentify.cs" />
+    <Compile Include="com.proem.exm.domain\OrderDigits.cs" />
     <Compile Include="com.proem.exm.domain\PayInfo.cs" />
     <Compile Include="com.proem.exm.domain\PayInfoItem.cs" />
     <Compile Include="com.proem.exm.domain\RelUserRole.cs">
@@ -178,6 +181,7 @@
     <Compile Include="com.proem.exm.service\branch\BranchAssociatorInfoService.cs" />
     <Compile Include="com.proem.exm.service\branch\BranchDailyReceiveGoodsService.cs" />
     <Compile Include="com.proem.exm.service\branch\BranchDeliverAmountInfoService.cs" />
+    <Compile Include="com.proem.exm.service\branch\BranchOrderDigitsService.cs" />
     <Compile Include="com.proem.exm.service\branch\BranchPayInfoItemService.cs" />
     <Compile Include="com.proem.exm.service\branch\BranchPayInfoService.cs" />
     <Compile Include="com.proem.exm.service\branch\BranchRelUserRoleService.cs" />
@@ -209,6 +213,7 @@
     <Compile Include="com.proem.exm.service\master\AssociatorInfoService.cs" />
     <Compile Include="com.proem.exm.service\master\DailyReceiveGoodsService.cs" />
     <Compile Include="com.proem.exm.service\master\DeliverAmountInfoService.cs" />
+    <Compile Include="com.proem.exm.service\master\OrderDigitsService.cs" />
     <Compile Include="com.proem.exm.service\master\PayInfoItemService.cs" />
     <Compile Include="com.proem.exm.service\master\PayInfoService.cs" />
     <Compile Include="com.proem.exm.service\master\RefundInfoService.cs" />
@@ -250,6 +255,7 @@
     <Compile Include="com.proem.exm.util\MD5Util.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="com.proem.exm.util\MoneyFormat.cs" />
     <Compile Include="com.proem.exm.util\MysqlDBHelper.cs">
       <SubType>Code</SubType>
     </Compile>

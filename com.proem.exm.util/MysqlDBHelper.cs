@@ -7,6 +7,7 @@ using MySql.Data.MySqlClient;
 using log4net;
 using System.Data;
 using System.Configuration;
+using System.Windows.Forms;
 
 namespace Branch.com.proem.exm.util
 {
@@ -28,8 +29,15 @@ namespace Branch.com.proem.exm.util
         /// <returns></returns>
         public MySqlConnection GetConnection()
         {
-            MySqlConnection conn = new MySqlConnection(ConnectionString);
-            conn.Open();
+            MySqlConnection conn = null;
+            try
+            {
+                conn = new MySqlConnection(ConnectionString);
+                conn.Open();
+            }catch(Exception ex){
+                MessageBox.Show("mysql数据连接失败,请检查配置!");
+                log.Error("mysql数据连接失败,请检查配置!", ex);
+            }
             return conn;
         }
 

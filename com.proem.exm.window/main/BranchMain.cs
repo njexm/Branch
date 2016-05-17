@@ -134,6 +134,17 @@ namespace Branch.com.proem.exm.window.main
 
             //branchHandover = new BranchHandover();
 
+            loadDigit();
+        }
+
+        /// <summary>
+        /// 加载精度设置
+        /// </summary>
+        private void loadDigit()
+        {
+            BranchOrderDigitsService service = new BranchOrderDigitsService();
+            OrderDigits digit = service.FindDigits();
+            MoneyFormat.accuracy = digit.MoneyAccuracy;
         }
 
         private void DownloadData()

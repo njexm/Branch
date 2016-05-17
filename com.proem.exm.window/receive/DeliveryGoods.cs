@@ -343,7 +343,7 @@ namespace Branch.com.proem.exm.window.receive
                 uploadDao.AddUploadInfo(uploadList);
             }
 
-            ///库存的减少
+            ///库存的更新
             BranchZcGoodsMasterService branchGoodsService = new BranchZcGoodsMasterService();
             BranchZcStoreHouseService branchStoreService = new BranchZcStoreHouseService();
             List<ZcStoreHouse> storeList = new List<ZcStoreHouse>();
