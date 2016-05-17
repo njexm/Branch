@@ -70,7 +70,7 @@ namespace Branch.com.proem.exm.dao.branch
         public string FindAmountCashier(DateTime first, DateTime last, string p)
         {
             string sum = "";
-            string sql = "select sum(money) from zc_payInfo where salesman_id = @p and createTime BETWEEN @first and @last;";
+            string sql = "select sum(money) from zc_payInfo where saleman_id = @p and createTime BETWEEN @first and @last;";
             MySqlConnection conn = null;
             MySqlCommand cmd = new MySqlCommand();
             try
