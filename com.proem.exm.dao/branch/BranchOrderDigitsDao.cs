@@ -22,7 +22,7 @@ namespace Branch.com.proem.exm.dao.branch
         /// <param name="list"></param>
         public void AddOrderDigits(List<OrderDigits> list)
         {
-            string sql = "insert into zc_orders_digits (id, createTime, updateTime, countodsi, disgitsAmount, money_accuracy, orderAmount, type)"
+            string sql = "insert into zc_order_digits (id, createTime, updateTime, countodsi, digitsAmount, money_accuracy, orderAmount, type)"
                 + " values(@id, @createTime, @updateTime, @countodsi, @disgitsAmount, @money_accuracy, @orderAmount, @type)";
             MySqlConnection conn = null;
             MySqlTransaction tran = null;

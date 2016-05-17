@@ -16,6 +16,7 @@ namespace Branch.com.proem.exm.util
 
         /// <summary>
         /// 金额格式化
+        /// 末位舍去
         /// </summary>
         /// <param name="money"></param>
         /// <returns></returns>
@@ -41,6 +42,32 @@ namespace Branch.com.proem.exm.util
             {
                 a = money.ToString("0.0000").Length;
                 target = money.ToString("0.0000").Substring(0, a);
+            }
+            return target;
+        }
+
+        /// <summary>
+        /// 金额格式化
+        /// 四舍五入
+        /// </summary>
+        /// <returns></returns>
+        public static string RountFormat(float money) {
+            string target = "";
+            if (string.IsNullOrEmpty(accuracy))
+            {
+                return money.ToString("0.00");
+            }
+            if (accuracy.Equals("1"))
+            {
+                target = money.ToString("0.0");
+            }
+            else if (accuracy.Equals("2"))
+            {
+                target = money.ToString("0.00");
+            }
+            else if (accuracy.Equals("3"))
+            {
+                target = money.ToString("0.000");
             }
             return target;
         }
