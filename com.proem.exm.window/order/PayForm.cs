@@ -765,15 +765,6 @@ namespace Branch.com.proem.exm.window.order
             cashTextbox.Focus();
         }
 
-        /// <summary>
-        /// 微信支付
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void button2_Click_1(object sender, EventArgs e)
-        {
-
-        }
     }
 }
  

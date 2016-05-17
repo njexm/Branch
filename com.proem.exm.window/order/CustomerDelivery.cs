@@ -3449,16 +3449,19 @@ namespace Branch.com.proem.exm.window.order
                     List<ResaleItem> list = new List<ResaleItem>();
                     for (int i = 0; i < itemDataGridView.RowCount; i++)
                     {
+                        float nums = itemDataGridView.Rows[i].Cells[4].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[4].Value.ToString());
+                        if(nums == 0){
+                            continue;
+                        }
                         ResaleItem obj = new ResaleItem();
                         obj.Id = Guid.NewGuid().ToString();
                         obj.CreateTime = DateTime.Now;
                         obj.UpdateTime = DateTime.Now;
                         obj.ResaleId = resale.Id;
                         obj.GoodsFileId = itemDataGridView.Rows[i].Cells[14].Value.ToString();
-                        obj.Nums = itemDataGridView.Rows[i].Cells[4].Value.ToString();
+                        obj.Nums = itemDataGridView.Rows[i].Cells[4].Value == null ? string.Empty : itemDataGridView.Rows[i].Cells[4].Value.ToString();
                         obj.weight = itemDataGridView.Rows[i].Cells[17].Value == null ? string.Empty : itemDataGridView.Rows[i].Cells[8].Value.ToString();
-                        obj.Money = itemDataGridView.Rows[i].Cells[19].Value.ToString();
-                        obj.Id = itemDataGridView.Rows[i].Cells[8].Value == null ? string.Empty : itemDataGridView.Rows[i].Cells[8].Value.ToString();
+                        obj.Money = itemDataGridView.Rows[i].Cells[19].Value == null ?  string.Empty: itemDataGridView.Rows[i].Cells[19].Value.ToString();
                         ///TODO  暂时未加入折扣，优惠金额等算法
                         obj.ActualMoney = obj.Money;
                         list.Add(obj);
