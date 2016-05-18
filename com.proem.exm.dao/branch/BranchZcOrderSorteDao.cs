@@ -57,5 +57,36 @@ namespace Branch.com.proem.exm.dao.branch
                 CloseConnection(conn);
             }
         }
+
+        public void deleteById(List<ZcOrderSorte> list)
+        {
+            string sql = "delete from zc_order_sorte where id = @id";
+            MySqlConnection conn = null;
+            MySqlCommand cmd = new MySqlCommand();
+            MySqlTransaction tran = null;
+            try
+            {
+                conn = GetConnection();
+                cmd.Connection = conn;
+                tran = conn.BeginTransaction();
+                cmd.CommandText = sql;
+                foreach(ZcOrderSorte obj in list)
+                {
+                    cmd.Parameters.AddWithValue("@id", obj.Id);
+                    cmd.ExecuteNonQuery();
+                    cmd.Parameters.Clear();
+                }
+                tran.Commit();
+            }
+            catch (Exception ex)
+            {
+                tran.Rollback();
+                log.Error("根据id删除分拣信息失败", ex);
+            }
+            finally
+            {
+                CloseConnection(conn);
+            }
+        }
     }
 }

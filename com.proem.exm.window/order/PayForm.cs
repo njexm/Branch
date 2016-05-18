@@ -301,7 +301,7 @@ namespace Branch.com.proem.exm.window.order
         private void PayForm_KeyDown(object sender, KeyEventArgs e)
         {
             ///输入完现金后按enter
-            if(cashTextbox.Focused == true && e.KeyCode == Keys.Enter)
+            if(e.KeyCode == Keys.Enter)
             {
                 equalButton_Click(this, EventArgs.Empty);
             }else if(e.KeyCode == Keys.Escape)

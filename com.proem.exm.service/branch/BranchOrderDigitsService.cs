@@ -24,5 +24,11 @@ namespace Branch.com.proem.exm.service.branch
             BranchOrderDigitsDao dao = new BranchOrderDigitsDao();
             return dao.GetDigits();
         }
+
+        internal void DeleteAll()
+        {
+            BranchOrderDigitsDao dao = new BranchOrderDigitsDao();
+            dao.DeleteAll("zc_order_digits");
+        }
     }
 }

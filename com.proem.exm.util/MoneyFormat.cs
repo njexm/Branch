@@ -35,12 +35,12 @@ namespace Branch.com.proem.exm.util
             }
             else if (accuracy.Equals("2"))
             {
-                a = money.ToString("0.000").Length;
+                a = money.ToString("0.00").Length;
                 target = money.ToString("0.000").Substring(0, a);
             }
             else if (accuracy.Equals("3"))
             {
-                a = money.ToString("0.0000").Length;
+                a = money.ToString("0.000").Length;
                 target = money.ToString("0.0000").Substring(0, a);
             }
             return target;

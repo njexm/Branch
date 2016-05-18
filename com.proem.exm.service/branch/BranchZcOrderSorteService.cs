@@ -17,5 +17,11 @@ namespace Branch.com.proem.exm.service.branch
             dao.AddZcOrdeSorte(obj);
         }
 
+
+        public void deleteById(List<ZcOrderSorte> list)
+        {
+            BranchZcOrderSorteDao dao = new BranchZcOrderSorteDao();
+            dao.deleteById(list);
+        }
     }
 }

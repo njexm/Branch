@@ -315,13 +315,14 @@ namespace Branch.com.proem.exm.service.main
          }
 
         /// <summary>
-        /// 下载分拣信息表
+        /// 根据时间戳下载分拣信息表
         /// </summary>
          void DownloadZcOrderSorteData()
          {
              ZcOrderSorteService service = new ZcOrderSorteService();
              BranchZcOrderSorteService branchService = new BranchZcOrderSorteService();
              List<ZcOrderSorte> list = service.FindByStreet();
+             branchService.deleteById(list);
              branchService.AddZcOrderSorte(list);
          }
 
@@ -331,6 +332,7 @@ namespace Branch.com.proem.exm.service.main
          void DownloadOrderDigits()
          {
              BranchOrderDigitsService branchService = new BranchOrderDigitsService();
+             branchService.DeleteAll();
              OrderDigitsService service = new OrderDigitsService();
              List<OrderDigits> list = service.FindAll();
              branchService.AddDigits(list);

@@ -141,7 +141,7 @@ namespace Branch.com.proem.exm.window.receive
         /// </summary>
         private void loadTotal()
         {
-            int totalSum = 0;
+            float totalSum = 0;
             float totalAmount = 0;
             try
             {
@@ -155,8 +155,8 @@ namespace Branch.com.proem.exm.window.receive
             {
                 log.Error("类型转换异常", ex);
             }
-            this.totalSum.Text = totalSum.ToString();
-            this.totalAmount.Text = totalAmount.ToString();
+            this.totalSum.Text = MoneyFormat.RountFormat(totalSum);
+            this.totalAmount.Text = MoneyFormat.RountFormat(totalAmount);
         }
 
         /// <summary>
@@ -278,17 +278,17 @@ namespace Branch.com.proem.exm.window.receive
                 obj.Id = Guid.NewGuid().ToString().Replace("-", "");
                 obj.CreateTime = DateTime.Now;
                 obj.UpdateTime = DateTime.Now;
-                obj.SerialNumber = dc.Cells[0].Value.ToString();
-                obj.Name = dc.Cells[1].Value.ToString();
-                obj.Classify = dc.Cells[11].Value.ToString();
-                obj.GoodsUnit = dc.Cells[10].Value.ToString();
-                obj.GoodsSpecifications = dc.Cells[9].Value.ToString();
-                obj.GooodsPrice = dc.Cells[2].Value.ToString();
-                obj.Nums = dc.Cells[3].Value.ToString();
+                obj.SerialNumber = dc.Cells[0].Value == null ? string.Empty : dc.Cells[0].Value.ToString();
+                obj.Name = dc.Cells[1].Value == null ? string.Empty : dc.Cells[1].Value.ToString();
+                obj.Classify = dc.Cells[11].Value == null ? string.Empty : dc.Cells[11].Value.ToString();
+                obj.GoodsUnit = dc.Cells[10].Value == null ? string.Empty :dc.Cells[10].Value.ToString();
+                obj.GoodsSpecifications = dc.Cells[9].Value == null ? string.Empty : dc.Cells[9].Value.ToString();
+                obj.GooodsPrice = dc.Cells[2].Value == null ? string.Empty : dc.Cells[2].Value.ToString();
+                obj.Nums = dc.Cells[3].Value == null ? string.Empty : dc.Cells[3].Value.ToString();
                 obj.ActualQuantity = dc.Cells[5].Value == null ? "" : dc.Cells[5].Value.ToString();
-                obj.OrderAmount = dc.Cells[7].Value.ToString();
+                obj.OrderAmount = dc.Cells[7].Value == null ? string.Empty: dc.Cells[7].Value.ToString();
                 obj.ReceiveAmount = dc.Cells[8].Value == null ? "" : dc.Cells[8].Value.ToString();
-                obj.sortenum = dc.Cells[4].Value.ToString();
+                obj.sortenum = dc.Cells[4].Value == null ? string.Empty : dc.Cells[4].Value.ToString();
                 obj.Salesman = LoginUserInfo.id;
                 obj.BranchId = LoginUserInfo.branchId;
                 obj.receiveDate = DateTime.Now;
@@ -579,7 +579,7 @@ namespace Branch.com.proem.exm.window.receive
         /// </summary>
         private void Calculate()
         {
-            int totalSum = 0;
+            float totalSum = 0;
             float totalAmount = 0;
             try
             {
@@ -593,8 +593,8 @@ namespace Branch.com.proem.exm.window.receive
             {
                 log.Error("类型转换异常", ex);
             }
-            this.totalSum.Text = totalSum.ToString();
-            this.totalAmount.Text = totalAmount.ToString();
+            this.totalSum.Text = MoneyFormat.RountFormat(totalSum);
+            this.totalAmount.Text = MoneyFormat.RountFormat(totalAmount);
         }
 
         private void DeliveryGoods_KeyDown(object sender, KeyEventArgs e)
@@ -674,10 +674,10 @@ namespace Branch.com.proem.exm.window.receive
             {
                 try
                 {
-                    int num = itemDataGridView.Rows[e.RowIndex].Cells[5].Value == null ? 0 : Convert.ToInt32(itemDataGridView.Rows[e.RowIndex].Cells[5].Value.ToString());
-                    Double price = Convert.ToDouble(itemDataGridView.Rows[e.RowIndex].Cells[2].Value.ToString());
-                    int difference = Convert.ToInt32(itemDataGridView.Rows[e.RowIndex].Cells[4].Value.ToString()) - num;
-                    itemDataGridView.Rows[e.RowIndex].Cells[6].Value = difference;
+                    float num = itemDataGridView.Rows[e.RowIndex].Cells[5].Value == null ? 0 : Convert.ToInt32(itemDataGridView.Rows[e.RowIndex].Cells[5].Value.ToString());
+                    float price =float.Parse(itemDataGridView.Rows[e.RowIndex].Cells[2].Value.ToString());
+                    float difference = float.Parse(itemDataGridView.Rows[e.RowIndex].Cells[4].Value.ToString()) - num;
+                    itemDataGridView.Rows[e.RowIndex].Cells[6].Value = MoneyFormat.RountFormat(difference);
                     if (difference != 0)
                     {
                         itemDataGridView.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.FromArgb(201, 67, 65);// Color.Red;
@@ -686,7 +686,7 @@ namespace Branch.com.proem.exm.window.receive
                     {
                         itemDataGridView.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.FromArgb(51, 153, 255);// Color.Blue;//51,153,255
                     }
-                    itemDataGridView.Rows[e.RowIndex].Cells[8].Value = Math.Round(num * price, 2).ToString("0.00");
+                    itemDataGridView.Rows[e.RowIndex].Cells[8].Value = MoneyFormat.RountFormat(num * price);
                     Calculate();
                 }
                 catch (Exception ex)
@@ -748,8 +748,8 @@ namespace Branch.com.proem.exm.window.receive
                 {
                     return;
                 }
-                double price = Convert.ToDouble(e.Value.ToString());
-                e.Value = price.ToString("0.00");
+                float price = float.Parse(e.Value.ToString());
+                e.Value = MoneyFormat.RountFormat(price);
             }
         }
 
@@ -837,28 +837,51 @@ namespace Branch.com.proem.exm.window.receive
             }
             string bar = numberTextBox.Text;
             numberTextBox.Text = "";
-            string good_id = "";
-            string good_wei = "";
-            if (string.IsNullOrEmpty(bar) || bar.Length != 13)
+            string serial = "";
+            string weight = "";
+            if (string.IsNullOrEmpty(bar) || (!bar.StartsWith("28") && !bar.StartsWith("69")) || (bar.Length != 18 && bar.Length != 13))
             {
                 MessageBox.Show("扫码的条码不正确,请重新扫码!", "提示", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
                 return;
             }
 
-            if (bar.Length == 13 && bar.StartsWith("28"))
+            if (bar.Length == 18)
             {
-                good_id = bar.Substring(2, 5);
-                good_wei = bar.Substring(7, 5);
+                serial = bar.Substring(2, 5);
+            }
+            else if (bar.StartsWith("28"))
+            {
+                serial = bar.Substring(2, 5);
             }
             else
             {
-                good_id = bar;
+                serial = bar;
             }
+            BranchZcGoodsMasterService branchGoodsService = new BranchZcGoodsMasterService();
+            ZcGoodsMaster obj = branchGoodsService.FindBySerialNumber(serial);
+            if (obj == null)
+            {
+                MessageBox.Show("没有此货号对应的商品信息，请检查后重新操作!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            bool isWeightGoods = branchGoodsService.IsWeightGoods(obj.Id);
+            if (isWeightGoods)
+            {
+                if (bar.Length == 18)
+                {
+                    weight = float.Parse(bar.Substring(12, 5).Insert(2, ".")).ToString();
+                }
+                else
+                {
+                    weight = float.Parse(bar.Substring(12, 5).Insert(2, ".")).ToString();
+                }
+            }
+            
             DataSet ds = (DataSet)itemDataGridView.DataSource;
             bool flag = false;
             for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
             {
-                if (itemDataGridView[0, i].Value.ToString().Equals(good_id))
+                if (itemDataGridView[0, i].Value.ToString().Equals(serial))
                 {
                     row = i;//
                     column = 5;//

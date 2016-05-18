@@ -56,8 +56,8 @@ namespace Branch.com.proem.exm.window.order
         private void WxPayForm_Load(object sender, EventArgs e)
         {
             ///默认焦点在二维码的输入框内
-            payableTextbox.Text = float.Parse(needPayMoney).ToString("0.00");
-            actualTextbox.Text = float.Parse(needPayMoney).ToString("0.00");
+            payableTextbox.Text = MoneyFormat.RountFormat(float.Parse(needPayMoney));
+            actualTextbox.Text = MoneyFormat.RountFormat(float.Parse(needPayMoney));
         }
 
         private void WxPayForm_KeyDown(object sender, KeyEventArgs e)
@@ -66,6 +66,8 @@ namespace Branch.com.proem.exm.window.order
             if(codeTextbox.Focused && !string.IsNullOrEmpty(codeTextbox.Text.Trim()) && e.KeyCode == Keys.Enter)
             {
                 WxPay();
+            }else if(e.KeyCode == Keys.Escape){
+                this.Close();
             }
         }
 

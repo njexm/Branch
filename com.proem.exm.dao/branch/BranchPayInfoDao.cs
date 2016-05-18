@@ -145,7 +145,7 @@ namespace Branch.com.proem.exm.dao.branch
         public PayInfo FindById(string p)
         {
             PayInfo obj = new PayInfo();
-            string sql = "select id,createTime, updateTime, member_id, money, branch_id, saleman_id from pay_info where id= @id";
+            string sql = "select id,createTime, updateTime, member_id, money, branch_id, saleman_id from zc_payInfo where id= @id";
             MySqlConnection conn = null;
             MySqlCommand cmd = new MySqlCommand();
             try
