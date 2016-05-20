@@ -26,8 +26,8 @@ namespace Branch.com.proem.exm.dao.master
         /// <param name="list"></param>
         public void AddResaleItem(List<ResaleItem> list)
         {
-            string sql = "insert into zc_resale_item (id, createTime, updateTime,resale_id,  goodsFile_id, nums, weight,money, discount_amount, actual_money) "
-                + " values(:id, :createTime, :updateTime,:resaleId, :gooodsFileId, :nums, :weight,:money, :discount_amount, :actual_money)";
+            string sql = "insert into zc_resale_item (id, createTime, updateTime,resale_id,  goodsFile_id, nums, weight,money, discount_amount, actual_money, bar_code, price) "
+                + " values(:id, :createTime, :updateTime,:resaleId, :gooodsFileId, :nums, :weight,:money, :discount_amount, :actual_money, :bar_code, :price)";
             OracleConnection conn = null;
             OracleTransaction tran = null;
             OracleCommand cmd = new OracleCommand();
@@ -48,6 +48,8 @@ namespace Branch.com.proem.exm.dao.master
                     cmd.Parameters.Add(":money", obj.Money);
                     cmd.Parameters.Add(":discount_amount", obj.DiscountMoney);
                     cmd.Parameters.Add(":actual_money", obj.ActualMoney);
+                    cmd.Parameters.Add(":bar_code", obj.BarCode);
+                    cmd.Parameters.Add(":price", obj.Price);
                     cmd.ExecuteNonQuery();
                     cmd.Parameters.Clear();
                 }
@@ -79,8 +81,8 @@ namespace Branch.com.proem.exm.dao.master
         public bool AddResaleItemI(ResaleItem obj)
         {
             bool flag = true;
-            string sql = "insert into zc_resale_item (id, createTime, updateTime,resale_id,  goodsFile_id, nums, weight,money, discount_amount, actual_money) "
-                + " values(:id, :createTime, :updateTime,:resaleId, :gooodsFileId, :nums, :weight,:money, :discount_amount, :actual_money)";
+            string sql = "insert into zc_resale_item (id, createTime, updateTime,resale_id,  goodsFile_id, nums, weight,money, discount_amount, actual_money, bar_code, price) "
+                + " values(:id, :createTime, :updateTime,:resaleId, :gooodsFileId, :nums, :weight,:money, :discount_amount, :actual_money, :bar_code, :price)";
             OracleConnection conn = null;
             OracleTransaction tran = null;
             OracleCommand cmd = new OracleCommand();
@@ -100,6 +102,8 @@ namespace Branch.com.proem.exm.dao.master
                 cmd.Parameters.Add(":money", obj.Money);
                 cmd.Parameters.Add(":discount_amount", obj.DiscountMoney);
                 cmd.Parameters.Add(":actual_money", obj.ActualMoney);
+                cmd.Parameters.Add(":bar_code", obj.BarCode);
+                cmd.Parameters.Add(":price", obj.Price);
                 cmd.ExecuteNonQuery();
                 cmd.Parameters.Clear();
                 tran.Commit();

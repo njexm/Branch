@@ -609,7 +609,6 @@ namespace Branch.com.proem.exm.window.order
             receiveAmount.Visible = true;
             goods_specifications.Visible = true;
             goods_unit.Visible = true;
-            classify.Visible = true;
             orderNum.Visible = true;
             refuseReason.Visible = true;
             nums.HeaderText = "订单份数";
@@ -631,8 +630,12 @@ namespace Branch.com.proem.exm.window.order
             memberCard.Text = "";
 
             ///初始化合计
-            totalSum.Text = "0.00";
-            totalAmount.Text = "0.00";
+            totalSum.Text = MoneyFormat.RountFormat(0);
+            totalAmount.Text = MoneyFormat.RountFormat(0);
+
+            //点击提货直接进入会员选择界面
+            MemberChoose memberChoose = new MemberChoose(this, WorkMode);
+            memberChoose.Show();
         }
 
         /// <summary>
@@ -659,7 +662,6 @@ namespace Branch.com.proem.exm.window.order
             receiveAmount.Visible = false;
             goods_specifications.Visible = false;
             goods_unit.Visible = false;
-            classify.Visible = false;
             orderNum.Visible = false;
             refuseReason.Visible = false;
             refundReason.Visible = false;
@@ -679,8 +681,8 @@ namespace Branch.com.proem.exm.window.order
             memberCard.Text = "";
 
             ///初始化合计
-            totalSum.Text = "0.00";
-            totalAmount.Text = "0.00";
+            totalSum.Text = MoneyFormat.RountFormat(0);
+            totalAmount.Text = MoneyFormat.RountFormat(0);
         }
 
         /// <summary>
@@ -715,7 +717,6 @@ namespace Branch.com.proem.exm.window.order
             receiveAmount.Visible = false;
             goods_specifications.Visible = false;
             goods_unit.Visible = false;
-            classify.Visible = false;
             orderNum.Visible = false;
             refuseReason.Visible = false;
             refundReason.Visible = true;
@@ -735,8 +736,11 @@ namespace Branch.com.proem.exm.window.order
             memberCard.Text = "";
 
             ///初始化合计
-            totalSum.Text = "0.00";
-            totalAmount.Text = "0.00";
+            totalSum.Text = MoneyFormat.RountFormat(0);
+            totalAmount.Text = MoneyFormat.RountFormat(0);
+
+            ResaleList resaleListForm = new ResaleList(this);
+            resaleListForm.ShowDialog();
         }
 
         /// <summary>
@@ -1293,6 +1297,8 @@ namespace Branch.com.proem.exm.window.order
                                     itemDataGridView.Rows[i].Cells[4].Value = refundNums + 1;
                                     itemDataGridView.Rows[i].Cells[17].Value = refundWeight + float.Parse(weight);
                                     itemDataGridView.Rows[i].Cells[19].Value = MoneyFormat.RountFormat((refundWeight + float.Parse(weight)) * price);
+                                    itemDataGridView.Rows[i].Selected = true;
+                                    itemDataGridView.CurrentCell = itemDataGridView.Rows[i].Cells[0];
                                     printObjectlist.Add(goodsPrint);
                                     flag = true;
                                 }
@@ -2775,8 +2781,7 @@ namespace Branch.com.proem.exm.window.order
             itemDataGridView.AutoGenerateColumns = false;
             itemDataGridView.DataSource = ds;
             itemDataGridView.DataMember = "zc_order_transit";
-            //itemDataGridView.CurrentCell = null;//不默认选中
-            ///初始化显示份数差异
+            orderNumerLabel.Text = obj.OrderNum;
             initDifference();
         }
 
@@ -2786,8 +2791,22 @@ namespace Branch.com.proem.exm.window.order
         /// <param name="resale"></param>
         public void showRefundInfo(Resale resale)
         {
-            if(string.IsNullOrEmpty(resale.OrderId)){
+            BranchAssociatorInfoService branchAssociatorInfoService = new BranchAssociatorInfoService();
+            associatorInfo = branchAssociatorInfoService.FindById(resale.memberId);
+            memberCard.Text = associatorInfo.CardNumber;
+            memberName.Text = associatorInfo.Name;
+            memberPhone.Text = associatorInfo.MobilePhone;
+            if (!string.IsNullOrEmpty(resale.OrderId))
+            {
                 zc_order_transit_id = resale.OrderId;
+                BranchZcOrderHistoryService branchhistoryService = new BranchZcOrderHistoryService();
+                ZcOrderHistory history = branchhistoryService.FindById(resale.OrderId);
+                orderNumerLabel.Text = history.OrderNum;
+                workModelabel.Text = "按单退货";
+            }
+            else
+            {
+                workModelabel.Text = "零售退货";
             }
             MysqlDBHelper dbHelper = new MysqlDBHelper();
             string sql = "select c.id as goodsfile_id,c.SERIALNUMBER,c.GOODS_NAME as name , c.GOODS_PRICE as g_price,a.nums, a.weight, a.money as receive_money "

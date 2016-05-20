@@ -37,12 +37,12 @@
             this.number = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.phone = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.cancelButton = new System.Windows.Forms.Button();
             this.confirmButton = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.searchButton = new System.Windows.Forms.Button();
             this.searchTextbox = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -151,6 +151,20 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "会员信息查询";
             // 
+            // label1
+            // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("宋体", 10F);
+            this.label1.ForeColor = System.Drawing.Color.Black;
+            this.label1.Location = new System.Drawing.Point(332, 25);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(231, 14);
+            this.label1.TabIndex = 6;
+            this.label1.Text = "请输入会员姓名或会员卡号或手机号";
+            // 
             // cancelButton
             // 
             this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -225,20 +239,8 @@
             this.searchTextbox.Name = "searchTextbox";
             this.searchTextbox.Size = new System.Drawing.Size(200, 26);
             this.searchTextbox.TabIndex = 0;
-            // 
-            // label1
-            // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("宋体", 10F);
-            this.label1.ForeColor = System.Drawing.Color.Black;
-            this.label1.Location = new System.Drawing.Point(332, 25);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(231, 14);
-            this.label1.TabIndex = 6;
-            this.label1.Text = "请输入会员姓名或会员卡号或手机号";
+            this.searchTextbox.TextChanged += new System.EventHandler(this.searchTextbox_TextChanged);
+            this.searchTextbox.Leave += new System.EventHandler(this.searchTextbox_Leave);
             // 
             // MemberChoose
             // 
@@ -253,6 +255,7 @@
             this.Name = "MemberChoose";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "选择会员";
+            this.Activated += new System.EventHandler(this.MemberChoose_Activated);
             this.Load += new System.EventHandler(this.MemberChoose_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MemberChoose_KeyDown);
             this.panel1.ResumeLayout(false);

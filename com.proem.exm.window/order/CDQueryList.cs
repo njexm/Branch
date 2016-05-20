@@ -79,71 +79,8 @@ namespace Branch.com.proem.exm.window.order
 
         private void CDQueryList_Load(object sender, EventArgs e)
         {
-
-            ///当前工作模式为提货状态
-            if (WorkMode == Constant.PICK_UP_GOODS)
-            {
-                try
-                {
-                    //string sql = "select e.CONSIGNEE AS '姓名',e.CANSIGNPHONE AS '电话',f.ASSOCIATOR_CARDNUMBER AS '卡号',e.ORDERNUM as '订单号',e.ORDERAMOUNT as '金额'"
-                    string sql = "select e.id,e.ORDERNUM ,e.ORDERAMOUNT,e.CONSIGNEE,e.CANSIGNPHONE,f.ASSOCIATOR_CARDNUMBER "
-                        + " From zc_order_transit e "
-                        + " LEFT JOIN zc_associator_info f on e.member_id = f.id "
-                        + " WHERE member_id = '"+keyStr+"' and e.orderstatus = '" + Constant.ORDER_STATUS_RECEIPT + "' ";
-                    MysqlDBHelper dbHelper = new MysqlDBHelper();
-                    DataSet ds = dbHelper.GetDataSet(sql, "zc_goods_master");
-                    listDataGridView.AutoGenerateColumns = false;
-                    listDataGridView.DataSource = ds;
-                    listDataGridView.DataMember = "zc_goods_master";
-                }
-                catch (Exception ex)
-                {
-                    log.Error("加载数据源发生异常", ex);
-                }
-            }
-            ///当前工作模式为退款状态
-            if (WorkMode == Constant.REFUND)
-            {
-                //try
-                //{
-                //    //string sql = "select e.CONSIGNEE AS '姓名',e.CANSIGNPHONE AS '电话',f.ASSOCIATOR_CARDNUMBER AS '卡号',e.ORDERNUM as '订单号',e.ORDERAMOUNT as '金额'"
-                //    string sql = "select e.id,e.ORDERNUM ,e.ORDERAMOUNT,e.CONSIGNEE,e.CANSIGNPHONE,f.ASSOCIATOR_CARDNUMBER,e.ACTUAL_MONEY "
-                //        + " From zc_order_history e "
-                //        + " LEFT JOIN zc_associator_info f on e.member_id = f.id "
-                //        + " WHERE  e.orderstatus not in ('" + Constant.ORDER_STATUS_ALL_REFUSE + "','" + Constant.ORDER_STATUS_ALL_REFUND + "','" + Constant.ORDER_STATUS_PART_REFUND + "') ";
-                //        //+ " WHERE  e.orderstatus in ('" + Constant.ORDER_STATUS_FININSH + "') ";
-                //    if (!keyStr.Equals(""))
-                //    {
-                //        sql += " and ( f.associator_cardnumber like '%" + keyStr + "%' or e.consignee like '%" + keyStr + "%' or e.cansignphone like '%" + keyStr + "%' ) ";
-                //    }
-                //    //MessageBox.Show(sql); 
-                //    MysqlDBHelper dbHelper = new MysqlDBHelper();
-                //    DataSet ds = dbHelper.GetDataSet(sql, "zc_goods_master");
-                //    listDataGridView.AutoGenerateColumns = false;
-                //    listDataGridView.DataSource = ds;
-                //    listDataGridView.DataMember = "zc_goods_master";
-                //}
-                //catch (Exception ex)
-                //{
-                //    log.Error("加载数据源发生异常", ex);
-                //}
-
-                //listDataGridView.CurrentCell = null;//不默认选中
-            }
-        }
-
-        /// <summary>
-        /// 关键词查询
-        /// </summary>
-        /// <returns></returns>
-        private string addTextConditions()
-        {
-            string conditions = "";
-            if (!keyStr.Equals(""))
-            {
-                conditions += " and f.associator_cardnumber like '%" + keyStr + "%' or e.consignee like '%" + keyStr + "%' or e.cansignphone like '%" + keyStr + "%' ";
-            }
-            return conditions;
+            searchTextBox.Focus();
+            button1_Click(this, EventArgs.Empty);            
         }
 
         private void okButton_Click(object sender, EventArgs e)
@@ -190,6 +127,37 @@ namespace Branch.com.proem.exm.window.order
             {
                 leaveButton_Click(this, EventArgs.Empty);
             }
+            if(e.KeyCode == Keys.A){
+                button1_Click(this, EventArgs.Empty);
+            }
+            if (e.KeyCode == Keys.Up)
+            {
+                if (listDataGridView.DataSource == null || listDataGridView.RowCount <= 1)
+                {
+                    return;
+                }
+                int index = listDataGridView.CurrentRow.Index;
+                int count = listDataGridView.RowCount;
+                if (index > 0)
+                {
+                    listDataGridView.Rows[index - 1].Selected = true;
+                    listDataGridView.CurrentCell = listDataGridView.Rows[index - 1].Cells[1];
+                }
+            }
+            else if (e.KeyCode == Keys.Down)
+            {
+                if (listDataGridView.DataSource == null || listDataGridView.RowCount <= 1)
+                {
+                    return;
+                }
+                int index = listDataGridView.CurrentRow.Index;
+                int count = listDataGridView.RowCount;
+                if (index < count - 1)
+                {
+                    listDataGridView.Rows[index + 1].Selected = true;
+                    listDataGridView.CurrentCell = listDataGridView.Rows[index + 1].Cells[1];
+                }
+            }
         }
 
         /// <summary>
@@ -201,18 +169,7 @@ namespace Branch.com.proem.exm.window.order
             string id = listDataGridView.CurrentRow.Cells[5].Value.ToString();
             BranchZcOrderTransitService branchService = new BranchZcOrderTransitService();
             ZcOrderTransit zcOrderTransit = branchService.FindById(id);
-            ///当前工作模式为提货状态
-            if (WorkMode == Constant.PICK_UP_GOODS)
-            {
-                customerDelivery.showTransitOrder(zcOrderTransit);
-            }
-            /////当前工作模式为退款状态
-            //if (WorkMode == Constant.REFUND)
-            //{
-            //    string actual_moneycard = listDataGridView.CurrentRow.Cells[5].Value.ToString();
-            //    customerDelivery.setOrderNum(order_Num);
-            //    customerDelivery.setinform(order_Num, actual_moneycard, name, phone, card);
-            //}
+            customerDelivery.showTransitOrder(zcOrderTransit);
         }
 
         private void listDataGridView_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
@@ -223,6 +180,48 @@ namespace Branch.com.proem.exm.window.order
                 e.Graphics.DrawString(Convert.ToString(e.RowIndex + 1),
                 e.InheritedRowStyle.Font, b, e.RowBounds.Location.X + 20, e.RowBounds.Location.Y + 4);
             }
+        }
+
+        /// <summary>
+        /// 查询
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button1_Click(object sender, EventArgs e)
+        {
+            string searchText = searchTextBox.Text;
+            try
+            {
+                string sql = "select e.id,e.ORDERNUM ,e.ORDERAMOUNT,e.CONSIGNEE,e.CANSIGNPHONE,f.ASSOCIATOR_CARDNUMBER "
+                    + " From zc_order_transit e "
+                    + " LEFT JOIN zc_associator_info f on e.member_id = f.id "
+                    + " WHERE member_id = '" + keyStr + "' and e.orderstatus = '" + Constant.ORDER_STATUS_RECEIPT + "' and e.orderNum like '%"+searchText+"%'";
+                MysqlDBHelper dbHelper = new MysqlDBHelper();
+                DataSet ds = dbHelper.GetDataSet(sql, "zc_goods_master");
+                listDataGridView.AutoGenerateColumns = false;
+                listDataGridView.DataSource = ds;
+                listDataGridView.DataMember = "zc_goods_master";
+            }
+            catch (Exception ex)
+            {
+                log.Error("加载数据源发生异常", ex);
+            }
+            
+        }
+
+        private void searchTextBox_TextChanged(object sender, EventArgs e)
+        {
+            button1_Click(this, EventArgs.Empty);
+        }
+
+        private void CDQueryList_Activated(object sender, EventArgs e)
+        {
+            searchTextBox.Focus();
+        }
+
+        private void searchTextBox_Leave(object sender, EventArgs e)
+        {
+            searchTextBox.Focus();
         }
     }
 }

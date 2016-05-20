@@ -55,6 +55,7 @@ namespace Branch.com.proem.exm.window.order
         private void MemberChoose_Load(object sender, EventArgs e)
         {
             searchTextbox.Focus();
+            button1_Click(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -96,14 +97,37 @@ namespace Branch.com.proem.exm.window.order
         /// <param name="e"></param>
         private void MemberChoose_KeyDown(object sender, KeyEventArgs e)
         {
-            if(searchTextbox.Focused && e.KeyCode == Keys.Enter){
-                button1_Click(this, EventArgs.Empty);
-            }else if(dataGridView1.Focused && e.KeyCode == Keys.Enter){
+            if(e.KeyCode == Keys.Enter){
                 confirmButton_Click(this, EventArgs.Empty);
             }else if(e.KeyCode == Keys.F1){
                 confirmButton_Click(this, EventArgs.Empty);
             }else if(e.KeyCode == Keys.Escape){
                 cancelButton_Click(this, EventArgs.Empty);
+            }else if(e.KeyCode == Keys.Up)
+            {
+                if (dataGridView1.DataSource == null || dataGridView1.RowCount <= 1)
+                {
+                    return;
+                }
+                int index = dataGridView1.CurrentRow.Index;
+                int count = dataGridView1.RowCount;
+                if(index > 0){
+                    dataGridView1.Rows[index-1].Selected = true;
+                    dataGridView1.CurrentCell = dataGridView1.Rows[index - 1].Cells[1];
+                }
+            }else if(e.KeyCode == Keys.Down)
+            {
+                if (dataGridView1.DataSource == null || dataGridView1.RowCount <= 1)
+                {
+                    return;
+                }
+                int index = dataGridView1.CurrentRow.Index;
+                int count = dataGridView1.RowCount;
+                if (index < count - 1)
+                {
+                    dataGridView1.Rows[index + 1].Selected = true;
+                    dataGridView1.CurrentCell = dataGridView1.Rows[index + 1].Cells[1];
+                }
             }
         }
 
@@ -171,12 +195,26 @@ namespace Branch.com.proem.exm.window.order
                 }
                 else 
                 {
-                    ResaleList resaleListForm = new ResaleList(this, obj.Id, customerDelivery);
-                    resaleListForm.ShowDialog();
+                    
                 }
             }
             customerDelivery.SetAssociatorInfo(obj);
             this.Close();
+        }
+
+        private void searchTextbox_TextChanged(object sender, EventArgs e)
+        {
+            button1_Click(this, EventArgs.Empty);
+        }
+
+        private void MemberChoose_Activated(object sender, EventArgs e)
+        {
+            searchTextbox.Focus();
+        }
+
+        private void searchTextbox_Leave(object sender, EventArgs e)
+        {
+            searchTextbox.Focus();
         }
     }
 }

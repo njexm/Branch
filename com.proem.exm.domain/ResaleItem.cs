@@ -50,5 +50,15 @@ namespace Branch.com.proem.exm.domain
         /// 实付金额
         /// </summary>
         public string ActualMoney { get; set; }
+
+        /// <summary>
+        /// 条形码
+        /// </summary>
+        public string BarCode { get; set; }
+
+        /// <summary>
+        /// 单价
+        /// </summary>
+        public string Price { get; set; }
     }
 }

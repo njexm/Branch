@@ -97,6 +97,8 @@
             this.receive_money = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.refund_money = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.refundReason = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.orderNumberTitle = new System.Windows.Forms.Label();
+            this.orderNumerLabel = new System.Windows.Forms.Label();
             this.customerDeliveryPanel.SuspendLayout();
             this.logoPanel.SuspendLayout();
             this.informPanel.SuspendLayout();
@@ -154,7 +156,8 @@
             // 
             this.workModelabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.workModelabel.Font = new System.Drawing.Font("宋体", 20F);
+            this.workModelabel.Font = new System.Drawing.Font("宋体", 20F, System.Drawing.FontStyle.Bold);
+            this.workModelabel.ForeColor = System.Drawing.Color.Red;
             this.workModelabel.Location = new System.Drawing.Point(697, 25);
             this.workModelabel.Name = "workModelabel";
             this.workModelabel.Size = new System.Drawing.Size(160, 27);
@@ -224,16 +227,19 @@
             // membertabLayout
             // 
             this.membertabLayout.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(133)))), ((int)(((byte)(160)))));
-            this.membertabLayout.ColumnCount = 3;
-            this.membertabLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.membertabLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.membertabLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.membertabLayout.ColumnCount = 4;
+            this.membertabLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.membertabLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.membertabLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.membertabLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.membertabLayout.Controls.Add(this.member_name, 0, 0);
             this.membertabLayout.Controls.Add(this.memberName, 0, 1);
             this.membertabLayout.Controls.Add(this.member_idlable, 1, 0);
             this.membertabLayout.Controls.Add(this.memberCard, 1, 1);
             this.membertabLayout.Controls.Add(this.memberPhoneLabel, 2, 0);
             this.membertabLayout.Controls.Add(this.memberPhone, 2, 1);
+            this.membertabLayout.Controls.Add(this.orderNumberTitle, 3, 0);
+            this.membertabLayout.Controls.Add(this.orderNumerLabel, 3, 1);
             this.membertabLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.membertabLayout.Location = new System.Drawing.Point(0, 0);
             this.membertabLayout.Name = "membertabLayout";
@@ -251,7 +257,7 @@
             this.member_name.ForeColor = System.Drawing.Color.White;
             this.member_name.Location = new System.Drawing.Point(3, 0);
             this.member_name.Name = "member_name";
-            this.member_name.Size = new System.Drawing.Size(327, 30);
+            this.member_name.Size = new System.Drawing.Size(244, 30);
             this.member_name.TabIndex = 0;
             this.member_name.Text = "会员姓名";
             this.member_name.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -264,7 +270,7 @@
             this.memberName.ForeColor = System.Drawing.Color.White;
             this.memberName.Location = new System.Drawing.Point(3, 30);
             this.memberName.Name = "memberName";
-            this.memberName.Size = new System.Drawing.Size(327, 30);
+            this.memberName.Size = new System.Drawing.Size(244, 30);
             this.memberName.TabIndex = 1;
             this.memberName.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
@@ -274,9 +280,9 @@
             this.member_idlable.Dock = System.Windows.Forms.DockStyle.Fill;
             this.member_idlable.Font = new System.Drawing.Font("宋体", 12F);
             this.member_idlable.ForeColor = System.Drawing.Color.White;
-            this.member_idlable.Location = new System.Drawing.Point(336, 0);
+            this.member_idlable.Location = new System.Drawing.Point(253, 0);
             this.member_idlable.Name = "member_idlable";
-            this.member_idlable.Size = new System.Drawing.Size(327, 30);
+            this.member_idlable.Size = new System.Drawing.Size(244, 30);
             this.member_idlable.TabIndex = 2;
             this.member_idlable.Text = "会员卡号";
             this.member_idlable.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -287,9 +293,9 @@
             this.memberCard.Dock = System.Windows.Forms.DockStyle.Fill;
             this.memberCard.Font = new System.Drawing.Font("宋体", 12F);
             this.memberCard.ForeColor = System.Drawing.Color.White;
-            this.memberCard.Location = new System.Drawing.Point(336, 30);
+            this.memberCard.Location = new System.Drawing.Point(253, 30);
             this.memberCard.Name = "memberCard";
-            this.memberCard.Size = new System.Drawing.Size(327, 30);
+            this.memberCard.Size = new System.Drawing.Size(244, 30);
             this.memberCard.TabIndex = 3;
             this.memberCard.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
@@ -299,9 +305,9 @@
             this.memberPhoneLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.memberPhoneLabel.Font = new System.Drawing.Font("宋体", 12F);
             this.memberPhoneLabel.ForeColor = System.Drawing.Color.White;
-            this.memberPhoneLabel.Location = new System.Drawing.Point(669, 0);
+            this.memberPhoneLabel.Location = new System.Drawing.Point(503, 0);
             this.memberPhoneLabel.Name = "memberPhoneLabel";
-            this.memberPhoneLabel.Size = new System.Drawing.Size(328, 30);
+            this.memberPhoneLabel.Size = new System.Drawing.Size(244, 30);
             this.memberPhoneLabel.TabIndex = 4;
             this.memberPhoneLabel.Text = "会员电话";
             this.memberPhoneLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -312,9 +318,9 @@
             this.memberPhone.Dock = System.Windows.Forms.DockStyle.Fill;
             this.memberPhone.Font = new System.Drawing.Font("宋体", 12F);
             this.memberPhone.ForeColor = System.Drawing.Color.White;
-            this.memberPhone.Location = new System.Drawing.Point(669, 30);
+            this.memberPhone.Location = new System.Drawing.Point(503, 30);
             this.memberPhone.Name = "memberPhone";
-            this.memberPhone.Size = new System.Drawing.Size(328, 30);
+            this.memberPhone.Size = new System.Drawing.Size(244, 30);
             this.memberPhone.TabIndex = 5;
             this.memberPhone.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
@@ -536,7 +542,6 @@
             this.orderItemGroupBox.Size = new System.Drawing.Size(982, 470);
             this.orderItemGroupBox.TabIndex = 2;
             this.orderItemGroupBox.TabStop = false;
-            this.orderItemGroupBox.Text = "详细信息";
             // 
             // itemTablePanel
             // 
@@ -753,6 +758,7 @@
             this.classify.HeaderText = "类型";
             this.classify.Name = "classify";
             this.classify.ReadOnly = true;
+            this.classify.Visible = false;
             // 
             // orderNum
             // 
@@ -829,6 +835,31 @@
             this.refundReason.ReadOnly = true;
             this.refundReason.Visible = false;
             this.refundReason.Width = 200;
+            // 
+            // orderNumberTitle
+            // 
+            this.orderNumberTitle.AutoSize = true;
+            this.orderNumberTitle.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.orderNumberTitle.Font = new System.Drawing.Font("宋体", 12F);
+            this.orderNumberTitle.ForeColor = System.Drawing.Color.White;
+            this.orderNumberTitle.Location = new System.Drawing.Point(753, 0);
+            this.orderNumberTitle.Name = "orderNumberTitle";
+            this.orderNumberTitle.Size = new System.Drawing.Size(244, 30);
+            this.orderNumberTitle.TabIndex = 6;
+            this.orderNumberTitle.Text = "订单号";
+            this.orderNumberTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // orderNumerLabel
+            // 
+            this.orderNumerLabel.AutoSize = true;
+            this.orderNumerLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.orderNumerLabel.Font = new System.Drawing.Font("宋体", 12F);
+            this.orderNumerLabel.ForeColor = System.Drawing.Color.White;
+            this.orderNumerLabel.Location = new System.Drawing.Point(753, 30);
+            this.orderNumerLabel.Name = "orderNumerLabel";
+            this.orderNumerLabel.Size = new System.Drawing.Size(244, 30);
+            this.orderNumerLabel.TabIndex = 7;
+            this.orderNumerLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // CustomerDelivery
             // 
@@ -907,6 +938,7 @@
         private System.Windows.Forms.Label memberCard;
         private System.Windows.Forms.Label memberPhoneLabel;
         private System.Windows.Forms.Label memberPhone;
+        private System.Windows.Forms.Label workModelabel;
         private System.Windows.Forms.DataGridViewTextBoxColumn serialnumber;
         private System.Windows.Forms.DataGridViewTextBoxColumn goods_name;
         private System.Windows.Forms.DataGridViewTextBoxColumn goods_price;
@@ -928,7 +960,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn receive_money;
         private System.Windows.Forms.DataGridViewTextBoxColumn refund_money;
         private System.Windows.Forms.DataGridViewTextBoxColumn refundReason;
-        private System.Windows.Forms.Label workModelabel;
+        private System.Windows.Forms.Label orderNumberTitle;
+        private System.Windows.Forms.Label orderNumerLabel;
 
     }
 }

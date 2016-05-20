@@ -587,20 +587,20 @@ namespace Branch.com.proem.exm.window.order
 
             //this.cardpayment = paidAmount;
             paidAmount += cash;
-            textBox5.Text = paidAmount.ToString("0.00");
+            textBox5.Text = MoneyFormat.RountFormat(paidAmount);
             //if (paidAmount >= payableAmount)
             if (paidAmount >= float.Parse(textBox4.Text))
             {
                 //textBox6.Text = (paidAmount - payableAmount).ToString("0.00");
-                textBox6.Text = (paidAmount - float.Parse(textBox4.Text)).ToString("0.00");
+                textBox6.Text = MoneyFormat.RountFormat(paidAmount - float.Parse(textBox4.Text));
                 flag = true;
                 button3_Click(this, EventArgs.Empty);
-                cashTextbox.Text = "0.00";
+                cashTextbox.Text = MoneyFormat.RountFormat(0);
             }
             else
             {
                 flag = false;
-                cashTextbox.Text = (float.Parse(textBox4.Text) - paidAmount).ToString("0.00");
+                cashTextbox.Text = MoneyFormat.RountFormat(float.Parse(textBox4.Text) - paidAmount);
             }
             
         }

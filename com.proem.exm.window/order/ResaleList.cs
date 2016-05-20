@@ -1,4 +1,5 @@
 ﻿using Branch.com.proem.exm.domain;
+using Branch.com.proem.exm.service.branch;
 using Branch.com.proem.exm.util;
 using System;
 using System.Collections.Generic;
@@ -13,44 +14,60 @@ namespace Branch.com.proem.exm.window.order
 {
     public partial class ResaleList : Form
     {
-        private MemberChoose memberChoose;
-
         private CustomerDelivery customerDelivery;
-
-        private string memberId;
 
         public ResaleList()
         {
             InitializeComponent();
         }
 
-        public ResaleList(MemberChoose memberChoose, string memberId, CustomerDelivery customerDelivery)
+        public ResaleList(CustomerDelivery customerDelivery)
         {
             InitializeComponent();
-            this.memberChoose = memberChoose;
             this.customerDelivery = customerDelivery;
-            this.memberId = memberId;
         }
 
         private void ResaleList_Load(object sender, EventArgs e)
         {
-            string sql = "select a.id, a.water_number as waterNumber, a.createTime,a.actual_money as money, a.order_id, b.ASSOCIATOR_NAME as name from zc_resale a left join zc_associator_info b "
-                +" on a.member_id = b.ID where a.member_id = '"+memberId+"' order by a.createTime desc";
-            MysqlDBHelper dbHelper = new MysqlDBHelper();
-            DataSet ds = dbHelper.GetDataSet(sql, "zc_resale");
-            dataGridView1.AutoGenerateColumns = false;
-            dataGridView1.DataSource = ds;
-            dataGridView1.DataMember = "zc_resale";
+            button1_Click(this, EventArgs.Empty);
         }
 
         private void ResaleList_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.KeyCode == Keys.Y){
-                okButton_Click(this, EventArgs.Empty);
-            }else if(e.KeyCode == Keys.L){
+            if(e.KeyCode == Keys.Escape){
                 this.Close();
             }else if(e.KeyCode == Keys.Enter){
                 okButton_Click(this, EventArgs.Empty);
+            }else if(e.KeyCode == Keys.A){
+                button1_Click(this, EventArgs.Empty);
+            }
+            else if (e.KeyCode == Keys.Up)
+            {
+                if (dataGridView1.DataSource == null || dataGridView1.RowCount <= 1)
+                {
+                    return;
+                }
+                int index = dataGridView1.CurrentRow.Index;
+                int count = dataGridView1.RowCount;
+                if (index > 0)
+                {
+                    dataGridView1.Rows[index - 1].Selected = true;
+                    dataGridView1.CurrentCell = dataGridView1.Rows[index - 1].Cells[1];
+                }
+            }
+            else if (e.KeyCode == Keys.Down)
+            {
+                if (dataGridView1.DataSource == null || dataGridView1.RowCount <= 1)
+                {
+                    return;
+                }
+                int index = dataGridView1.CurrentRow.Index;
+                int count = dataGridView1.RowCount;
+                if (index < count - 1)
+                {
+                    dataGridView1.Rows[index + 1].Selected = true;
+                    dataGridView1.CurrentCell = dataGridView1.Rows[index + 1].Cells[1];
+                }
             }
         }
 
@@ -64,11 +81,10 @@ namespace Branch.com.proem.exm.window.order
             if(dataGridView1.DataSource == null || dataGridView1.RowCount == 0){
                 return;
             }
-            Resale obj = new Resale();
-            obj.Id = dataGridView1.CurrentRow.Cells[5].Value.ToString();
-            obj.OrderId = dataGridView1.CurrentRow.Cells[3].Value == null ? string.Empty : dataGridView1.CurrentRow.Cells[3].Value.ToString();
+            string id = dataGridView1.CurrentRow.Cells[5].Value.ToString();
+            BranchResaleService service = new BranchResaleService();
+            Resale obj = service.FindById(id);
             customerDelivery.showRefundInfo(obj);
-            memberChoose.Close();
             this.Close();
         }
 
@@ -85,6 +101,38 @@ namespace Branch.com.proem.exm.window.order
                 e.Graphics.DrawString(Convert.ToString(e.RowIndex + 1),
                 e.InheritedRowStyle.Font, b, e.RowBounds.Location.X + 5, e.RowBounds.Location.Y + 4);
             }
+        }
+
+        /// <summary>
+        /// 查询
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button1_Click(object sender, EventArgs e)
+        {
+            string search = searchTextBox.Text;
+            string sql = "select a.id, a.water_number as waterNumber, a.createTime,a.actual_money as money, a.order_id, b.ASSOCIATOR_NAME as name from zc_resale a left join zc_associator_info b "
+                + " on a.member_id = b.ID left join zc_order_history c on a.order_id = c.id where b.associator_Name like '%" + search + "%' or b.associator_CardNumber like '%" + search + "%' or b.associator_Mobilephone like '%" + search + "%' or a.water_number like '%" + search + "%' or c.orderNum like '%" + search + "%' order by a.createTime desc";
+            MysqlDBHelper dbHelper = new MysqlDBHelper();
+            DataSet ds = dbHelper.GetDataSet(sql, "zc_resale");
+            dataGridView1.AutoGenerateColumns = false;
+            dataGridView1.DataSource = ds;
+            dataGridView1.DataMember = "zc_resale";
+        }
+
+        private void ResaleList_Activated(object sender, EventArgs e)
+        {
+            searchTextBox.Focus();
+        }
+
+        private void searchTextBox_Leave(object sender, EventArgs e)
+        {
+            searchTextBox.Focus();
+        }
+
+        private void searchTextBox_TextChanged(object sender, EventArgs e)
+        {
+            button1_Click(this, EventArgs.Empty);
         }
     }
 }
