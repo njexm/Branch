@@ -85,6 +85,11 @@ namespace Branch.com.proem.exm.window.order
 
         public CustomerDelivery customerDelivery;
 
+        /// <summary>
+        /// 流水号
+        /// </summary>
+        public string waterNumber;
+
         public PayForm()
         {
             InitializeComponent();
@@ -126,12 +131,12 @@ namespace Branch.com.proem.exm.window.order
             ///应付金额
             payableAmount = amount - float.Parse(textBox3.Text);
             textBox4.Text = MoneyFormat.Format(payableAmount);
-            cashTextbox.Text = payableAmount.ToString("0.00");
+            cashTextbox.Text = MoneyFormat.Format(payableAmount);
             ///已付金额
             paidAmount = 0;
-            textBox5.Text = "0.00";
+            textBox5.Text = MoneyFormat.RountFormat(0);
             ///找零金额
-            textBox6.Text = "0.00";
+            textBox6.Text = MoneyFormat.RountFormat(0);
         }
 
         /// <summary>
@@ -341,13 +346,16 @@ namespace Branch.com.proem.exm.window.order
             }
             if (e.KeyChar != '\b')
             {
-                if (cashTextbox.Text.IndexOf(".") > -1)
+                if (string.IsNullOrEmpty(cashTextbox.SelectedText))
                 {
-                    string[] str = cashTextbox.Text.Split('.');
-                    //已经有小数点2位了则取消输入
-                    if (str[1].Length > 1)
+                    if (cashTextbox.Text.IndexOf(".") > -1)
                     {
-                        e.Handled = true;
+                        string[] str = cashTextbox.Text.Split('.');
+                        //已经有小数点2位了则取消输入
+                        if (str[1].Length > 1)
+                        {
+                            e.Handled = true;
+                        }
                     }
                 }
             }

@@ -20,6 +20,7 @@ using Branch.com.proem.exm.service.branch;
 using Branch.com.proem.exm.window.order.controller;
 using System.Drawing.Printing;
 using Branch.com.proem.exm.dao.branch;
+using WxPayAPI;
 
 namespace Branch.com.proem.exm.window.order
 {
@@ -441,17 +442,14 @@ namespace Branch.com.proem.exm.window.order
             }else if(e.KeyCode == Keys.L)
             {
                 resaleInit();
-            }else if(e.KeyCode == Keys.F2)
+            }else if(e.KeyCode == Keys.F2 && WorkMode.Equals(Constant.RETAIL))
             {
                 MemberChoose memberChoose = new MemberChoose(this, WorkMode);
                 memberChoose.Show();
-            }else if(e.KeyCode == Keys.Add)
-            {
-                AddOrDelete = true;
             }
             else if (e.KeyCode == Keys.Subtract)
             {
-                AddOrDelete = false;
+                setFlagLabel();
             }
             else if (e.KeyCode == Keys.Multiply)
             {
@@ -459,7 +457,7 @@ namespace Branch.com.proem.exm.window.order
             }else if(e.KeyCode == Keys.U && WorkMode.Equals(Constant.RETAIL))
             {
                 deleteResaleGoods();
-            }else if(e.KeyCode == Keys.Space)
+            }else if(e.KeyCode == Keys.Add)
             {
                 ///按space进入结算
                 settlement();
@@ -473,8 +471,19 @@ namespace Branch.com.proem.exm.window.order
                 }
                 else 
                 {
-                    InputReason inputReason = new InputReason(this.WorkMode, this);
-                    inputReason.Show();
+                    if (WorkMode.Equals(Constant.PICK_UP_GOODS))
+                    {
+                        RefuseReason reason = new RefuseReason(this, itemDataGridView.CurrentRow.Cells[1].Value == null ? string.Empty : itemDataGridView.CurrentRow.Cells[1].Value.ToString(), false);
+                        reason.Show();
+                    }
+                    else
+                    {
+                        RefuseReason reason = new RefuseReason(this, itemDataGridView.CurrentRow.Cells[1].Value == null ? string.Empty : itemDataGridView.CurrentRow.Cells[1].Value.ToString(), WorkMode);
+                        reason.Show();
+                    }
+                    
+                    //InputReason inputReason = new InputReason(this.WorkMode, this);
+                    //inputReason.Show();
                 }
             }
 
@@ -803,53 +812,6 @@ namespace Branch.com.proem.exm.window.order
         }
 
         /// <summary>
-        /// 添加商品
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="num">商品份数</param>
-        public void AddGoods(ZcGoodsMaster obj, string num)
-        {
-            if (itemDataGridView.DataSource == null)
-            {
-                MessageBox.Show("尚未读取订单数据");
-                return;
-            }
-            DataSet ds = (DataSet)itemDataGridView.DataSource;
-            //
-            bool flag = false;
-            for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
-            {
-                if (ds.Tables[0].Rows[i][0].ToString().ToString().Equals(obj.SerialNumber))
-                {
-                    string nums = itemDataGridView[5, i].Value.ToString();
-                    itemDataGridView[5, i].Value = Convert.ToInt32(nums) + Convert.ToInt32(num);
-                    return;
-                }
-                else
-                {
-
-                }
-                if (itemDataGridView[0, i].Value.ToString().Equals(obj.SerialNumber))//
-                {//
-                    row = i;//
-                    column = 5;//
-                    //itemsInput.sureflag = true;//
-                    flag = true;//
-                    itemDataGridView[4, i].Value = Convert.ToInt32(itemDataGridView[4, i].Value) + 1;
-                    //this.itemDataGridView.CurrentCell = itemDataGridView[4, row]; //单元格设置可编辑状态-
-                    //itemDataGridView.BeginEdit(true);
-                }//
-            }
-            if (!flag)
-            {
-                MessageBox.Show("客户订单中没有此商品，请与客户确认");
-                return;
-            }
-            //自动计算
-            Calculate();
-        }
-
-        /// <summary>
         /// 检测输入是否为数字的事件
         /// </summary>
         /// <param name="sender"></param>
@@ -1019,6 +981,7 @@ namespace Branch.com.proem.exm.window.order
             memberName.Text = "";
             memberCard.Text = "";
             memberPhone.Text = "";
+            orderNumerLabel.Text = "";
             totalSum.Text = MoneyFormat.RountFormat(0);
             totalAmount.Text = MoneyFormat.RountFormat(0);
             itemDataGridView.DataSource = null;
@@ -1067,7 +1030,7 @@ namespace Branch.com.proem.exm.window.order
                 }
                 else
                 {
-                    weight = float.Parse(bar.Substring(12, 5).Insert(2, ".")).ToString();
+                    weight = float.Parse(bar.Substring(7, 5).Insert(2, ".")).ToString();
                 }
             }
             DataSet ds = (DataSet)itemDataGridView.DataSource;
@@ -1090,6 +1053,8 @@ namespace Branch.com.proem.exm.window.order
                     goodsPrint.Nums = 1;
                     goodsPrint.Price = float.Parse(itemDataGridView[2, i].Value == null ? "0" : itemDataGridView[2, i].Value.ToString());
                     goodsPrint.Unit = itemDataGridView[10, i].Value == null ? "" : itemDataGridView[10, i].Value.ToString();
+                    goodsPrint.GoodsFileId = zcGoodsMaster.Id;
+                    goodsPrint.BarCode = bar;
                     if(isWeightGoods){
                         goodsPrint.Weight = float.Parse(weight);
                     }else{
@@ -1141,7 +1106,7 @@ namespace Branch.com.proem.exm.window.order
                         if (Convert.ToInt32(itemDataGridView[4, i].Value == null ? "0" : itemDataGridView[4, i].Value.ToString()) == 0)
                         {
                             MessageBox.Show("此商品的份数为0，无法进行减去扫码操作!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            AddOrDelete = true;
+                            setFlagLabel();
                             return;
                         }
                         bool isDone = false;
@@ -1178,7 +1143,7 @@ namespace Branch.com.proem.exm.window.order
                         if( !isDone)
                         {
                             MessageBox.Show("此商品之前未曾进行过扫码操作，无法执行减去扫码操作!", "提示", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
-                            AddOrDelete = true;
+                            setFlagLabel();
                             return;
                         }
                         itemDataGridView[4, i].Value = Convert.ToInt32(itemDataGridView[4, i].Value == null ? "0" : itemDataGridView[4, i].Value.ToString()) - 1;
@@ -1192,7 +1157,7 @@ namespace Branch.com.proem.exm.window.order
                             itemDataGridView[7, i].Value = MoneyFormat.RountFormat(float.Parse(itemDataGridView[7, i].Value == null ? "0" : itemDataGridView[7, i].Value.ToString()) - goodsPrice * 1);
                             itemDataGridView[8, i].Value = (float.Parse(itemDataGridView[8, i].Value == null ? "0" : itemDataGridView[8, i].Value.ToString()) - 1).ToString("0.000");
                         }
-                        AddOrDelete = true;
+                        setFlagLabel();
                     }
                     Calculate();
                     itemDataGridView.Rows[i].Selected = true;
@@ -1249,7 +1214,7 @@ namespace Branch.com.proem.exm.window.order
                 }
                 else
                 {
-                    weight = float.Parse(bar.Substring(12, 5).Insert(2, ".")).ToString();
+                    weight = float.Parse(bar.Substring(7, 5).Insert(2, ".")).ToString();
                 }
             }
             DataSet ds = (DataSet)itemDataGridView.DataSource;
@@ -1273,6 +1238,8 @@ namespace Branch.com.proem.exm.window.order
                     goodsPrint.Name = itemDataGridView[1, i].Value == null ? "" : itemDataGridView[1, i].Value.ToString();
                     goodsPrint.Nums = 1;
                     goodsPrint.Price = price;
+                    goodsPrint.GoodsFileId = zcGoodsMaster.Id;
+                    goodsPrint.BarCode = bar;
                     if (isWeightGoods)
                     {
                         goodsPrint.Weight = float.Parse(weight);
@@ -1319,11 +1286,10 @@ namespace Branch.com.proem.exm.window.order
                         }
                     }else
                     {
-                        AddOrDelete = true;
+                        setFlagLabel();
                         if (refundNums == 0)
                         {
                             MessageBox.Show("退货数量已经为0，无法进行扫码减去操作", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            AddOrDelete = true;
                             return;
                         }
                         else if (refundNums == 1)
@@ -1501,9 +1467,11 @@ namespace Branch.com.proem.exm.window.order
                     {
                         for (int i = 0; i < itemDataGridView.Rows.Count; i++)
                         {
-                            if (Convert.ToInt32(itemDataGridView[5, i].Value) != 0)
+                            string reason = itemDataGridView[13, i].Value == null ? string.Empty : itemDataGridView[13, i].Value.ToString();
+                            if (Convert.ToInt32(itemDataGridView[5, i].Value) != 0 && !string.IsNullOrEmpty(reason))
                             {
-                                RefuseReason refuseReason = new RefuseReason(this, itemDataGridView[1, i].Value.ToString(), i);
+                                
+                                RefuseReason refuseReason = new RefuseReason(this, itemDataGridView[1, i].Value.ToString(), i, true);
                                 refuseReason.ShowDialog();
                             }
                         }
@@ -1526,9 +1494,10 @@ namespace Branch.com.proem.exm.window.order
                     {
                         for (int i = 0; i < itemDataGridView.Rows.Count; i++)
                         {
-                            if (Convert.ToInt32(itemDataGridView[5, i].Value) != 0)
+                            string reason = itemDataGridView[13, i].Value == null ? string.Empty : itemDataGridView[13, i].Value.ToString();
+                            if (Convert.ToInt32(itemDataGridView[5, i].Value) != 0 && !string.IsNullOrEmpty(reason))
                             {
-                                RefuseReason refuseReason = new RefuseReason(this, itemDataGridView[1, i].Value.ToString(), i);
+                                RefuseReason refuseReason = new RefuseReason(this, itemDataGridView[1, i].Value.ToString(), i, true);
                                 refuseReason.ShowDialog();
                             }
                         }
@@ -1557,9 +1526,16 @@ namespace Branch.com.proem.exm.window.order
         /// </summary>
         /// <param name="index"></param>
         /// <param name="p"></param>
-        public void AddRefuseReason(int index, string reason)
+        public void AddRefuseReason(int index, string reason, bool flag)
         {
-            itemDataGridView[13, index].Value = reason;
+            if (flag)
+            {
+                itemDataGridView[13, index].Value = reason;
+            }
+            else 
+            {
+                itemDataGridView.CurrentRow.Cells[13].Value = reason;
+            }
         }
 
         /// <summary>
@@ -1588,23 +1564,29 @@ namespace Branch.com.proem.exm.window.order
                 resale.PayInfoId = payInfoId;
 
                 List<ResaleItem> list = new List<ResaleItem>();
-                for (int i = 0; i < itemDataGridView.RowCount; i++)
+                for (int i = 0; i < printObjectlist.Count; i++)
                 {
-                    if (itemDataGridView.Rows[i].Cells[4].Value == null || string.IsNullOrEmpty(itemDataGridView.Rows[i].Cells[4].Value.ToString()) || float.Parse(itemDataGridView.Rows[i].Cells[4].Value.ToString()) == 0)
-                    {
-                        continue;
-                    }
+                    GoodsPrint goodsPrint = printObjectlist[i];
                     ResaleItem obj = new ResaleItem();
                     obj.Id = Guid.NewGuid().ToString();
                     obj.CreateTime = DateTime.Now;
                     obj.UpdateTime = DateTime.Now;
                     obj.ResaleId = resale.Id;
-                    obj.GoodsFileId = itemDataGridView.Rows[i].Cells[14].Value.ToString();
-                    obj.Nums = itemDataGridView.Rows[i].Cells[4].Value.ToString();
-                    obj.Money = itemDataGridView.Rows[i].Cells[7].Value.ToString();
-                    obj.weight = itemDataGridView.Rows[i].Cells[8].Value == null ? string.Empty : itemDataGridView.Rows[i].Cells[8].Value.ToString();
+                    obj.GoodsFileId = goodsPrint.GoodsFileId;
+                    obj.Nums = goodsPrint.Nums.ToString();
+                    if (goodsPrint.Weight != 0)
+                    {
+                        obj.weight = goodsPrint.Weight.ToString();
+                        obj.Money = MoneyFormat.RountFormat(goodsPrint.Price * goodsPrint.Weight);
+                    }
+                    else 
+                    {
+                        obj.Money = MoneyFormat.RountFormat(goodsPrint.Price * goodsPrint.Nums);
+                    }
                     ///TODO  暂时未加入折扣，优惠金额等算法
                     obj.ActualMoney = obj.Money;
+                    obj.BarCode = goodsPrint.BarCode;
+                    obj.Price = goodsPrint.Price.ToString();
                     list.Add(obj);
                 }
                 BranchResaleItemService branchItemService = new BranchResaleItemService();
@@ -1851,8 +1833,9 @@ namespace Branch.com.proem.exm.window.order
 
             UploadDao uploadDao = new UploadDao();
             uploadDao.AddUploadInfo(uploadList);
-            ///初始化提货
-            //pickUp();
+            
+            ///初始化到零售
+            resaleInit();
         }
 
         /// <summary>
@@ -1878,17 +1861,27 @@ namespace Branch.com.proem.exm.window.order
             resale.PayInfoId = payInfoId;
 
             List<ResaleItem> list = new List<ResaleItem>();
-            for (int i = 0; i < itemDataGridView.RowCount; i++)
+            for (int i = 0; i < printObjectlist.Count; i++)
             {
+                GoodsPrint goodsPrint = printObjectlist[i];
                 ResaleItem obj = new ResaleItem();
                 obj.Id = Guid.NewGuid().ToString();
                 obj.CreateTime = DateTime.Now;
                 obj.UpdateTime = DateTime.Now;
                 obj.ResaleId = resale.Id;
-                obj.GoodsFileId = itemDataGridView.Rows[i].Cells[14].Value.ToString();
-                obj.Nums = itemDataGridView.Rows[i].Cells[4].Value.ToString();
-                obj.Money = itemDataGridView.Rows[i].Cells[7].Value.ToString();
-                obj.weight = itemDataGridView.Rows[i].Cells[8].Value == null ? string.Empty : itemDataGridView.Rows[i].Cells[8].Value.ToString();
+                obj.GoodsFileId = goodsPrint.GoodsFileId;
+                obj.Nums = goodsPrint.Nums.ToString();
+                obj.BarCode = goodsPrint.BarCode;
+                obj.Price = goodsPrint.Price.ToString();
+                if (goodsPrint.Weight != 0)
+                {
+                    obj.weight = goodsPrint.Weight.ToString();
+                    obj.Money = MoneyFormat.RountFormat(goodsPrint.Weight * goodsPrint.Price);
+                }
+                else
+                {
+                    obj.Money = MoneyFormat.RountFormat(goodsPrint.Price * goodsPrint.Nums);
+                }
                 ///TODO  暂时未加入折扣，优惠金额等算法
                 obj.ActualMoney = obj.Money;
                 list.Add(obj);
@@ -2059,8 +2052,9 @@ namespace Branch.com.proem.exm.window.order
             }
             UploadDao uploadDao = new UploadDao();
             uploadDao.AddUploadInfo(uploadList);
-            ///初始化提货
-            //pickUp();
+
+            ///初始化到零售
+            resaleInit();
         }
 
         private void numberTextBox_KeyPress(object sender, KeyPressEventArgs e)
@@ -2305,7 +2299,7 @@ namespace Branch.com.proem.exm.window.order
                 }
                 else 
                 {
-                    weight = float.Parse(numberString.Substring(12, 5).Insert(2, ".")).ToString();
+                    weight = float.Parse(numberString.Substring(7, 5).Insert(2, ".")).ToString();
                 }
             }
 
@@ -2352,6 +2346,8 @@ namespace Branch.com.proem.exm.window.order
                             goodsPrint.Nums = 1;
                             goodsPrint.Price = obj.GoodsPrice;
                             goodsPrint.Weight = float.Parse(weight);
+                            goodsPrint.BarCode = numberString;
+                            goodsPrint.GoodsFileId = obj.Id;
                             printObjectlist.Add(goodsPrint);
                         }
                         break;
@@ -2365,6 +2361,7 @@ namespace Branch.com.proem.exm.window.order
                             if (float.Parse(weight) > old_weight)
                             {
                                 MessageBox.Show("扫码减去的商品重量不能大于已扫描的商品重量", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                setFlagLabel();
                                 return;
                             }
                         }
@@ -2405,10 +2402,11 @@ namespace Branch.com.proem.exm.window.order
                             if( !isHave)
                             {
                                 MessageBox.Show("没有此商品对应的扫码销售信息", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                setFlagLabel();
                                 return;
                             }
                             itemDataGridView.Rows.RemoveAt(i);
-                            AddOrDelete = true;
+                            setFlagLabel();
                         }
                         else
                         {
@@ -2438,6 +2436,7 @@ namespace Branch.com.proem.exm.window.order
                                 if (!isHaveResaleGoods)
                                 {
                                     MessageBox.Show("没有此商品对应的扫码销售信息", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    setFlagLabel();
                                     return;
                                 }
                             }
@@ -2454,7 +2453,7 @@ namespace Branch.com.proem.exm.window.order
                             }
                             itemDataGridView.Rows[i].Selected = true;
                             itemDataGridView.CurrentCell = itemDataGridView.Rows[i].Cells[0];
-                            AddOrDelete = true;
+                            setFlagLabel();
                             break;
                         }
                     }
@@ -2481,11 +2480,14 @@ namespace Branch.com.proem.exm.window.order
                     goodsPrint.Nums = 1;
                     goodsPrint.Weight = isWeightGoods ? float.Parse(weight) : 0;
                     goodsPrint.Price = obj.GoodsPrice;
+                    goodsPrint.BarCode = numberString;
+                    goodsPrint.GoodsFileId = obj.Id;
                     printObjectlist.Add(goodsPrint);
                 }
                 else
                 {
                     MessageBox.Show("已扫的商品中没有此商品，无法进行减去扫码操作!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    setFlagLabel();
                     return;
                 }
             }
@@ -2648,17 +2650,27 @@ namespace Branch.com.proem.exm.window.order
             resale.PayInfoId = payInfoId;
             
             List<ResaleItem> list = new List<ResaleItem>();
-            for (int i = 0; i < itemDataGridView.RowCount; i++)
+            for (int i = 0; i < printObjectlist.Count; i++)
             {
+                GoodsPrint goodsPrint = printObjectlist[i];
                 ResaleItem obj = new ResaleItem();
                 obj.Id = Guid.NewGuid().ToString();
                 obj.CreateTime = DateTime.Now;
                 obj.UpdateTime = DateTime.Now;
                 obj.ResaleId = resale.Id;
-                obj.GoodsFileId = itemDataGridView.Rows[i].Cells[14].Value.ToString();
-                obj.Nums = itemDataGridView.Rows[i].Cells[15].Value.ToString();
-                obj.weight = itemDataGridView.Rows[i].Cells[8].Value == null ? string.Empty : itemDataGridView.Rows[i].Cells[8].Value.ToString();
-                obj.Money = itemDataGridView.Rows[i].Cells[16].Value.ToString();
+                obj.GoodsFileId = goodsPrint.GoodsFileId;
+                obj.Nums = goodsPrint.Nums.ToString();
+                obj.Price = goodsPrint.Price.ToString();
+                obj.BarCode = goodsPrint.BarCode;
+                if (goodsPrint.Weight != 0)
+                {
+                    obj.weight = goodsPrint.Weight.ToString();
+                    obj.Money = MoneyFormat.RountFormat(goodsPrint.Weight * goodsPrint.Price);
+                }
+                else
+                {
+                    obj.Money = MoneyFormat.RountFormat(goodsPrint.Price * goodsPrint.Nums);
+                }
                 ///TODO  暂时未加入折扣，优惠金额等算法
                 obj.ActualMoney = obj.Money;
                 list.Add(obj);
@@ -2745,8 +2757,9 @@ namespace Branch.com.proem.exm.window.order
                 UploadDao uploadDao = new UploadDao();
                 uploadDao.AddUploadInfo(uploadList);
             }
-            ///初始化
-            ///resaleInit();
+
+            //初始化
+            resaleInit();
         }
 
         /// <summary>
@@ -2785,6 +2798,8 @@ namespace Branch.com.proem.exm.window.order
             initDifference();
         }
 
+        private Resale resaleObj;
+
         /// <summary>
         /// 加载退货信息
         /// </summary>
@@ -2796,6 +2811,7 @@ namespace Branch.com.proem.exm.window.order
             memberCard.Text = associatorInfo.CardNumber;
             memberName.Text = associatorInfo.Name;
             memberPhone.Text = associatorInfo.MobilePhone;
+            this.resaleObj = resale;
             if (!string.IsNullOrEmpty(resale.OrderId))
             {
                 zc_order_transit_id = resale.OrderId;
@@ -2809,9 +2825,9 @@ namespace Branch.com.proem.exm.window.order
                 workModelabel.Text = "零售退货";
             }
             MysqlDBHelper dbHelper = new MysqlDBHelper();
-            string sql = "select c.id as goodsfile_id,c.SERIALNUMBER,c.GOODS_NAME as name , c.GOODS_PRICE as g_price,a.nums, a.weight, a.money as receive_money "
+            string sql = "select c.id as goodsfile_id,c.SERIALNUMBER,c.GOODS_NAME as name , a.price as g_price,sum(a.nums) as nums, sum(a.weight) as weight, a.money as receive_money "
                 +" from zc_resale_item a left join zc_resale b on a.resale_id = b.id "
-                +" left join zc_goods_master c on a.goodsFile_id = c.ID where a.resale_id = '"+resale.Id+"'";
+                + " left join zc_goods_master c on a.goodsFile_id = c.ID where a.resale_id = '" + resale.Id + "' group by c.SERIALNUMBER";
             DataSet ds = dbHelper.GetDataSet(sql, "zc_resale_item");
             itemDataGridView.AutoGenerateColumns = false;
             itemDataGridView.DataSource = ds;
@@ -2824,239 +2840,294 @@ namespace Branch.com.proem.exm.window.order
         private void refundSettlement()
         {
             bool isHave = false;
-            for(int i = 0; i < itemDataGridView.RowCount; i++){
+            for (int i = 0; i < itemDataGridView.RowCount; i++)
+            {
                 float nums = itemDataGridView.Rows[i].Cells[4].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[4].Value.ToString());
-                if(nums != 0){
+                if (nums != 0)
+                {
                     isHave = true;
-                }else{
+                }
+                else
+                {
                     continue;
                 }
             }
-            if(!isHave){
+            if (!isHave)
+            {
                 MessageBox.Show("当前没有货物需要进行退货", "提示", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
                 return;
             }
-            if(string.IsNullOrEmpty(zc_order_transit_id)){
-                DialogResult dr = MessageBox.Show("当前退货输入零售退货，退货金额为：" + totalAmount.Text + ",是否确认退货?", "提示", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
-                if (dr == DialogResult.OK)
+            BranchPayInfoService branchPayInfoService = new BranchPayInfoService();
+            BranchPayInfoItemService branchPayInfoItemService = new BranchPayInfoItemService();
+            PayInfo payhistory = branchPayInfoService.FindById(resaleObj.PayInfoId);
+            ///默认只有一种支付
+            List<PayInfoItem> payList = branchPayInfoItemService.FindByPayId(resaleObj.PayInfoId);
+            PayInfoItem payInfoItem = payList[0];
+            string showstring = "";
+            if (payInfoItem.PayMode == BranchPay.money)
+            {
+                showstring = "退货金额为：" + totalAmount.Text + ",退款方式为现金退款,是否确认退货?";
+            }
+            else if (payInfoItem.PayMode == BranchPay.WxPay)
+            {
+                showstring = "退货金额为：" + totalAmount.Text + ",退款方式为微信退款,是否确认退货?";
+            }
+            else if (payInfoItem.PayMode == BranchPay.ZFBPay)
+            {
+                showstring = "退货金额为：" + totalAmount.Text + ",退款方式为支付宝退款,是否确认退货?";
+            }
+
+            DialogResult dr = MessageBox.Show(showstring, "提示", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+            if (dr == DialogResult.OK)
+            {
+                ///原路返回金额
+                if (payInfoItem.PayMode == BranchPay.WxPay)
                 {
-                    ///保存支付信息
-                    BranchPayInfoService branchPayInfoService = new BranchPayInfoService();
-                    BranchPayInfoItemService branchPayInfoItemService = new BranchPayInfoItemService();
-                    PayInfoService payInfoService = new PayInfoService();
-                    PayInfoItemService payInfoItemService = new PayInfoItemService();
-                    PayInfo payInfo = new PayInfo();
-                    payInfo.Id = Guid.NewGuid().ToString();
-                    payInfo.CreateTime = DateTime.Now;
-                    payInfo.UpdateTime = DateTime.Now;
-                    payInfo.MemberId = associatorInfo == null ? string.Empty : associatorInfo.Id;
-                    payInfo.Money = totalAmount.Text;
-                    payInfo.BranchId = LoginUserInfo.branchId;
-                    payInfo.salesmanId = LoginUserInfo.id;
-                    List<PayInfoItem> payInfoItemList = new List<PayInfoItem>();
-                    for (int i = 0; i < itemDataGridView.RowCount; i++ )
+                    string amount = float.Parse(resaleObj.ActualMoney).ToString("0.00").Replace(".", "");
+                    WxPayData result = Refund.Run(null, resaleObj.WaterNumber, amount, float.Parse(totalAmount.Text).ToString("0.00").Replace(".", ""));
+                    if ("SUCCESS".Equals(result.GetValue("result_code")))
                     {
-                        float nums = itemDataGridView.Rows[i].Cells[4].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[4].Value.ToString());
-                        if(nums != 0){
-                            PayInfoItem itemPay = new PayInfoItem();
-                            itemPay.Id = Guid.NewGuid().ToString();
-                            itemPay.CreateTime = DateTime.Now;
-                            itemPay.UpdateTime = DateTime.Now;
-                            itemPay.PayInfoId = payInfo.Id;
-                            itemPay.PayMode = BranchPay.money_refund;
-                            itemPay.Money = itemDataGridView.Rows[i].Cells[19].Value.ToString();
-                            payInfoItemList.Add(itemPay);
-                        }
+                        MessageBox.Show("微信支付退款成功!");
                     }
-                    branchPayInfoService.AddPayInfo(payInfo);
-                    branchPayInfoItemService.AddPayInfoItem(payInfoItemList);
+                    else
+                    {
+                        if (result.IsSet("err_code_des"))
+                        {
+                            MessageBox.Show(result.GetValue("err_code_des").ToString());
+                            return;
+                        }
+                        else
+                        {
+                            MessageBox.Show("未知错误!");
+                            return;
+                        }
 
-                    ///保存流水信息
-                    ResaleWaterNumber = "KTH" + DateTime.Now.ToString("yyyyMMddhhmmss") + LoginUserInfo.street; ;
-                    Resale resale = new Resale();
-                    resale.Id = Guid.NewGuid().ToString();
-                    resale.CreateTime = DateTime.Now;
-                    resale.UpdateTime = DateTime.Now;
-                    resale.WaterNumber = ResaleWaterNumber;
-                    resale.Nums = totalSum.Text;
-                    resale.Money = totalAmount.Text;
+                    }
+                }
+
+                PayInfoService payInfoService = new PayInfoService();
+                PayInfoItemService payInfoItemService = new PayInfoItemService();
+                PayInfo payInfo = new PayInfo();
+                payInfo.Id = Guid.NewGuid().ToString();
+                payInfo.CreateTime = DateTime.Now;
+                payInfo.UpdateTime = DateTime.Now;
+                payInfo.MemberId = associatorInfo == null ? string.Empty : associatorInfo.Id;
+                payInfo.Money = totalAmount.Text;
+                payInfo.BranchId = LoginUserInfo.branchId;
+                payInfo.salesmanId = LoginUserInfo.id;
+                List<PayInfoItem> payInfoItemList = new List<PayInfoItem>();
+                for (int i = 0; i < itemDataGridView.RowCount; i++)
+                {
+                    float nums = itemDataGridView.Rows[i].Cells[4].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[4].Value.ToString());
+                    if (nums != 0)
+                    {
+                        PayInfoItem itemPay = new PayInfoItem();
+                        itemPay.Id = Guid.NewGuid().ToString();
+                        itemPay.CreateTime = DateTime.Now;
+                        itemPay.UpdateTime = DateTime.Now;
+                        itemPay.PayInfoId = payInfo.Id;
+                        itemPay.PayMode = payInfoItem.PayMode;
+                        itemPay.Money = itemDataGridView.Rows[i].Cells[19].Value.ToString();
+                        payInfoItemList.Add(itemPay);
+                    }
+                }
+                branchPayInfoService.AddPayInfo(payInfo);
+                branchPayInfoItemService.AddPayInfoItem(payInfoItemList);
+
+                ///保存流水信息
+                ResaleWaterNumber = "KTH" + DateTime.Now.ToString("yyyyMMddhhmmss") + LoginUserInfo.street; ;
+                Resale resale = new Resale();
+                resale.Id = Guid.NewGuid().ToString();
+                resale.CreateTime = DateTime.Now;
+                resale.UpdateTime = DateTime.Now;
+                resale.WaterNumber = ResaleWaterNumber;
+                resale.Nums = totalSum.Text;
+                resale.Money = MoneyFormat.RountFormat(-float.Parse(totalAmount.Text));
+                ///TODO  暂时未加入折扣，优惠金额等算法
+                resale.ActualMoney = resale.Money;
+                resale.BranchId = LoginUserInfo.branchId;
+                resale.SaleManId = LoginUserInfo.id;
+                resale.memberId = associatorInfo == null ? string.Empty : associatorInfo.Id;
+                resale.PayInfoId = payInfo.Id;
+                if(!string.IsNullOrEmpty(resaleObj.OrderId)){
+                    resale.OrderId = resaleObj.OrderId;
+                }
+                List<ResaleItem> list = new List<ResaleItem>();
+                for (int i = 0; i < printObjectlist.Count; i++)
+                {
+                    GoodsPrint goodsPrint = printObjectlist[i];
+                    float nums = goodsPrint.Nums;
+                    if (nums == 0)
+                    {
+                        continue;
+                    }
+                    ResaleItem obj = new ResaleItem();
+                    obj.Id = Guid.NewGuid().ToString();
+                    obj.CreateTime = DateTime.Now;
+                    obj.UpdateTime = DateTime.Now;
+                    obj.ResaleId = resale.Id;
+                    obj.GoodsFileId = goodsPrint.GoodsFileId;
+                    obj.BarCode = goodsPrint.BarCode;
+                    obj.Nums = goodsPrint.Nums.ToString();
+                    obj.Price = goodsPrint.Price.ToString();
+                    if(goodsPrint.Weight != 0){
+                        obj.weight = goodsPrint.Weight.ToString();
+                        obj.Money = MoneyFormat.RountFormat(-goodsPrint.Weight * goodsPrint.Price);
+                    }else
+                    {
+                        obj.Money = MoneyFormat.RountFormat(-goodsPrint.Nums * goodsPrint.Price);
+                    }
                     ///TODO  暂时未加入折扣，优惠金额等算法
-                    resale.ActualMoney = totalAmount.Text;
-                    resale.BranchId = LoginUserInfo.branchId;
-                    resale.SaleManId = LoginUserInfo.id;
-                    resale.memberId = associatorInfo == null ? string.Empty : associatorInfo.Id;
-                    resale.PayInfoId = payInfo.Id;
+                    obj.ActualMoney = obj.Money;
+                    list.Add(obj);
+                }
+                BranchResaleItemService branchItemService = new BranchResaleItemService();
+                BranchResaleService branchService = new BranchResaleService();
+                ResaleItemService itemServcie = new ResaleItemService();
+                ResaleService service = new ResaleService();
+                branchItemService.AddResaleItem(list);
+                branchService.AddResale(resale);
+                List<UploadInfo> uploadList = new List<UploadInfo>();
+                if(!string.IsNullOrEmpty(resaleObj.OrderId))
+                {
+                    BranchZcOrderHistoryService branchZcOrderHistoryService = new BranchZcOrderHistoryService();
+                    ZcOrderHistory zcOrderHistory = branchZcOrderHistoryService.FindById(zc_order_transit_id);
 
-                    List<ResaleItem> list = new List<ResaleItem>();
+                    ZcOrderRefund zcOrderRefund = new ZcOrderRefund();
+                    zcOrderRefund.Id = Guid.NewGuid().ToString();
+                    zcOrderRefund.CreateTime = DateTime.Now;
+                    zcOrderRefund.UpdateTime = DateTime.Now;
+                    zcOrderRefund.Order_id = zcOrderHistory.Id;
+                    zcOrderRefund.Order_amount = zcOrderHistory.OrderAmount.ToString("0.00");
+                    zcOrderRefund.Actual_amount = (float.Parse(zcOrderHistory.ActualMoney == null ? "0" : zcOrderHistory.ActualMoney) - returnAmount).ToString("0.00");
+                    zcOrderRefund.Order_refund_status = "1";//退款单未审批
+                    zcOrderRefund.Hand_date = DateTime.Now;
+
+                    //MessageBox.Show("‘ID’:" + zcOrderRefund.Id + "‘UpdateTime’:" + zcOrderRefund.UpdateTime + "‘Order_id’:" + zcOrderRefund.Order_id + "‘Order_amount’:" + zcOrderRefund.Order_amount + "‘Actual_amount’:" + zcOrderRefund.Actual_amount);
+
+                    
+                    List<ZcOrderRefundItem> refundlist = new List<ZcOrderRefundItem>();
                     for (int i = 0; i < itemDataGridView.RowCount; i++)
                     {
                         float nums = itemDataGridView.Rows[i].Cells[4].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[4].Value.ToString());
                         if(nums == 0){
                             continue;
                         }
-                        ResaleItem obj = new ResaleItem();
-                        obj.Id = Guid.NewGuid().ToString();
-                        obj.CreateTime = DateTime.Now;
-                        obj.UpdateTime = DateTime.Now;
-                        obj.ResaleId = resale.Id;
-                        obj.GoodsFileId = itemDataGridView.Rows[i].Cells[14].Value.ToString();
-                        obj.Nums = itemDataGridView.Rows[i].Cells[4].Value == null ? string.Empty : itemDataGridView.Rows[i].Cells[4].Value.ToString();
-                        obj.weight = itemDataGridView.Rows[i].Cells[17].Value == null ? string.Empty : itemDataGridView.Rows[i].Cells[8].Value.ToString();
-                        obj.Money = itemDataGridView.Rows[i].Cells[19].Value == null ?  string.Empty: itemDataGridView.Rows[i].Cells[19].Value.ToString();
-                        ///TODO  暂时未加入折扣，优惠金额等算法
-                        obj.ActualMoney = obj.Money;
-                        list.Add(obj);
-                    }
-                    BranchResaleItemService branchItemService = new BranchResaleItemService();
-                    BranchResaleService branchService = new BranchResaleService();
-                    ResaleItemService itemServcie = new ResaleItemService();
-                    ResaleService service = new ResaleService();
-                    branchItemService.AddResaleItem(list);
-                    branchService.AddResale(resale);
-                    ///上传零售信息
-                    if (PingTask.IsConnected)
-                    {
-                        ///连网状态
-                        itemServcie.AddResaleItem(list);
-                        service.AddResale(resale);
-                        payInfoService.AddPayInfo(payInfo);
-                        payInfoItemService.AddPayInfoItem(payInfoItemList);
-                    }
-                    else
-                    {
-                        //断网状态
-                        List<UploadInfo> uploadList = new List<UploadInfo>();
-                        UploadInfo obj1 = new UploadInfo();
-                        obj1.Id = resale.Id;
-                        obj1.CreateTime = DateTime.Now;
-                        obj1.UpdateTime = DateTime.Now;
-                        obj1.Type = Constant.ZC_RESALE;
-                        uploadList.Add(obj1);
-                        foreach (ResaleItem obj in list)
+                        ZcOrderRefundItem zcOrderRefundItem = new ZcOrderRefundItem();
+                        zcOrderRefundItem.Id = Guid.NewGuid().ToString();
+                        zcOrderRefundItem.CreateTime = DateTime.Now;
+                        zcOrderRefundItem.UpdateTime = DateTime.Now;
+                        zcOrderRefundItem.SerialNumber = itemDataGridView.Rows[i].Cells[0].Value.ToString();
+                        zcOrderRefundItem.Order_id = zc_order_transit_id;
+                        zcOrderRefundItem.Order_nums = itemDataGridView.Rows[i].Cells[3].Value.ToString();
+                        zcOrderRefundItem.Refund_nums = itemDataGridView.Rows[i].Cells[4].Value.ToString();
+                        zcOrderRefundItem.Price = itemDataGridView.Rows[i].Cells[2].Value.ToString();
+                        zcOrderRefundItem.Refund_amount = itemDataGridView.Rows[i].Cells[19].Value.ToString();
+                        zcOrderRefundItem.Salesman_id = LoginUserInfo.id;
+                        zcOrderRefundItem.Hand_date = DateTime.Now;
+                        zcOrderRefundItem.Street = LoginUserInfo.street;
+                        zcOrderRefundItem.GoodsFile_id = itemDataGridView.Rows[i].Cells[14].Value.ToString();
+                        zcOrderRefundItem.Refund_id = zcOrderRefund.Id;
+                        zcOrderRefundItem.Refund_reason = itemDataGridView.Rows[i].Cells[20].Value == null ? string.Empty : itemDataGridView.Rows[i].Cells[20].Value.ToString();
+                        refundlist.Add(zcOrderRefundItem);
+                        if (PingTask.IsConnected)
                         {
-                            UploadInfo obj2 = new UploadInfo();
-                            obj2.Id = obj.Id;
-                            obj2.CreateTime = DateTime.Now;
-                            obj2.UpdateTime = DateTime.Now;
-                            obj2.Type = Constant.ZC_RESALE_ITME;
-                            uploadList.Add(obj2);
+                            //上传退款表数据
+                            RefundInfoService refundInfoService = new RefundInfoService();
+                            refundInfoService.AddZcOrderRefund(zcOrderRefund);
+                            refundInfoService.AddZcOrderRefundItem(refundlist);
+                            //上传历史表状态更新
+                            ZcOrderHistoryService zcOrderHistoryService = new ZcOrderHistoryService();
+                            zcOrderHistoryService.UpdateOrderStatusByIds(zc_order_transit_id, Constant.ORDER_STATUS_REFUND);
                         }
-                        UploadInfo obj3 = new UploadInfo();
-                        obj3.Id = resale.Id;
-                        obj3.CreateTime = DateTime.Now;
-                        obj3.UpdateTime = DateTime.Now;
-                        obj3.Type = Constant.PAY_INFO;
-                        uploadList.Add(obj1);
-                        foreach (PayInfoItem obj in payInfoItemList)
+                        else
                         {
-                            UploadInfo obj2 = new UploadInfo();
-                            obj2.Id = obj.Id;
-                            obj2.CreateTime = DateTime.Now;
-                            obj2.UpdateTime = DateTime.Now;
-                            obj2.Type = Constant.PAY_INFO_ITEM;
-                            uploadList.Add(obj2);
+                            UploadInfo obj1 = new UploadInfo();
+                            obj1.Id = zcOrderRefund.Id;
+                            obj1.CreateTime = DateTime.Now;
+                            obj1.UpdateTime = DateTime.Now;
+                            obj1.Type = Constant.ZC_ORDER_REFUND;
+                            uploadList.Add(obj1);
+                            foreach (ZcOrderRefundItem obj in refundlist)
+                            {
+                                UploadInfo obj2 = new UploadInfo();
+                                obj2.Id = obj.Id;
+                                obj2.CreateTime = DateTime.Now;
+                                obj2.UpdateTime = DateTime.Now;
+                                obj2.Type = Constant.ZC_ORDER_REFUND_ITEM;
+                                uploadList.Add(obj2);
+                            }
+                            UploadInfo obj3 = new UploadInfo();
+                            obj3.Id = zcOrderRefund.Id;
+                            obj3.CreateTime = DateTime.Now;
+                            obj3.UpdateTime = DateTime.Now;
+                            obj3.Type = Constant.ZC_ORDER_HISTORY_UPDATE;
+                            uploadList.Add(obj3);
                         }
-                        UploadDao uploadDao = new UploadDao();
-                        uploadDao.AddUploadInfo(uploadList);
                     }
+
+                    //添加退款明细
+                    BranchZcOrderRefundService branchZcOrderRefundService = new BranchZcOrderRefundService();
+                    BranchZcOrderRefundItemService branchZcOrderRefundItemService = new BranchZcOrderRefundItemService();
+                    branchZcOrderRefundService.AddZcOrderRefund(zcOrderRefund);
+                    branchZcOrderRefundItemService.AddZcOrderRefundItem(refundlist);
+                    //修改本地历史订单状态
+                    branchZcOrderHistoryService.UpdateOrderStatusByIds(zc_order_transit_id, Constant.ORDER_STATUS_REFUND);
+                    //
+                    MessageBox.Show("退款单已生成，请等待处理！");
+
+                   
                 }
-            }else
-            {
-               DialogResult dr = MessageBox.Show("当前退货为按单退货，确定提交总部处理?", "提示", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
-               if(dr == DialogResult.OK){
-                   ///提交到总部客服
-                   //直接将退款信息及明细存入本地
-                   //查询历史订单信息
-                   BranchZcOrderHistoryService branchZcOrderHistoryService = new BranchZcOrderHistoryService();
-                   ZcOrderHistory zcOrderHistory = branchZcOrderHistoryService.FindById(zc_order_transit_id);
 
-                   ZcOrderRefund zcOrderRefund = new ZcOrderRefund();
-                   zcOrderRefund.Id = Guid.NewGuid().ToString();
-                   zcOrderRefund.CreateTime = DateTime.Now;
-                   zcOrderRefund.UpdateTime = DateTime.Now;
-                   zcOrderRefund.Order_id = zcOrderHistory.Id;
-                   zcOrderRefund.Order_amount = zcOrderHistory.OrderAmount.ToString("0.00");
-                   zcOrderRefund.Actual_amount = (float.Parse(zcOrderHistory.ActualMoney == null ? "0" : zcOrderHistory.ActualMoney) - returnAmount).ToString("0.00");
-                   //zcOrderRefund.Actual_amount = (zcOrderHistory.OrderAmount - returnAmount).ToString("0.00");//实际金额
-                   zcOrderRefund.Order_refund_status = "1";//退款单未审批
-                   zcOrderRefund.Hand_date = DateTime.Now;
+                ///上传零售信息
+                if (PingTask.IsConnected)
+                {
+                    ///连网状态
+                    itemServcie.AddResaleItem(list);
+                    service.AddResale(resale);
+                    payInfoService.AddPayInfo(payInfo);
+                    payInfoItemService.AddPayInfoItem(payInfoItemList);
+                }
+                else
+                {
+                    //断网状态
 
-                   //MessageBox.Show("‘ID’:" + zcOrderRefund.Id + "‘UpdateTime’:" + zcOrderRefund.UpdateTime + "‘Order_id’:" + zcOrderRefund.Order_id + "‘Order_amount’:" + zcOrderRefund.Order_amount + "‘Actual_amount’:" + zcOrderRefund.Actual_amount);
-
-
-                   List<ZcOrderRefundItem> refundlist = new List<ZcOrderRefundItem>();
-                   for (int i = 0; i < itemDataGridView.RowCount; i++)
-                   {
-
-                       ZcOrderRefundItem zcOrderRefundItem = new ZcOrderRefundItem();
-                       zcOrderRefundItem.Id = Guid.NewGuid().ToString();
-                       zcOrderRefundItem.CreateTime = DateTime.Now;
-                       zcOrderRefundItem.UpdateTime = DateTime.Now;
-                       zcOrderRefundItem.SerialNumber = itemDataGridView.Rows[i].Cells[0].Value.ToString();
-                       zcOrderRefundItem.Order_id = zc_order_transit_id;
-                       zcOrderRefundItem.Order_nums = itemDataGridView.Rows[i].Cells[3].Value.ToString();
-                       zcOrderRefundItem.Refund_nums = itemDataGridView.Rows[i].Cells[4].Value.ToString();
-                       zcOrderRefundItem.Price = itemDataGridView.Rows[i].Cells[2].Value.ToString();
-                       zcOrderRefundItem.Refund_amount = itemDataGridView.Rows[i].Cells[19].Value.ToString();
-                       zcOrderRefundItem.Salesman_id = LoginUserInfo.id;
-                       zcOrderRefundItem.Hand_date = DateTime.Now;
-                       zcOrderRefundItem.Street = LoginUserInfo.street;
-                       zcOrderRefundItem.GoodsFile_id = itemDataGridView.Rows[i].Cells[14].Value.ToString();
-                       zcOrderRefundItem.Refund_id = zcOrderRefund.Id;
-                       zcOrderRefundItem.Refund_reason = itemDataGridView.Rows[i].Cells[20].Value.ToString();
-                       refundlist.Add(zcOrderRefundItem);
-
-                   }
-
-                   //添加退款明细
-                   BranchZcOrderRefundService branchZcOrderRefundService = new BranchZcOrderRefundService();
-                   BranchZcOrderRefundItemService branchZcOrderRefundItemService = new BranchZcOrderRefundItemService();
-                   branchZcOrderRefundService.AddZcOrderRefund(zcOrderRefund);
-                   branchZcOrderRefundItemService.AddZcOrderRefundItem(refundlist);
-                   //修改本地历史订单状态
-                   branchZcOrderHistoryService.UpdateOrderStatusByIds(zc_order_transit_id, Constant.ORDER_STATUS_REFUND);
-                   //
-                   MessageBox.Show("退款单已生成，请等待处理！");
-
-                   List<UploadInfo> uploadList = new List<UploadInfo>();
-                   UploadDao uploadDao = new UploadDao();
-                   if (PingTask.IsConnected)
-                   {
-                       //上传退款表数据
-                       RefundInfoService refundInfoService = new RefundInfoService();
-                       refundInfoService.AddZcOrderRefund(zcOrderRefund);
-                       refundInfoService.AddZcOrderRefundItem(refundlist);
-                       //上传历史表状态更新
-                       ZcOrderHistoryService zcOrderHistoryService = new ZcOrderHistoryService();
-                       zcOrderHistoryService.UpdateOrderStatusByIds(zc_order_transit_id, Constant.ORDER_STATUS_REFUND);
-                   }
-                   else
-                   {
-                       UploadInfo obj1 = new UploadInfo();
-                       obj1.Id = zcOrderRefund.Id;
-                       obj1.CreateTime = DateTime.Now;
-                       obj1.UpdateTime = DateTime.Now;
-                       obj1.Type = Constant.ZC_ORDER_REFUND;
-                       uploadList.Add(obj1);
-                       foreach (ZcOrderRefundItem obj in refundlist)
-                       {
-                           UploadInfo obj2 = new UploadInfo();
-                           obj2.Id = obj.Id;
-                           obj2.CreateTime = DateTime.Now;
-                           obj2.UpdateTime = DateTime.Now;
-                           obj2.Type = Constant.ZC_ORDER_REFUND_ITEM;
-                           uploadList.Add(obj2);
-                       }
-                       UploadInfo obj3 = new UploadInfo();
-                       obj3.Id = zcOrderRefund.Id;
-                       obj3.CreateTime = DateTime.Now;
-                       obj3.UpdateTime = DateTime.Now;
-                       obj3.Type = Constant.ZC_ORDER_HISTORY_UPDATE;
-                       uploadList.Add(obj3);
-                       uploadDao.AddUploadInfo(uploadList);
-                   }
-               }
+                    UploadInfo obj1 = new UploadInfo();
+                    obj1.Id = resale.Id;
+                    obj1.CreateTime = DateTime.Now;
+                    obj1.UpdateTime = DateTime.Now;
+                    obj1.Type = Constant.ZC_RESALE;
+                    uploadList.Add(obj1);
+                    foreach (ResaleItem obj in list)
+                    {
+                        UploadInfo obj2 = new UploadInfo();
+                        obj2.Id = obj.Id;
+                        obj2.CreateTime = DateTime.Now;
+                        obj2.UpdateTime = DateTime.Now;
+                        obj2.Type = Constant.ZC_RESALE_ITME;
+                        uploadList.Add(obj2);
+                    }
+                    UploadInfo obj3 = new UploadInfo();
+                    obj3.Id = resale.Id;
+                    obj3.CreateTime = DateTime.Now;
+                    obj3.UpdateTime = DateTime.Now;
+                    obj3.Type = Constant.PAY_INFO;
+                    uploadList.Add(obj1);
+                    foreach (PayInfoItem obj in payInfoItemList)
+                    {
+                        UploadInfo obj2 = new UploadInfo();
+                        obj2.Id = obj.Id;
+                        obj2.CreateTime = DateTime.Now;
+                        obj2.UpdateTime = DateTime.Now;
+                        obj2.Type = Constant.PAY_INFO_ITEM;
+                        uploadList.Add(obj2);
+                    }
+                    UploadDao uploadDao = new UploadDao();
+                    uploadDao.AddUploadInfo(uploadList);
+                }
+                
             }
+            
             printTicket(float.Parse(totalAmount.Text));
             ///初始化数据
             returnOfGoodsInit();
@@ -3073,5 +3144,28 @@ namespace Branch.com.proem.exm.window.order
                 itemDataGridView.CurrentRow.Cells[20].Value = reason;
             }
         }
+
+        public void AddRefundReason(string p)
+        {
+            itemDataGridView.CurrentRow.Cells[20].Value = p;
+        }
+
+        /// <summary>
+        /// 显示当前扫码的模式
+        /// </summary>
+        private void setFlagLabel()
+        {
+            if (AddOrDelete)
+            {
+                AddOrDelete = false;
+                flaglabel.Text = "(-)";
+            }
+            else
+            {
+                AddOrDelete = true;
+                flaglabel.Text = "(+)";
+            }
+        }
+
     }
 }

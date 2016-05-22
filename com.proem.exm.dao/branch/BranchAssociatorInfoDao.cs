@@ -112,7 +112,7 @@ namespace Branch.com.proem.exm.dao.branch
                 + " ASSOCIATOR_EMAIL, ASSOCIATOR_ETHNIC, ASSOCIATOR_ISSUERS, ASSOCIATOR_ISSUINGDATE, ASSOCIATOR_MARITALSTATUS, "
                 + " ASSOCIATOR_MOBILEPHONE,ASSOCIATOR_NAME, ASSOCIATOR_NOTE, ASSOCIATOR_PASSWORD, ASSOCIATOR_REGISTERSTORE, "
                 + " ASSOCIATOR_REPEATPASSWORD, ASSOCIATOR_REVISEDATE, ASSOCIATOR_SALESMAN, ASSOCIATOR_SEX, ASSOCIATOR_STATE, ASSOCIATOR_TELEPHONE, "
-                + " ASSOCIATOR_USEDCREDIT, ASSOCIATOR_ZIPCODE, DELFLAG from zc_associator_info";
+                + " ASSOCIATOR_USEDCREDIT, ASSOCIATOR_ZIPCODE, DELFLAG from zc_associator_info where id = '"+p+"'";
             MySqlConnection conn = null;
             MySqlCommand cmd = new MySqlCommand();
             try

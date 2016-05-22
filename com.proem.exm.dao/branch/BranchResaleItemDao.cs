@@ -67,7 +67,7 @@ namespace Branch.com.proem.exm.dao.branch
         public ResaleItem FindById(string p)
         {
             ResaleItem obj = new ResaleItem();
-            string sql = "select id, createTime, updateTime, resale_id, goodsFile_id, nums, weight, money, discount_amount, actual_money,bar_code,price from zc_resale_item where id = '"+p+"'";
+            string sql = "select id, createTime, updateTime, resale_id, goodsFile_id, nums, weight, money, discount_money, actual_money,bar_code,price from zc_resale_item where id = '"+p+"'";
             MySqlCommand cmd = new MySqlCommand();
             MySqlConnection conn = null;
             try

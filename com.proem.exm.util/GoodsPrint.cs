@@ -40,5 +40,14 @@ namespace Branch.com.proem.exm.util
         /// </summary>
         public string Unit { get; set; }
 
+        /// <summary>
+        /// 条形码
+        /// </summary>
+        public string BarCode { get; set; }
+
+        /// <summary>
+        /// 商品id
+        /// </summary>
+        public string GoodsFileId { get; set; }
     }
 }

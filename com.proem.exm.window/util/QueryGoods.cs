@@ -134,7 +134,7 @@ namespace Branch.com.proem.exm.window.util
                     }
                     else if (this.count.Equals(ParentWindow.CustomerDelivery.ToString()))
                     {
-                        this.customerDelivery.AddGoods(zcGoodsMaster, num);
+                        //this.customerDelivery.AddGoods(zcGoodsMaster, num);
                     }
                 }
             }

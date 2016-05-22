@@ -21,5 +21,11 @@ namespace Branch.com.proem.exm.service.branch
             BranchPayInfoItemDao dao = new BranchPayInfoItemDao();
             return dao.FindById(p);
         }
+
+        public List<PayInfoItem> FindByPayId(string p)
+        {
+            BranchPayInfoItemDao dao = new BranchPayInfoItemDao();
+            return dao.FindByPayId(p);
+        }
     }
 }

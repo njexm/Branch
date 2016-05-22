@@ -27,9 +27,33 @@ namespace Branch.com.proem.exm.window.order
         /// </summary>
         private int index;
 
+        /// <summary>
+        /// 工作模式
+        /// </summary>
+        private string WorkMode;
+
+        private bool flag;
+
         public RefuseReason()
         {
             InitializeComponent();
+        }
+
+        public RefuseReason(CustomerDelivery obj,string name, string WorkMode)
+        {
+            InitializeComponent();
+            this.WorkMode = WorkMode;
+            this.Text = "退货原因";
+            this.goodName = name;
+            this.obj = obj;
+        }
+
+        public RefuseReason(CustomerDelivery obj, string name, bool flag)
+        {
+            InitializeComponent();
+            this.goodName = name;
+            this.obj = obj;
+            this.flag = flag;
         }
 
         /// <summary>
@@ -37,12 +61,13 @@ namespace Branch.com.proem.exm.window.order
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="name"></param>
-        public RefuseReason(CustomerDelivery obj, string name, int index)
+        public RefuseReason(CustomerDelivery obj, string name, int index, bool flag)
         {
             InitializeComponent();
-            goodName = name;
+            this.goodName = name;
             this.obj = obj;
             this.index = index;
+            this.flag = flag;
         }
 
         /// <summary>
@@ -52,8 +77,16 @@ namespace Branch.com.proem.exm.window.order
         /// <param name="e"></param>
         private void RefuseReason_Load(object sender, EventArgs e)
         {
-            messagelabel.Text = goodName + "提货份数存在差异, 请输入拒收原因？";
-            reasonTextbox.Focus();
+            if (string.IsNullOrEmpty(WorkMode))
+            {
+                messagelabel.Text = goodName + "提货份数存在差异, 请输入拒收原因?";
+                reasonTextbox.Focus();
+            }
+            else 
+            {
+                messagelabel.Text = "请输入" + goodName + "退货原因?";
+                reasonTextbox.Focus();
+            }
         }
 
         /// <summary>
@@ -63,8 +96,13 @@ namespace Branch.com.proem.exm.window.order
         /// <param name="e"></param>
         private void confirm_Click(object sender, EventArgs e)
         {
-            ///添加拒收原因
-            obj.AddRefuseReason(index, reasonTextbox.Text.ToString());
+            if(string.IsNullOrEmpty(WorkMode)){
+                ///添加拒收原因
+                obj.AddRefuseReason(index, reasonTextbox.Text, flag);
+            }else
+            {
+                obj.AddRefundReason(reasonTextbox.Text);
+            }
             this.Close();
         }
 

@@ -112,7 +112,7 @@ namespace Branch.com.proem.exm.window.order
         {
             string search = searchTextBox.Text;
             string sql = "select a.id, a.water_number as waterNumber, a.createTime,a.actual_money as money, a.order_id, b.ASSOCIATOR_NAME as name from zc_resale a left join zc_associator_info b "
-                + " on a.member_id = b.ID left join zc_order_history c on a.order_id = c.id where b.associator_Name like '%" + search + "%' or b.associator_CardNumber like '%" + search + "%' or b.associator_Mobilephone like '%" + search + "%' or a.water_number like '%" + search + "%' or c.orderNum like '%" + search + "%' order by a.createTime desc";
+                + " on a.member_id = b.ID left join zc_order_history c on a.order_id = c.id where a.water_number not like 'KTH%' and( b.associator_Name like '%" + search + "%' or b.associator_CardNumber like '%" + search + "%' or b.associator_Mobilephone like '%" + search + "%' or a.water_number like '%" + search + "%' or c.orderNum like '%" + search + "%') order by a.createTime desc";
             MysqlDBHelper dbHelper = new MysqlDBHelper();
             DataSet ds = dbHelper.GetDataSet(sql, "zc_resale");
             dataGridView1.AutoGenerateColumns = false;

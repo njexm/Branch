@@ -87,7 +87,7 @@ namespace Branch.com.proem.exm.window.order
                 amount = float.Parse(amount).ToString("0.00").Replace(".", "");
             }
             ///商品描述, 总金额 , 二维码, 订单号
-            WxPayData result = MicroPay.Run(GoodsDetails, amount , codeTextbox.Text.Trim(), this.OrderNumber + "4");
+            WxPayData result = MicroPay.Run(GoodsDetails, amount , codeTextbox.Text.Trim(), this.OrderNumber);
             if ("SUCCESS".Equals(result.GetValue("result_code")) && "SUCCESS".Equals(result.GetValue("return_code")))
             {
                 MessageBox.Show("微信支付成功!");
