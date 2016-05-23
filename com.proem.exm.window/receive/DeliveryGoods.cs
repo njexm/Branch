@@ -873,7 +873,7 @@ namespace Branch.com.proem.exm.window.receive
                 }
                 else
                 {
-                    weight = float.Parse(bar.Substring(12, 5).Insert(2, ".")).ToString();
+                    weight = float.Parse(bar.Substring(7, 5).Insert(2, ".")).ToString();
                 }
             }
             
