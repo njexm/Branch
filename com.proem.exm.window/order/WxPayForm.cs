@@ -100,8 +100,8 @@ namespace Branch.com.proem.exm.window.order
                 obj.PayInfoId = PayInfoId;
                 obj.PayMode = BranchPay.WxPay;
                 this.payForm.AddPayInfo(obj);
+                this.payForm.AddPaidAmount(obj.Money);
                 clFlag = true;
-
                 this.Close();
             }
             else if ("SUCCESS".Equals(result.GetValue("return_code")))

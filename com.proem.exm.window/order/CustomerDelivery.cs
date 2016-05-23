@@ -2912,7 +2912,7 @@ namespace Branch.com.proem.exm.window.order
                 payInfo.CreateTime = DateTime.Now;
                 payInfo.UpdateTime = DateTime.Now;
                 payInfo.MemberId = associatorInfo == null ? string.Empty : associatorInfo.Id;
-                payInfo.Money = totalAmount.Text;
+                payInfo.Money = "-"+totalAmount.Text;
                 payInfo.BranchId = LoginUserInfo.branchId;
                 payInfo.salesmanId = LoginUserInfo.id;
                 List<PayInfoItem> payInfoItemList = new List<PayInfoItem>();
@@ -2927,7 +2927,7 @@ namespace Branch.com.proem.exm.window.order
                         itemPay.UpdateTime = DateTime.Now;
                         itemPay.PayInfoId = payInfo.Id;
                         itemPay.PayMode = payInfoItem.PayMode;
-                        itemPay.Money = itemDataGridView.Rows[i].Cells[19].Value.ToString();
+                        itemPay.Money = itemDataGridView.Rows[i].Cells[19].Value == null ? string.Empty : "-"+itemDataGridView.Rows[i].Cells[19].Value.ToString();
                         payInfoItemList.Add(itemPay);
                     }
                 }
@@ -3129,8 +3129,8 @@ namespace Branch.com.proem.exm.window.order
             }
             
             printTicket(float.Parse(totalAmount.Text));
-            ///初始化数据
-            returnOfGoodsInit();
+            ///初始化数据   零售界面
+            resaleInit();
         }
 
         public void writeReason(string reason)
