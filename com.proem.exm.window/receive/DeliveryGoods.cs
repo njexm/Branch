@@ -361,11 +361,6 @@ namespace Branch.com.proem.exm.window.receive
                     storeHouse.UpdateTime = DateTime.Now;
                     storeHouse.Store = (oldNums - nums).ToString();
                     storeHouse.StoreMoney = (oldMoney * (oldNums - nums) / oldNums).ToString();
-                    //if (isGoodsWeight)
-                    //{
-                    //    float oldWeight = float.Parse(dg.weight);
-                    //    storeHouse.weight = (oldWeight - float.Parse(weightString)).ToString();
-                    //}
                     storeList.Add(storeHouse);
                 }
                 else
@@ -376,11 +371,12 @@ namespace Branch.com.proem.exm.window.receive
                     storeHouse.Id = Guid.NewGuid().ToString();
                     storeHouse.CreateTime = DateTime.Now;
                     storeHouse.UpdateTime = DateTime.Now;
+                    storeHouse.Store = nums.ToString();
                     storeHouse.StoreMoney = (nums * (float.Parse(dg.GooodsPrice))).ToString();
                     storeHouse.BranchId = branchInfoService.FindIdByBranchTotalId(LoginUserInfo.branchId);
                     storeHouse.CreateUserId = LoginUserInfo.id;
                     storeHouse.GoodsFileId = dg.GoodsFileId;
-                    storeService.AddZcStoreHouse(storeHouse);
+                    branchStoreService.AddZcStoreHouse(storeHouse);
                     if (PingTask.IsConnected)
                     {
                         storeService.AddZcStoreHouseII(storeHouse);
@@ -431,14 +427,25 @@ namespace Branch.com.proem.exm.window.receive
         /// </summary>
         private void loadGoods()
         {
+            DateTime first = DateTime.Today;
+            DateTime last = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd 23:59:59"));
             string sql = "select sum(nums) as nums,name,sum(g_price*nums) as totalprice,classify_name,goods_unit,delFlag,goods_specifications,serialNumber,g_price as actualnums,goodsfile_id,goods_class_id,g_price, sortenum, address_id  from "
                 + " (select a.goods_state, a.nums ,b.goods_name as name ,b.goods_specifications,b.goods_unit,a.g_price,b.id as goodsfile_id,b.delFlag,b.serialNumber,c.classify_name,b.goods_class_id,b.goods_supplier_id ,e.sortenum, e.address as address_id  "
-                + " from zc_order_transit_item a left join zc_goods_master b on a.goodsfile_id = b.id left join zc_classify_info c on b.goods_class_id = c.id  left join (select sum(sortenum) as sortenum, address, goods_id from zc_order_sorte group by goods_id) e on a.GOODSFILE_ID = e.goods_id  "
-                + " ) as d where address_id ='" + LoginUserInfo.street + "' group by name,delFlag,classify_name,goods_unit,goods_specifications,serialNumber,g_price,goodsfile_id,goods_class_id ";
+                + " from zc_order_transit_item a left join zc_goods_master b on a.goodsfile_id = b.id left join zc_classify_info c on b.goods_class_id = c.id  left join (select sum(sortenum) as sortenum, address, goods_id from zc_order_sorte where createTime >=@first and createTime <=@last group by goods_id) e on a.GOODSFILE_ID = e.goods_id  "
+                + " ) as d where address_id ='" + LoginUserInfo.street + "' group by name,delFlag,classify_name,goods_unit,goods_specifications,serialNumber,g_price,goodsfile_id,goods_class_id order by serialNumber";
+            MySqlConnection conn = null;
+            MysqlDBHelper dbHelper = new MysqlDBHelper();
             try
             {
-                MysqlDBHelper dbHelper = new MysqlDBHelper();
-                DataSet ds = dbHelper.GetDataSet(sql, "zc_order_transit_item");
+                conn = dbHelper.GetConnection();
+                MySqlCommand cmd = new MySqlCommand();
+                cmd.CommandText = sql;
+                cmd.Connection = conn;
+                cmd.Parameters.AddWithValue("@first", first);
+                cmd.Parameters.AddWithValue("@last", last);
+                MySqlDataAdapter da = new MySqlDataAdapter(cmd);
+                DataSet ds = new DataSet();
+                da.Fill(ds, "zc_order_transit_item");
                 itemDataGridView.AutoGenerateColumns = false;
                 itemDataGridView.DataSource = ds;
                 itemDataGridView.DataMember = "zc_order_transit_item";
@@ -447,6 +454,10 @@ namespace Branch.com.proem.exm.window.receive
             catch (Exception ex)
             {
                 log.Error("加载订单中商品时发生错误", ex);
+            }
+            finally
+            {
+                dbHelper.CloseConnection(conn);
             }
         }
 

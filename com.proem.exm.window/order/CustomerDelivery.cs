@@ -595,6 +595,7 @@ namespace Branch.com.proem.exm.window.order
         /// <param name="e"></param>
         private void pickUp()
         {
+            printObjectlist.Clear();
             this.workModelabel.Text = "客户提货";
             this.WorkMode = Constant.PICK_UP_GOODS;
             zc_order_transit_id = "";
@@ -652,6 +653,7 @@ namespace Branch.com.proem.exm.window.order
         /// </summary>
         private void resaleInit()
         {
+            printObjectlist.Clear();
             this.workModelabel.Text = "零售";
             this.WorkMode = Constant.RETAIL;
             zc_order_transit_id = "";
@@ -699,6 +701,7 @@ namespace Branch.com.proem.exm.window.order
         /// </summary>
         private void returnOfGoodsInit()
         {
+            printObjectlist.Clear();
             this.workModelabel.Text = "退货";
             this.WorkMode = Constant.REFUND;
             zc_order_transit_id = "";
@@ -986,6 +989,7 @@ namespace Branch.com.proem.exm.window.order
             totalAmount.Text = MoneyFormat.RountFormat(0);
             itemDataGridView.DataSource = null;
             itemDataGridView.Rows.Clear();
+            resaleInit();
         }
 
         /// <summary>
@@ -1834,8 +1838,6 @@ namespace Branch.com.proem.exm.window.order
             UploadDao uploadDao = new UploadDao();
             uploadDao.AddUploadInfo(uploadList);
             
-            ///初始化到零售
-            resaleInit();
         }
 
         /// <summary>
@@ -2053,8 +2055,6 @@ namespace Branch.com.proem.exm.window.order
             UploadDao uploadDao = new UploadDao();
             uploadDao.AddUploadInfo(uploadList);
 
-            ///初始化到零售
-            resaleInit();
         }
 
         private void numberTextBox_KeyPress(object sender, KeyPressEventArgs e)
@@ -2758,8 +2758,6 @@ namespace Branch.com.proem.exm.window.order
                 uploadDao.AddUploadInfo(uploadList);
             }
 
-            //初始化
-            resaleInit();
         }
 
         /// <summary>
@@ -3130,7 +3128,7 @@ namespace Branch.com.proem.exm.window.order
             
             printTicket(float.Parse(totalAmount.Text));
             ///初始化数据   零售界面
-            resaleInit();
+            initData();
         }
 
         public void writeReason(string reason)

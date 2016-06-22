@@ -183,5 +183,45 @@ namespace Branch.com.proem.exm.dao.branch
             }
             return obj;
         }
+
+        public void AddZcStoreHouse(ZcStoreHouse obj)
+        {
+            MySqlConnection conn = null;
+            MySqlTransaction tran = null;
+            MySqlCommand cmd = new MySqlCommand();
+            try
+            {
+                conn = GetConnection();
+                tran = conn.BeginTransaction();
+                string sql = "insert into zc_storehouse (id, createTime, updateTime, status, store, storemoney, branch_id, createuser_id,goodsFile_id ,weight) "
+                    + " values(@id, @create, @update, @status, @store, @storeMoney, @branchId, @createUserId, @goodsFileId, @weight)";
+                cmd.Connection = conn;
+                cmd.CommandText = sql;
+                cmd.Parameters.AddWithValue("@id", obj.Id);
+                cmd.Parameters.AddWithValue("@create", obj.CreateTime);
+                cmd.Parameters.AddWithValue("@update", obj.UpdateTime);
+                cmd.Parameters.AddWithValue("@status", obj.Status);
+                cmd.Parameters.AddWithValue("@store", obj.Store);
+                cmd.Parameters.AddWithValue("@storeMoney", obj.StoreMoney);
+                cmd.Parameters.AddWithValue("@branchId", obj.BranchId);
+                cmd.Parameters.AddWithValue("@createUserId", obj.CreateUserId);
+                cmd.Parameters.AddWithValue("@goodsFileId", obj.GoodsFileId);
+                cmd.Parameters.AddWithValue("@weight", obj.weight);
+                cmd.ExecuteNonQuery();
+                cmd.Parameters.Clear();
+                tran.Commit();
+            }
+            catch (Exception ex)
+            {
+                tran.Rollback();
+                log.Error("添加zc_storehouse数据异常", ex);
+            }
+            finally
+            {
+                cmd.Dispose();
+                tran.Dispose();
+                CloseConnection(conn);
+            }
+        }
     }
 }

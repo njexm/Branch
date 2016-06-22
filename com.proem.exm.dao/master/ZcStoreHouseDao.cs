@@ -115,6 +115,7 @@ namespace Branch.com.proem.exm.dao.master
                 cmd.Parameters.Add(":createTime", obj.CreateTime);
                 cmd.Parameters.Add(":updateTime", obj.UpdateTime);
                 cmd.Parameters.Add(":status", obj.Status);
+                cmd.Parameters.Add(":store", obj.Store);
                 cmd.Parameters.Add(":storemoney", obj.StoreMoney);
                 cmd.Parameters.Add(":branch_id", obj.BranchId);
                 cmd.Parameters.Add(":createuser_id", obj.CreateUserId);
@@ -244,6 +245,7 @@ namespace Branch.com.proem.exm.dao.master
                 cmd.Parameters.Add(":createTime", obj.CreateTime);
                 cmd.Parameters.Add(":updateTime", obj.UpdateTime);
                 cmd.Parameters.Add(":status", obj.Status);
+                cmd.Parameters.Add(":store", obj.Store);
                 cmd.Parameters.Add(":storemoney", obj.StoreMoney);
                 cmd.Parameters.Add(":branch_id", obj.BranchId);
                 cmd.Parameters.Add(":createuser_id", obj.CreateUserId);
@@ -315,6 +317,7 @@ namespace Branch.com.proem.exm.dao.master
                 cmd.Parameters.Add(":createTime", obj.CreateTime);
                 cmd.Parameters.Add(":updateTime", obj.UpdateTime);
                 cmd.Parameters.Add(":status", obj.Status);
+                cmd.Parameters.Add(":store", obj.Store);
                 cmd.Parameters.Add(":storemoney", obj.StoreMoney);
                 cmd.Parameters.Add(":branch_id", obj.BranchId);
                 cmd.Parameters.Add(":createuser_id", obj.CreateUserId);

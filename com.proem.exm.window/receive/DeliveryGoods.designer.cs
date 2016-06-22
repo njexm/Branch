@@ -137,6 +137,8 @@
             // 
             // informTableLayoutPanel
             // 
+            this.informTableLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.informTableLayoutPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(136)))), ((int)(((byte)(161)))), ((int)(((byte)(179)))));
             this.informTableLayoutPanel.ColumnCount = 7;
             this.informTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 13.92984F));
@@ -152,7 +154,6 @@
             this.informTableLayoutPanel.Controls.Add(this.amountPanel, 6, 0);
             this.informTableLayoutPanel.Controls.Add(this.numsPanel, 5, 0);
             this.informTableLayoutPanel.Controls.Add(this.totalPanel, 4, 0);
-            this.informTableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.informTableLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.informTableLayoutPanel.Name = "informTableLayoutPanel";
             this.informTableLayoutPanel.RowCount = 2;
@@ -211,15 +212,15 @@
             // 
             // totalAmount
             // 
-            this.totalAmount.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.totalAmount.AutoSize = true;
+            this.totalAmount.Dock = System.Windows.Forms.DockStyle.Fill;
             this.totalAmount.Font = new System.Drawing.Font("宋体", 28F);
             this.totalAmount.ForeColor = System.Drawing.Color.White;
-            this.totalAmount.Location = new System.Drawing.Point(25, 18);
+            this.totalAmount.Location = new System.Drawing.Point(0, 0);
             this.totalAmount.Name = "totalAmount";
-            this.totalAmount.Size = new System.Drawing.Size(93, 38);
+            this.totalAmount.Size = new System.Drawing.Size(143, 74);
             this.totalAmount.TabIndex = 10;
             this.totalAmount.Text = "0.00";
+            this.totalAmount.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // nums_Panel
             // 
@@ -235,14 +236,14 @@
             // 
             // totalSum
             // 
-            this.totalSum.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.totalSum.AutoSize = true;
+            this.totalSum.Dock = System.Windows.Forms.DockStyle.Fill;
             this.totalSum.Font = new System.Drawing.Font("宋体", 28F);
-            this.totalSum.Location = new System.Drawing.Point(52, 18);
+            this.totalSum.Location = new System.Drawing.Point(0, 0);
             this.totalSum.Name = "totalSum";
-            this.totalSum.Size = new System.Drawing.Size(36, 38);
+            this.totalSum.Size = new System.Drawing.Size(140, 74);
             this.totalSum.TabIndex = 9;
             this.totalSum.Text = "0";
+            this.totalSum.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // amountPanel
             // 
@@ -774,7 +775,7 @@
             // 
             this.goods_price.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.goods_price.DataPropertyName = "g_price";
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle3.Format = "N2";
             dataGridViewCellStyle3.NullValue = "0.00";
             this.goods_price.DefaultCellStyle = dataGridViewCellStyle3;
@@ -788,7 +789,7 @@
             // 
             this.nums.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.nums.DataPropertyName = "nums";
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle4.Format = "N0";
             dataGridViewCellStyle4.NullValue = "0";
             this.nums.DefaultCellStyle = dataGridViewCellStyle4;
@@ -802,7 +803,7 @@
             // 
             this.sortenum.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.sortenum.DataPropertyName = "sortenum";
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle5.Format = "N0";
             dataGridViewCellStyle5.NullValue = "0";
             this.sortenum.DefaultCellStyle = dataGridViewCellStyle5;
@@ -814,7 +815,7 @@
             // actualQuantity
             // 
             this.actualQuantity.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle6.Format = "N0";
             dataGridViewCellStyle6.NullValue = "0";
             this.actualQuantity.DefaultCellStyle = dataGridViewCellStyle6;
@@ -825,7 +826,7 @@
             // diffenence
             // 
             this.diffenence.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle7.Format = "N0";
             dataGridViewCellStyle7.NullValue = "0";
             this.diffenence.DefaultCellStyle = dataGridViewCellStyle7;
@@ -915,9 +916,7 @@
             this.scanPanel.ResumeLayout(false);
             this.scanPanel.PerformLayout();
             this.amount_Panel.ResumeLayout(false);
-            this.amount_Panel.PerformLayout();
             this.nums_Panel.ResumeLayout(false);
-            this.nums_Panel.PerformLayout();
             this.amountPanel.ResumeLayout(false);
             this.amountPanel.PerformLayout();
             this.numsPanel.ResumeLayout(false);
