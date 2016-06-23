@@ -164,6 +164,7 @@ namespace Branch.com.proem.exm.window.order
                         List<ZcOrderTransit> list = branchTransitService.FindByCondition(searchTextbox.Text);
                         ZcOrderTransit zcOrderTransit = list[0];
                         customerDelivery.showTransitOrder(zcOrderTransit);
+                        this.Close();
                     }
                     else
                     {
@@ -176,54 +177,63 @@ namespace Branch.com.proem.exm.window.order
                     return;
                 }
             }
-            AssociatorInfo obj = new AssociatorInfo();
-            obj.Id = dataGridView1.CurrentRow.Cells[0].Value.ToString();
-            obj.CardNumber = dataGridView1.CurrentRow.Cells[1].Value == null ? string.Empty : dataGridView1.CurrentRow.Cells[1].Value.ToString();
-            obj.Name = dataGridView1.CurrentRow.Cells[2].Value == null ? string.Empty : dataGridView1.CurrentRow.Cells[2].Value.ToString();
-            obj.MobilePhone = dataGridView1.CurrentRow.Cells[3].Value == null ? string.Empty : dataGridView1.CurrentRow.Cells[3].Value.ToString();
-            if(workMode.Equals(Constant.RETAIL)){
-                ///nothing todo 
-            }else if(workMode.Equals(Constant.PICK_UP_GOODS)){
-                ///查询该用户的订单有几条
-                BranchZcOrderTransitService branchTransitService = new BranchZcOrderTransitService();
-                int orderCounts = branchTransitService.GetOrderCount(obj.Id);
-                if (orderCounts == 0)
-                {
-                    MessageBox.Show("暂无" + obj.Name + "提货的订单!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-                else if (orderCounts == 1)
-                {
-                    List<ZcOrderTransit> list = branchTransitService.FindByMemberId(obj.Id);
-                    ZcOrderTransit zcOrderTransit = list[0];
-                    customerDelivery.showTransitOrder(zcOrderTransit);
-                }
-                else
-                {
-                    CDQueryList cdQueryList = new CDQueryList(this, obj.Id, workMode, customerDelivery, 0);
-                    cdQueryList.ShowDialog();
-                }
-            }else if(workMode.Equals(Constant.REFUND))
+            else
             {
-                BranchResaleService branchResaleService = new BranchResaleService();
-                int count = branchResaleService.FindCountByMemberId(obj.Id);
-                if(count == 0){
-                    MessageBox.Show("暂无" + obj.Name + "的销售流水信息!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-                else if (count == 1)
+                AssociatorInfo obj = new AssociatorInfo();
+                obj.Id = dataGridView1.CurrentRow.Cells[0].Value.ToString();
+                obj.CardNumber = dataGridView1.CurrentRow.Cells[1].Value == null ? string.Empty : dataGridView1.CurrentRow.Cells[1].Value.ToString();
+                obj.Name = dataGridView1.CurrentRow.Cells[2].Value == null ? string.Empty : dataGridView1.CurrentRow.Cells[2].Value.ToString();
+                obj.MobilePhone = dataGridView1.CurrentRow.Cells[3].Value == null ? string.Empty : dataGridView1.CurrentRow.Cells[3].Value.ToString();
+                if (workMode.Equals(Constant.RETAIL))
                 {
-                    List<Resale> list = branchResaleService.FindByMemberId(obj.Id);
-                    Resale resale = list[0];
-                    customerDelivery.showRefundInfo(resale);
+                    ///nothing todo 
                 }
-                else 
+                else if (workMode.Equals(Constant.PICK_UP_GOODS))
                 {
-                    
+                    ///查询该用户的订单有几条
+                    BranchZcOrderTransitService branchTransitService = new BranchZcOrderTransitService();
+                    int orderCounts = branchTransitService.GetOrderCount(obj.Id);
+                    if (orderCounts == 0)
+                    {
+                        MessageBox.Show("暂无" + obj.Name + "提货的订单!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    else if (orderCounts == 1)
+                    {
+                        List<ZcOrderTransit> list = branchTransitService.FindByMemberId(obj.Id);
+                        ZcOrderTransit zcOrderTransit = list[0];
+                        customerDelivery.showTransitOrder(zcOrderTransit);
+                    }
+                    else
+                    {
+                        CDQueryList cdQueryList = new CDQueryList(this, obj.Id, workMode, customerDelivery, 0);
+                        cdQueryList.ShowDialog();
+                    }
                 }
+                else if (workMode.Equals(Constant.REFUND))
+                {
+                    BranchResaleService branchResaleService = new BranchResaleService();
+                    int count = branchResaleService.FindCountByMemberId(obj.Id);
+                    if (count == 0)
+                    {
+                        MessageBox.Show("暂无" + obj.Name + "的销售流水信息!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    else if (count == 1)
+                    {
+                        List<Resale> list = branchResaleService.FindByMemberId(obj.Id);
+                        Resale resale = list[0];
+                        customerDelivery.showRefundInfo(resale);
+                    }
+                    else
+                    {
+
+                    }
+                }
+                customerDelivery.SetAssociatorInfo(obj);
+                this.Close();
             }
-            customerDelivery.SetAssociatorInfo(obj);
-            this.Close();
+           
         }
 
         private void searchTextbox_TextChanged(object sender, EventArgs e)
