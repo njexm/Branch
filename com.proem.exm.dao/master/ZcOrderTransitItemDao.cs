@@ -17,6 +17,8 @@ namespace Branch.com.proem.exm.dao.master
 
         public List<ZcOrderTransitItem> FindAll()
         {
+            DateTime start = DateTime.Today.AddDays(-1);
+            DateTime last = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd 23:59:59")).AddDays(-1);
             List<ZcOrderTransitItem> list = new List<ZcOrderTransitItem>();
             OracleConnection conn = null;
             try
@@ -24,9 +26,11 @@ namespace Branch.com.proem.exm.dao.master
                 conn = OracleUtil.OpenConn();
                 string sql = "select ID, CREATETIME, UPDATETIME, ADDON, AMOUNT, BN, COST, G_PRICE, GOODS_STATE, ITEM_TYPE, "
                     + " NAME, NUMS, OBJ_ID, ORDER_ID, PRICE, PRODUCT_ID, SCORE, SENDNUM, TYPE_ID, WEIGHT, GOODSFILE_ID, PROVIDER_ID  from ZC_ORDER_TRANSIT_ITEM where ORDER_ID in "
-                    +" (select a.id from ZC_ORDER_TRANSIT a where a.BRANCHID = '"+LoginUserInfo.street+"')";
+                    + " (select a.id from ZC_ORDER_TRANSIT a where a.BRANCHID = '" + LoginUserInfo.street + "') and  createTime >=:first and createTime <=:last";
                 OracleCommand command = new OracleCommand(sql);
                 command.Connection = conn;
+                command.Parameters.Add(":first", start);
+                command.Parameters.Add(":last", last);
                 var reader = command.ExecuteReader();
                 while (reader.Read())
                 {

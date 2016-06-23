@@ -429,10 +429,12 @@ namespace Branch.com.proem.exm.window.receive
         {
             DateTime first = DateTime.Today;
             DateTime last = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd 23:59:59"));
+            DateTime begin = first.AddDays(-1);
+            DateTime end = last.AddDays(-1);
             string sql = "select sum(nums) as nums,name,sum(g_price*nums) as totalprice,classify_name,goods_unit,delFlag,goods_specifications,serialNumber,g_price as actualnums,goodsfile_id,goods_class_id,g_price, sortenum, address_id  from "
                 + " (select a.goods_state, a.nums ,b.goods_name as name ,b.goods_specifications,b.goods_unit,a.g_price,b.id as goodsfile_id,b.delFlag,b.serialNumber,c.classify_name,b.goods_class_id,b.goods_supplier_id ,e.sortenum, e.address as address_id  "
                 + " from zc_order_transit_item a left join zc_goods_master b on a.goodsfile_id = b.id left join zc_classify_info c on b.goods_class_id = c.id  left join (select sum(sortenum) as sortenum, address, goods_id from zc_order_sorte where createTime >=@first and createTime <=@last group by goods_id) e on a.GOODSFILE_ID = e.goods_id  "
-                + " ) as d where address_id ='" + LoginUserInfo.street + "' group by name,delFlag,classify_name,goods_unit,goods_specifications,serialNumber,g_price,goodsfile_id,goods_class_id order by serialNumber";
+                + "  where a.createTime >=@begin and a.createTime <=@end) as d where address_id ='" + LoginUserInfo.street + "' group by name,delFlag,classify_name,goods_unit,goods_specifications,serialNumber,g_price,goodsfile_id,goods_class_id order by serialNumber";
             MySqlConnection conn = null;
             MysqlDBHelper dbHelper = new MysqlDBHelper();
             try
@@ -443,6 +445,8 @@ namespace Branch.com.proem.exm.window.receive
                 cmd.Connection = conn;
                 cmd.Parameters.AddWithValue("@first", first);
                 cmd.Parameters.AddWithValue("@last", last);
+                cmd.Parameters.AddWithValue("@begin", begin);
+                cmd.Parameters.AddWithValue("@end", end);
                 MySqlDataAdapter da = new MySqlDataAdapter(cmd);
                 DataSet ds = new DataSet();
                 da.Fill(ds, "zc_order_transit_item");

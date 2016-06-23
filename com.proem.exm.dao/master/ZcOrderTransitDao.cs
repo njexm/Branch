@@ -19,7 +19,9 @@ namespace Branch.com.proem.exm.dao.master
         private readonly ILog log = LogManager.GetLogger(typeof(ZcOrderTransitDao));
 
         public List<ZcOrderTransit> FindAll()
-        { 
+        {
+            DateTime start = DateTime.Today.AddDays(-1);
+            DateTime last = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd 23:59:59")).AddDays(-1);
             List<ZcOrderTransit> list = new List<ZcOrderTransit>();
             OracleConnection conn = null;
             try
@@ -27,8 +29,10 @@ namespace Branch.com.proem.exm.dao.master
                 conn = OracleUtil.OpenConn();
                 string sql = "select ID, CREATETIME, UPDATETIME, BRANCHID, CANSIGNPHONE, CONSIGNEE, "
                     + " GOODSNUM, ISGIFT, MEMBERCARDNUMBER, ORDERAMOUNT, ORDERCOME, ORDERDATE, ORDERNUM, ORDERREDUCEAMOUNT, "
-                    + " ORDERSTATUS, ORDERTOTALVALUE, PULLFLAG, MEMBER_ID, ZCZONING_ID from zc_order_transit where branchid ='" + LoginUserInfo.street + "'";
+                    + " ORDERSTATUS, ORDERTOTALVALUE, PULLFLAG, MEMBER_ID, ZCZONING_ID from zc_order_transit where branchid ='" + LoginUserInfo.street + "' and  createTime >=:first and createTime <=:last";
                 OracleCommand command = new OracleCommand(sql);
+                command.Parameters.Add(":first", start);
+                command.Parameters.Add(":last", last);
                 command.Connection = conn;
                 var reader = command.ExecuteReader();
                 while (reader.Read())

@@ -314,6 +314,8 @@ namespace Branch.com.proem.exm.window.order
                 button4_Click(this, EventArgs.Empty);
             }else if(e.KeyCode == Keys.A){
                 wxPayButton_Click(this, EventArgs.Empty);
+            }else if(e.KeyCode == Keys.B){
+                ZFBPayButton_Click(this, EventArgs.Empty);
             }
         }
 

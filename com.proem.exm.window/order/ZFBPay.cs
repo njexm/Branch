@@ -84,7 +84,6 @@ namespace Branch.com.proem.exm.window.order
 
             //
             AlipayTradePayContentBuilder builder = BuildPayContent();
-            string out_trade_no = builder.out_trade_no;
 
             AlipayF2FPayResult payResult = serviceClient.tradePay(builder);
 

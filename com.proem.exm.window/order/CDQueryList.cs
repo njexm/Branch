@@ -77,6 +77,18 @@ namespace Branch.com.proem.exm.window.order
             this.WorkMode = WorkMode;
         }
 
+        private int flag;
+
+        public CDQueryList(MemberChoose choose, string keyStr, string WorkMode, CustomerDelivery obj, int flag)
+        {
+            InitializeComponent();
+            this.memberChoose = choose;
+            this.customerDelivery = obj;
+            this.keyStr = keyStr;
+            this.WorkMode = WorkMode;
+            this.flag = flag;
+        }
+
         private void CDQueryList_Load(object sender, EventArgs e)
         {
             searchTextBox.Focus();
@@ -192,10 +204,21 @@ namespace Branch.com.proem.exm.window.order
             string searchText = searchTextBox.Text;
             try
             {
-                string sql = "select e.id,e.ORDERNUM ,e.ORDERAMOUNT,e.CONSIGNEE,e.CANSIGNPHONE,f.ASSOCIATOR_CARDNUMBER "
+                string sql = "";
+                if (flag == 0)
+                {
+                    sql = "select e.id,e.ORDERNUM ,e.ORDERAMOUNT,e.CONSIGNEE,e.CANSIGNPHONE,f.ASSOCIATOR_CARDNUMBER "
                     + " From zc_order_transit e "
                     + " LEFT JOIN zc_associator_info f on e.member_id = f.id "
-                    + " WHERE member_id = '" + keyStr + "' and e.orderstatus = '" + Constant.ORDER_STATUS_RECEIPT + "' and e.orderNum like '%"+searchText+"%'";
+                    + " WHERE member_id = '" + keyStr + "' and e.orderstatus = '" + Constant.ORDER_STATUS_RECEIPT + "' and e.orderNum like '%" + searchText + "%'";
+                }
+                else 
+                {
+                    sql = "select e.id,e.ORDERNUM ,e.ORDERAMOUNT,e.CONSIGNEE,e.CANSIGNPHONE,f.ASSOCIATOR_CARDNUMBER "
+                    + " From zc_order_transit e "
+                    + " LEFT JOIN zc_associator_info f on e.member_id = f.id "
+                    + " WHERE (e.CONSIGNEE = '" + keyStr + "' or e.CANSIGNPHONE = '" + keyStr + "' or e.MEMBERCARDNUMBER = '"+keyStr+"' ) and e.orderstatus = '" + Constant.ORDER_STATUS_RECEIPT + "' and e.orderNum like '%" + searchText + "%'";
+                }
                 MysqlDBHelper dbHelper = new MysqlDBHelper();
                 DataSet ds = dbHelper.GetDataSet(sql, "zc_goods_master");
                 listDataGridView.AutoGenerateColumns = false;

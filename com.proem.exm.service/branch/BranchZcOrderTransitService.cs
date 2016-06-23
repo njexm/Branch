@@ -93,5 +93,17 @@ namespace Branch.com.proem.exm.service.branch
             BranchZcOrderTransitDao dao = new BranchZcOrderTransitDao();
             return dao.FindByMemberId(p);
         }
+
+        public int getCountBy(string p)
+        {
+            BranchZcOrderTransitDao dao = new BranchZcOrderTransitDao();
+            return dao.getCountBy(p);
+        }
+
+        public List<ZcOrderTransit> FindByCondition(string p)
+        {
+            BranchZcOrderTransitDao dao = new BranchZcOrderTransitDao();
+            return dao.FindByCondition(p);
+        }
     }
 }

@@ -29,14 +29,14 @@
         private void InitializeComponent()
         {
             this.zFBPayPanel = new System.Windows.Forms.Panel();
+            this.WIDdynamic_id = new System.Windows.Forms.TextBox();
+            this.WIDtotal_fee = new System.Windows.Forms.TextBox();
+            this.textBox3 = new System.Windows.Forms.TextBox();
             this.leaveButton = new System.Windows.Forms.Button();
             this.sureButton = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
-            this.WIDtotal_fee = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.WIDdynamic_id = new System.Windows.Forms.TextBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
             this.zFBPayPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -57,6 +57,35 @@
             this.zFBPayPanel.Name = "zFBPayPanel";
             this.zFBPayPanel.Size = new System.Drawing.Size(384, 270);
             this.zFBPayPanel.TabIndex = 0;
+            // 
+            // WIDdynamic_id
+            // 
+            this.WIDdynamic_id.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.WIDdynamic_id.Font = new System.Drawing.Font("宋体", 15F);
+            this.WIDdynamic_id.Location = new System.Drawing.Point(174, 127);
+            this.WIDdynamic_id.Name = "WIDdynamic_id";
+            this.WIDdynamic_id.Size = new System.Drawing.Size(119, 30);
+            this.WIDdynamic_id.TabIndex = 8;
+            this.WIDdynamic_id.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.WIDdynamic_id_KeyPress);
+            // 
+            // WIDtotal_fee
+            // 
+            this.WIDtotal_fee.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.WIDtotal_fee.Font = new System.Drawing.Font("宋体", 15F);
+            this.WIDtotal_fee.Location = new System.Drawing.Point(174, 83);
+            this.WIDtotal_fee.Name = "WIDtotal_fee";
+            this.WIDtotal_fee.Size = new System.Drawing.Size(119, 30);
+            this.WIDtotal_fee.TabIndex = 12;
+            this.WIDtotal_fee.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.WIDtotal_fee_KeyPress);
+            // 
+            // textBox3
+            // 
+            this.textBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBox3.Font = new System.Drawing.Font("宋体", 15F);
+            this.textBox3.Location = new System.Drawing.Point(174, 47);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(119, 30);
+            this.textBox3.TabIndex = 6;
             // 
             // leaveButton
             // 
@@ -94,28 +123,21 @@
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(91, 90);
+            this.label2.Font = new System.Drawing.Font("宋体", 15F);
+            this.label2.Location = new System.Drawing.Point(57, 90);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(65, 12);
+            this.label2.Size = new System.Drawing.Size(109, 20);
             this.label2.TabIndex = 13;
             this.label2.Text = "付款金额：";
-            // 
-            // WIDtotal_fee
-            // 
-            this.WIDtotal_fee.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.WIDtotal_fee.Location = new System.Drawing.Point(174, 90);
-            this.WIDtotal_fee.Name = "WIDtotal_fee";
-            this.WIDtotal_fee.Size = new System.Drawing.Size(119, 21);
-            this.WIDtotal_fee.TabIndex = 12;
-            this.WIDtotal_fee.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.WIDtotal_fee_KeyPress);
             // 
             // label6
             // 
             this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(91, 130);
+            this.label6.Font = new System.Drawing.Font("宋体", 15F);
+            this.label6.Location = new System.Drawing.Point(57, 130);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(53, 12);
+            this.label6.Size = new System.Drawing.Size(89, 20);
             this.label6.TabIndex = 11;
             this.label6.Text = "动态ID：";
             // 
@@ -123,28 +145,12 @@
             // 
             this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(91, 50);
+            this.label4.Font = new System.Drawing.Font("宋体", 15F);
+            this.label4.Location = new System.Drawing.Point(56, 50);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(65, 12);
+            this.label4.Size = new System.Drawing.Size(109, 20);
             this.label4.TabIndex = 9;
             this.label4.Text = "应付金额：";
-            // 
-            // WIDdynamic_id
-            // 
-            this.WIDdynamic_id.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.WIDdynamic_id.Location = new System.Drawing.Point(174, 130);
-            this.WIDdynamic_id.Name = "WIDdynamic_id";
-            this.WIDdynamic_id.Size = new System.Drawing.Size(119, 21);
-            this.WIDdynamic_id.TabIndex = 8;
-            this.WIDdynamic_id.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.WIDdynamic_id_KeyPress);
-            // 
-            // textBox3
-            // 
-            this.textBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox3.Location = new System.Drawing.Point(174, 50);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(119, 21);
-            this.textBox3.TabIndex = 6;
             // 
             // ZFBPay
             // 

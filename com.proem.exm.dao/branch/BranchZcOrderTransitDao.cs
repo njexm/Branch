@@ -418,6 +418,84 @@ namespace Branch.com.proem.exm.dao.branch
             }
             return list;
         }
+
+        public int getCountBy(string p)
+        {
+            int count = 0;
+            string sql = "select count(1) from zc_order_transit where CONSIGNEE = '" + p + "' or CANSIGNPHONE = '" + p + "' or MEMBERCARDNUMBER = '"+p+"' ";
+            MySqlConnection conn = null;
+            MySqlCommand cmd = new MySqlCommand();
+            try
+            {
+                conn = GetConnection();
+                cmd.Connection = conn;
+                cmd.CommandText = sql;
+                MySqlDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    count = reader.IsDBNull(0) ? default(int) : reader.GetInt32(0);
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("获取条件查询的订单数量发生异常", ex);
+            }
+            finally
+            {
+                CloseConnection(conn);
+            }
+            return count;
+        }
+
+        public List<ZcOrderTransit> FindByCondition(string p)
+        {
+            List<ZcOrderTransit> list = new List<ZcOrderTransit>();
+            string sql = "select ID, CREATETIME, UPDATETIME, BRANCHID, CANSIGNPHONE, CONSIGNEE, "
+                    + " GOODSNUM, ISGIFT, MEMBERCARDNUMBER, ORDERAMOUNT, ORDERCOME, ORDERDATE, ORDERNUM, ORDERREDUCEAMOUNT, "
+                    + " ORDERSTATUS, ORDERTOTALVALUE, PULLFLAG, MEMBER_ID, ZCZONING_ID from zc_order_transit where CONSIGNEE = '" + p + "' or CANSIGNPHONE = '" + p + "' or MEMBERCARDNUMBER = '" + p + "' ";
+            MySqlConnection conn = null;
+            MySqlCommand cmd = new MySqlCommand();
+            try
+            {
+                conn = GetConnection();
+                cmd.Connection = conn;
+                cmd.CommandText = sql;
+                MySqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    ZcOrderTransit obj = new ZcOrderTransit();
+                    obj.Id = reader.IsDBNull(0) ? string.Empty : reader.GetString(0);
+                    obj.CreateTime = reader.IsDBNull(1) ? default(DateTime) : reader.GetDateTime(1);
+                    obj.UpdateTime = reader.IsDBNull(2) ? default(DateTime) : reader.GetDateTime(2);
+                    obj.BranchId = reader.IsDBNull(3) ? string.Empty : reader.GetString(3);
+                    obj.Cansignphone = reader.IsDBNull(4) ? string.Empty : reader.GetString(4);
+                    obj.Consignee = reader.IsDBNull(5) ? string.Empty : reader.GetString(5);
+                    obj.GoodSnum = reader.IsDBNull(6) ? default(int) : reader.GetInt32(6);
+                    obj.IsGift = reader.IsDBNull(7) ? string.Empty : reader.GetString(7);
+                    obj.MemberCardNumber = reader.IsDBNull(8) ? string.Empty : reader.GetString(8);
+                    obj.OrderAmount = reader.IsDBNull(9) ? default(float) : reader.GetFloat(9);
+                    obj.OrderCome = reader.IsDBNull(10) ? string.Empty : reader.GetString(10);
+                    obj.OrderDate = reader.IsDBNull(11) ? default(DateTime) : reader.GetDateTime(11);
+                    obj.OrderNum = reader.IsDBNull(12) ? string.Empty : reader.GetString(12);
+                    obj.OrderRedUceAmount = reader.IsDBNull(13) ? default(float) : reader.GetFloat(13);
+                    obj.OrderStatus = reader.IsDBNull(14) ? string.Empty : reader.GetString(14);
+                    obj.OrderTotalValue = reader.IsDBNull(15) ? default(float) : reader.GetFloat(15);
+                    obj.PullFlag = reader.IsDBNull(16) ? string.Empty : reader.GetString(16);
+                    obj.MemberId = reader.IsDBNull(17) ? string.Empty : reader.GetString(17);
+                    obj.ZczoingId = reader.IsDBNull(18) ? string.Empty : reader.GetString(18);
+                    list.Add(obj);
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("根据会员id获取待提货订单发生错误", ex);
+            }
+            finally
+            {
+                CloseConnection(conn);
+            }
+            return list;
+        }
     }
 }
 

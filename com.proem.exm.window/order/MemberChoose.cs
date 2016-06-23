@@ -150,7 +150,31 @@ namespace Branch.com.proem.exm.window.order
         {
             if (dataGridView1.DataSource == null || dataGridView1.RowCount == 0)
             {
-                return;
+                if (workMode.Equals(Constant.PICK_UP_GOODS))
+                {
+                    BranchZcOrderTransitService branchTransitService = new BranchZcOrderTransitService();
+                    int counts = branchTransitService.getCountBy(searchTextbox.Text);
+                    if (counts == 0)
+                    {
+                        MessageBox.Show("暂无" + searchTextbox.Text + "需要提货的订单!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    else if (counts == 1)
+                    {
+                        List<ZcOrderTransit> list = branchTransitService.FindByCondition(searchTextbox.Text);
+                        ZcOrderTransit zcOrderTransit = list[0];
+                        customerDelivery.showTransitOrder(zcOrderTransit);
+                    }
+                    else
+                    {
+                        CDQueryList cdQueryList = new CDQueryList(this, searchTextbox.Text, workMode, customerDelivery, 1);
+                        cdQueryList.ShowDialog();
+                    }
+                }
+                else
+                {
+                    return;
+                }
             }
             AssociatorInfo obj = new AssociatorInfo();
             obj.Id = dataGridView1.CurrentRow.Cells[0].Value.ToString();
@@ -176,7 +200,7 @@ namespace Branch.com.proem.exm.window.order
                 }
                 else
                 {
-                    CDQueryList cdQueryList = new CDQueryList(this, obj.Id, workMode, customerDelivery);
+                    CDQueryList cdQueryList = new CDQueryList(this, obj.Id, workMode, customerDelivery, 0);
                     cdQueryList.ShowDialog();
                 }
             }else if(workMode.Equals(Constant.REFUND))

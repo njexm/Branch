@@ -13,18 +13,18 @@ namespace Branch.app_code
     {
 
         /*****************************生产环境的测试数据*****************************/
-        //public static string alipay_public_key = HttpRuntime.AppDomainAppPath.ToString() + "Demo\\alipay_rsa_public_key.pem";
-        public static string alipay_public_key = "E:\\vs_2012\\Branch\\Demo\\alipay_rsa_public_key.pem";
+        public static string alipay_public_key = "Demo\\alipay_rsa_public_key.pem";
+        //public static string alipay_public_key = "E:\\vs_2012\\Branch\\Demo\\alipay_rsa_public_key.pem";
                            //这里要配置没有经过PKCS8转换的原始私钥
-        //public static string merchant_private_key = HttpRuntime.AppDomainAppPath.ToString() + "Demo\\backup_test\\rsa_private_key.pem";
-        public static string merchant_private_key = "E:\\vs_2012\\Branch\\Demo\\rsa_private_key.pem";
-        //public static string merchant_public_key = HttpRuntime.AppDomainAppPath.ToString() + "Demo\\rsa_public_key.pem";
-        public static string merchant_public_key =  "E:\\vs_2012\\Branch\\Demo\\rsa_public_key.pem";
-           public static string          appId = "2015090900262421";
+        public static string merchant_private_key = "Demo\\rsa_private_key.pem";
+        //public static string merchant_private_key = "E:\\vs_2012\\Branch\\Demo\\rsa_private_key.pem";
+        public static string merchant_public_key = "Demo\\rsa_public_key.pem";
+        //public static string merchant_public_key =  "E:\\vs_2012\\Branch\\Demo\\rsa_public_key.pem";
+           public static string          appId = "2016053101465454 ";
            public static string          serverUrl = "https://openapi.alipay.com/gateway.do";
            public static string          mapiUrl = "https://mapi.alipay.com/gateway.do"; 
            public static string          monitorUrl = "http://mcloudmonitor.com/gateway.do";
-           public static string          pid = "2088101568353491";
+           public static string          pid = "2088221665554288";
          /*****************************生产环境的测试数据*****************************/
 
 
