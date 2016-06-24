@@ -689,7 +689,7 @@ namespace Branch.com.proem.exm.window.receive
             {
                 try
                 {
-                    float num = itemDataGridView.Rows[e.RowIndex].Cells[5].Value == null ? 0 : Convert.ToInt32(itemDataGridView.Rows[e.RowIndex].Cells[5].Value.ToString());
+                    float num = (itemDataGridView.Rows[e.RowIndex].Cells[5].Value == null || string.IsNullOrEmpty(itemDataGridView.Rows[e.RowIndex].Cells[5].Value.ToString())) ? 0 : float.Parse(itemDataGridView.Rows[e.RowIndex].Cells[5].Value.ToString());
                     float price =float.Parse(itemDataGridView.Rows[e.RowIndex].Cells[2].Value.ToString());
                     float difference = float.Parse(itemDataGridView.Rows[e.RowIndex].Cells[4].Value.ToString()) - num;
                     itemDataGridView.Rows[e.RowIndex].Cells[6].Value = MoneyFormat.RountFormat(difference);

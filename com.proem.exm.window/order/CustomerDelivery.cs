@@ -1940,8 +1940,9 @@ namespace Branch.com.proem.exm.window.order
                     storeHouse.StoreMoney = (oldMoney * (oldNums - nums) / oldNums).ToString();
                     if (!string.IsNullOrEmpty(weightString))
                     {
-                        float oldWeight = float.Parse(storeHouse.weight);
-                        storeHouse.weight = (oldWeight - float.Parse(weightString)).ToString();
+                        //重量没有做处理
+                        //float oldWeight = float.Parse(storeHouse.weight);
+                        //storeHouse.weight = (oldWeight - float.Parse(weightString)).ToString();
                     }
                     storeList.Add(storeHouse);
                 }

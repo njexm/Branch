@@ -65,6 +65,19 @@
             this.orderItemGroupBox = new System.Windows.Forms.GroupBox();
             this.itemTablePanel = new System.Windows.Forms.Panel();
             this.itemDataGridView = new System.Windows.Forms.DataGridView();
+            this.serialnumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.goods_name = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.goods_price = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.nums = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.sortenum = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.actualQuantity = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.diffenence = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.orderAmount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.receiveAmount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.goods_specifications = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.goods_unit = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.classify = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.goodsFileId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.itemInputPanel = new System.Windows.Forms.Panel();
             this.backButton = new System.Windows.Forms.Button();
             this.clearBotton = new System.Windows.Forms.Button();
@@ -81,19 +94,6 @@
             this.threeButton = new System.Windows.Forms.Button();
             this.twoButton = new System.Windows.Forms.Button();
             this.oneButton = new System.Windows.Forms.Button();
-            this.serialnumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.goods_name = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.goods_price = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.nums = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.sortenum = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.actualQuantity = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.diffenence = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.orderAmount = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.receiveAmount = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.goods_specifications = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.goods_unit = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.classify = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.goodsFileId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.deliveryGoodsPanel.SuspendLayout();
             this.informPanel.SuspendLayout();
             this.informTableLayoutPanel.SuspendLayout();
@@ -386,7 +386,7 @@
             // deliveryButton
             // 
             this.deliveryButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.deliveryButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(173)))), ((int)(((byte)(173)))), ((int)(((byte)(173)))));
+            this.deliveryButton.BackColor = System.Drawing.Color.Green;
             this.deliveryButton.FlatAppearance.BorderSize = 0;
             this.deliveryButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.deliveryButton.Font = new System.Drawing.Font("宋体", 10F);
@@ -504,6 +504,151 @@
             this.itemDataGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.itemDataGridView_EditingControlShowing);
             this.itemDataGridView.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.itemDataGridView_RowPostPaint);
             this.itemDataGridView.Paint += new System.Windows.Forms.PaintEventHandler(this.itemDataGridView_Paint);
+            // 
+            // serialnumber
+            // 
+            this.serialnumber.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.serialnumber.DataPropertyName = "serialNumber";
+            this.serialnumber.FillWeight = 0.1F;
+            this.serialnumber.HeaderText = "货号";
+            this.serialnumber.Name = "serialnumber";
+            this.serialnumber.ReadOnly = true;
+            this.serialnumber.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            // 
+            // goods_name
+            // 
+            this.goods_name.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.goods_name.DataPropertyName = "name";
+            this.goods_name.FillWeight = 0.12F;
+            this.goods_name.HeaderText = "商品名";
+            this.goods_name.Name = "goods_name";
+            this.goods_name.ReadOnly = true;
+            this.goods_name.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            // 
+            // goods_price
+            // 
+            this.goods_price.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.goods_price.DataPropertyName = "g_price";
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle3.Format = "N2";
+            dataGridViewCellStyle3.NullValue = "0.00";
+            this.goods_price.DefaultCellStyle = dataGridViewCellStyle3;
+            this.goods_price.FillWeight = 0.08F;
+            this.goods_price.HeaderText = "单价";
+            this.goods_price.Name = "goods_price";
+            this.goods_price.ReadOnly = true;
+            this.goods_price.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            // 
+            // nums
+            // 
+            this.nums.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.nums.DataPropertyName = "nums";
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle4.Format = "N0";
+            dataGridViewCellStyle4.NullValue = "0";
+            this.nums.DefaultCellStyle = dataGridViewCellStyle4;
+            this.nums.FillWeight = 0.1F;
+            this.nums.HeaderText = "订单份数";
+            this.nums.Name = "nums";
+            this.nums.ReadOnly = true;
+            this.nums.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            // 
+            // sortenum
+            // 
+            this.sortenum.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.sortenum.DataPropertyName = "sortenum";
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle5.Format = "N0";
+            dataGridViewCellStyle5.NullValue = "0";
+            this.sortenum.DefaultCellStyle = dataGridViewCellStyle5;
+            this.sortenum.FillWeight = 0.1F;
+            this.sortenum.HeaderText = "配送份数";
+            this.sortenum.Name = "sortenum";
+            this.sortenum.ReadOnly = true;
+            // 
+            // actualQuantity
+            // 
+            this.actualQuantity.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle6.Format = "N0";
+            dataGridViewCellStyle6.NullValue = "0";
+            this.actualQuantity.DefaultCellStyle = dataGridViewCellStyle6;
+            this.actualQuantity.FillWeight = 0.1F;
+            this.actualQuantity.HeaderText = "实际份数";
+            this.actualQuantity.Name = "actualQuantity";
+            // 
+            // diffenence
+            // 
+            this.diffenence.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle7.Format = "N0";
+            dataGridViewCellStyle7.NullValue = "0";
+            this.diffenence.DefaultCellStyle = dataGridViewCellStyle7;
+            this.diffenence.FillWeight = 0.1F;
+            this.diffenence.HeaderText = "份数差异";
+            this.diffenence.Name = "diffenence";
+            this.diffenence.ReadOnly = true;
+            // 
+            // orderAmount
+            // 
+            this.orderAmount.DataPropertyName = "totalprice";
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle8.Format = "N2";
+            dataGridViewCellStyle8.NullValue = "0.00";
+            this.orderAmount.DefaultCellStyle = dataGridViewCellStyle8;
+            this.orderAmount.HeaderText = "订单金额";
+            this.orderAmount.Name = "orderAmount";
+            this.orderAmount.ReadOnly = true;
+            this.orderAmount.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.orderAmount.Visible = false;
+            this.orderAmount.Width = 120;
+            // 
+            // receiveAmount
+            // 
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle9.Format = "N2";
+            dataGridViewCellStyle9.NullValue = "0.00";
+            this.receiveAmount.DefaultCellStyle = dataGridViewCellStyle9;
+            this.receiveAmount.HeaderText = "收货金额";
+            this.receiveAmount.Name = "receiveAmount";
+            this.receiveAmount.ReadOnly = true;
+            this.receiveAmount.Visible = false;
+            this.receiveAmount.Width = 120;
+            // 
+            // goods_specifications
+            // 
+            this.goods_specifications.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.goods_specifications.DataPropertyName = "goods_specifications";
+            this.goods_specifications.FillWeight = 0.1F;
+            this.goods_specifications.HeaderText = "规格";
+            this.goods_specifications.Name = "goods_specifications";
+            this.goods_specifications.ReadOnly = true;
+            this.goods_specifications.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            // 
+            // goods_unit
+            // 
+            this.goods_unit.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.goods_unit.DataPropertyName = "goods_unit";
+            this.goods_unit.FillWeight = 0.1F;
+            this.goods_unit.HeaderText = "单位";
+            this.goods_unit.Name = "goods_unit";
+            this.goods_unit.ReadOnly = true;
+            this.goods_unit.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            // 
+            // classify
+            // 
+            this.classify.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.classify.DataPropertyName = "classify_name";
+            this.classify.FillWeight = 0.1F;
+            this.classify.HeaderText = "类型";
+            this.classify.Name = "classify";
+            // 
+            // goodsFileId
+            // 
+            this.goodsFileId.DataPropertyName = "goodsFile_id";
+            this.goodsFileId.HeaderText = "goodsFileId";
+            this.goodsFileId.Name = "goodsFileId";
+            this.goodsFileId.Visible = false;
             // 
             // itemInputPanel
             // 
@@ -750,151 +895,6 @@
             this.oneButton.Text = "1";
             this.oneButton.UseVisualStyleBackColor = false;
             this.oneButton.Click += new System.EventHandler(this.oneButton_Click);
-            // 
-            // serialnumber
-            // 
-            this.serialnumber.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.serialnumber.DataPropertyName = "serialNumber";
-            this.serialnumber.FillWeight = 0.1F;
-            this.serialnumber.HeaderText = "货号";
-            this.serialnumber.Name = "serialnumber";
-            this.serialnumber.ReadOnly = true;
-            this.serialnumber.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            // 
-            // goods_name
-            // 
-            this.goods_name.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.goods_name.DataPropertyName = "name";
-            this.goods_name.FillWeight = 0.12F;
-            this.goods_name.HeaderText = "商品名";
-            this.goods_name.Name = "goods_name";
-            this.goods_name.ReadOnly = true;
-            this.goods_name.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            // 
-            // goods_price
-            // 
-            this.goods_price.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.goods_price.DataPropertyName = "g_price";
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle3.Format = "N2";
-            dataGridViewCellStyle3.NullValue = "0.00";
-            this.goods_price.DefaultCellStyle = dataGridViewCellStyle3;
-            this.goods_price.FillWeight = 0.08F;
-            this.goods_price.HeaderText = "单价";
-            this.goods_price.Name = "goods_price";
-            this.goods_price.ReadOnly = true;
-            this.goods_price.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            // 
-            // nums
-            // 
-            this.nums.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.nums.DataPropertyName = "nums";
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle4.Format = "N0";
-            dataGridViewCellStyle4.NullValue = "0";
-            this.nums.DefaultCellStyle = dataGridViewCellStyle4;
-            this.nums.FillWeight = 0.1F;
-            this.nums.HeaderText = "订单份数";
-            this.nums.Name = "nums";
-            this.nums.ReadOnly = true;
-            this.nums.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            // 
-            // sortenum
-            // 
-            this.sortenum.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.sortenum.DataPropertyName = "sortenum";
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle5.Format = "N0";
-            dataGridViewCellStyle5.NullValue = "0";
-            this.sortenum.DefaultCellStyle = dataGridViewCellStyle5;
-            this.sortenum.FillWeight = 0.1F;
-            this.sortenum.HeaderText = "配送份数";
-            this.sortenum.Name = "sortenum";
-            this.sortenum.ReadOnly = true;
-            // 
-            // actualQuantity
-            // 
-            this.actualQuantity.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle6.Format = "N0";
-            dataGridViewCellStyle6.NullValue = "0";
-            this.actualQuantity.DefaultCellStyle = dataGridViewCellStyle6;
-            this.actualQuantity.FillWeight = 0.1F;
-            this.actualQuantity.HeaderText = "实际份数";
-            this.actualQuantity.Name = "actualQuantity";
-            // 
-            // diffenence
-            // 
-            this.diffenence.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle7.Format = "N0";
-            dataGridViewCellStyle7.NullValue = "0";
-            this.diffenence.DefaultCellStyle = dataGridViewCellStyle7;
-            this.diffenence.FillWeight = 0.1F;
-            this.diffenence.HeaderText = "份数差异";
-            this.diffenence.Name = "diffenence";
-            this.diffenence.ReadOnly = true;
-            // 
-            // orderAmount
-            // 
-            this.orderAmount.DataPropertyName = "totalprice";
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle8.Format = "N2";
-            dataGridViewCellStyle8.NullValue = "0.00";
-            this.orderAmount.DefaultCellStyle = dataGridViewCellStyle8;
-            this.orderAmount.HeaderText = "订单金额";
-            this.orderAmount.Name = "orderAmount";
-            this.orderAmount.ReadOnly = true;
-            this.orderAmount.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.orderAmount.Visible = false;
-            this.orderAmount.Width = 120;
-            // 
-            // receiveAmount
-            // 
-            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle9.Format = "N2";
-            dataGridViewCellStyle9.NullValue = "0.00";
-            this.receiveAmount.DefaultCellStyle = dataGridViewCellStyle9;
-            this.receiveAmount.HeaderText = "收货金额";
-            this.receiveAmount.Name = "receiveAmount";
-            this.receiveAmount.ReadOnly = true;
-            this.receiveAmount.Visible = false;
-            this.receiveAmount.Width = 120;
-            // 
-            // goods_specifications
-            // 
-            this.goods_specifications.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.goods_specifications.DataPropertyName = "goods_specifications";
-            this.goods_specifications.FillWeight = 0.1F;
-            this.goods_specifications.HeaderText = "规格";
-            this.goods_specifications.Name = "goods_specifications";
-            this.goods_specifications.ReadOnly = true;
-            this.goods_specifications.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            // 
-            // goods_unit
-            // 
-            this.goods_unit.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.goods_unit.DataPropertyName = "goods_unit";
-            this.goods_unit.FillWeight = 0.1F;
-            this.goods_unit.HeaderText = "单位";
-            this.goods_unit.Name = "goods_unit";
-            this.goods_unit.ReadOnly = true;
-            this.goods_unit.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            // 
-            // classify
-            // 
-            this.classify.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.classify.DataPropertyName = "classify_name";
-            this.classify.FillWeight = 0.1F;
-            this.classify.HeaderText = "类型";
-            this.classify.Name = "classify";
-            // 
-            // goodsFileId
-            // 
-            this.goodsFileId.DataPropertyName = "goodsFile_id";
-            this.goodsFileId.HeaderText = "goodsFileId";
-            this.goodsFileId.Name = "goodsFileId";
-            this.goodsFileId.Visible = false;
             // 
             // DeliveryGoods
             // 
