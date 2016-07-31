@@ -21,6 +21,7 @@ using Branch.com.proem.exm.service.master;
 using Branch.com.proem.exm.service;
 using MySql.Data.MySqlClient;
 using Branch.com.proem.exm.dao.branch;
+using Branch.com.proem.exm.dao.master;
 
 namespace Branch.com.proem.exm.window.receive
 {
@@ -63,6 +64,11 @@ namespace Branch.com.proem.exm.window.receive
         /// 收货标识
         /// </summary>
         private bool harvestFlag = true;
+
+        /// <summary>
+        /// 配送出库单id
+        /// </summary>
+        private string dispatchingId;
 
         public delegate void child_close();
         public event child_close delivery;
@@ -111,22 +117,40 @@ namespace Branch.com.proem.exm.window.receive
             //this.itemInputPanel.Controls.Add(itemsInput);
             //itemsInput.Show();
 
-            DownloadIdentifyService service = new DownloadIdentifyService();
-            ///判断亭点是否收获
-            if (service.IsHarvest())
+            BranchDispatchingWarehouseDao dao = new BranchDispatchingWarehouseDao();
+            List<string> list = dao.getCountToday();
+            if (list == null || list.Count == 0)
             {
-                harvestFlag = false;
-                ///已经已收货
-                loadHarvestGoods();
-                loadTotal();
+                MessageBox.Show("今天无连锁配送单", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
             }
-            else    ///未收货
+            else if (list.Count == 1)
             {
-                loadGoods();
-                initDifference();
+                ///加载配送单汇总数据
+                loadGoods(list[0]);
+                initDifference(list[0]);
+            }
+            else 
+            {
+                ///打开选择配送单界面
+                DispatchChoose choose = new DispatchChoose(this);
+                choose.ShowDialog();
             }
 
-
+            //DownloadIdentifyService service = new DownloadIdentifyService();
+            /////判断亭点是否收获
+            //if (service.IsHarvest())
+            //{
+            //    harvestFlag = false;
+            //    ///已经已收货
+            //    loadHarvestGoods();
+            //    loadTotal();
+            //}
+            //else    ///未收货
+            //{
+            //    loadGoods();
+            //    initDifference();
+            //}
 
             Times times = new Times();
             times.TopLevel = false;
@@ -162,57 +186,73 @@ namespace Branch.com.proem.exm.window.receive
         /// <summary>
         /// 初始化显示差异difference
         /// </summary>
-        private void initDifference()
+        private void initDifference(string id)
         {
-            for (int i = 0; i < itemDataGridView.RowCount; i++)
+            BranchInDao dao = new BranchInDao();
+            List<string> list = dao.getByDispatchingId(id);
+            if (list != null && list.Count == 1)
             {
-                int orderNums = Convert.ToInt32(itemDataGridView[4, i].Value);
-                itemDataGridView[5, i].Value = orderNums;
-                itemDataGridView[6, i].Value = 0;
+                harvestFlag = true;
+                for (int i = 0; i < itemDataGridView.RowCount; i++)
+                {
+                    float nums = float.Parse(string.IsNullOrEmpty(itemDataGridView[3, i].Value.ToString()) ? "0" : itemDataGridView[3, i].Value.ToString());
+                    float actual = float.Parse(string.IsNullOrEmpty(itemDataGridView[4, i].Value.ToString()) ? "0" : itemDataGridView[4, i].Value.ToString());
+                    itemDataGridView[5, i].Value = (nums - actual).ToString("0.00");
+                }
+            }
+            else 
+            {
+                harvestFlag = false;
+                for (int i = 0; i < itemDataGridView.RowCount; i++)
+                {
+                    float nums = float.Parse(string.IsNullOrEmpty(itemDataGridView[3, i].Value.ToString()) ? "0" : itemDataGridView[3, i].Value.ToString());
+                    itemDataGridView[4, i].Value = nums.ToString("0.00");
+                    itemDataGridView[5, i].Value = "0";
+                }
             }
         }
 
         /// <summary>
         /// 加载收货过的商品信息列表
         /// </summary>
-        private void loadHarvestGoods()
-        {
-            DateTime first = DateTime.Today;
-            DateTime last = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd 23:59:59"));
-            MysqlDBHelper dbHelper = new MysqlDBHelper();
-            MySqlConnection conn = null;
-            string sql = "select serialNumber , name, classify, goods_unit, goods_specifications, goods_price as g_price, nums, actual_quantity, order_amount, receive_amount,sortenum  from daily_receive_goods where createTime between @first and @last ";
-            MySqlCommand cmd = new MySqlCommand();
-            try
-            {
-                conn = dbHelper.GetConnection();
-                cmd.Connection = conn;
-                cmd.CommandText = sql;
-                cmd.Parameters.AddWithValue("@first", first);
-                cmd.Parameters.AddWithValue("@last", last);
-                DataSet ds = new DataSet();
-                MySqlDataAdapter da = new MySqlDataAdapter(cmd);
-                da.Fill(ds, "daily_receive_goods");
-                receiveAmount.DataPropertyName = "receive_amount";
-                actualQuantity.DataPropertyName = "actual_quantity";
-                orderAmount.DataPropertyName = "order_amount";
-                classify.DataPropertyName = "classify";
-                actualQuantity.ReadOnly = true;
+        //private void loadHarvestGoods()
+        //{
+        //    DateTime first = DateTime.Today;
+        //    DateTime last = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd 23:59:59"));
+        //    MysqlDBHelper dbHelper = new MysqlDBHelper();
+        //    MySqlConnection conn = null;
+        //    string sql = "select serialNumber , name, classify, goods_unit, goods_specifications, goods_price as g_price, nums, actual_quantity, order_amount, receive_amount,sortenum  from daily_receive_goods where createTime between @first and @last ";
+        //    MySqlCommand cmd = new MySqlCommand();
+        //    try
+        //    {
+        //        conn = dbHelper.GetConnection();
+        //        cmd.Connection = conn;
+        //        cmd.CommandText = sql;
+        //        cmd.Parameters.AddWithValue("@first", first);
+        //        cmd.Parameters.AddWithValue("@last", last);
+        //        DataSet ds = new DataSet();
+        //        MySqlDataAdapter da = new MySqlDataAdapter(cmd);
+        //        da.Fill(ds, "daily_receive_goods");
+        //        receiveAmount.DataPropertyName = "receive_amount";
+        //        actualQuantity.DataPropertyName = "actual_quantity";
+        //        orderAmount.DataPropertyName = "order_amount";
+        //        classify.DataPropertyName = "classify";
+        //        actualQuantity.ReadOnly = true;
 
-                itemDataGridView.DataSource = ds;
-                itemDataGridView.DataMember = "daily_receive_goods";
-                itemDataGridView.CurrentCell = null;//不默认选中
-            }
-            catch (Exception ex)
-            {
-                log.Error("获取当天收货后的商品信息失败", ex);
-            }
-            finally
-            {
-                cmd.Dispose();
-                dbHelper.CloseConnection(conn);
-            }
-        }
+        //        itemDataGridView.DataSource = ds;
+        //        itemDataGridView.DataMember = "daily_receive_goods";
+        //        itemDataGridView.CurrentCell = null;//不默认选中
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        log.Error("获取当天收货后的商品信息失败", ex);
+        //    }
+        //    finally
+        //    {
+        //        cmd.Dispose();
+        //        dbHelper.CloseConnection(conn);
+        //    }
+        //}
 
         private void returnButton_Click(object sender, EventArgs e)
         {
@@ -244,12 +284,12 @@ namespace Branch.com.proem.exm.window.receive
             }
             for (int i = 0; i < itemDataGridView.Rows.Count; i++)
             {
-                if (Convert.ToInt32(itemDataGridView[5, i].Value) == 0)
+                if (float.Parse(itemDataGridView[4, i].Value == null ? "0" : itemDataGridView[4, i].Value.ToString()) == 0)
                 {
                     deli = true;
                 }
 
-                if (Convert.ToInt32(itemDataGridView[6, i].Value) != 0)
+                if (float.Parse(itemDataGridView[5, i].Value == null ? "0" : itemDataGridView[5, i].Value.ToString()) != 0)
                 {
                     prompt = true;
                 }
@@ -269,35 +309,119 @@ namespace Branch.com.proem.exm.window.receive
                 }
             }
 
-            List<DailyReceiveGoods> list = new List<DailyReceiveGoods>();
+            BranchInDao branchInDao = new BranchInDao();
+            BranchInItemDao branchInItemDao = new BranchInItemDao();
+
+            BranchIn branchIn = new BranchIn();
+            branchIn.id = Guid.NewGuid().ToString().Replace("-", "");
+            branchIn.createTime = DateTime.Now;
+            branchIn.updateTime = DateTime.Now;
+            branchIn.InOdd ="TDRKD" + DateTime.Now.ToString("yyyyMMddHHmmssSSS");
+            branchIn.dispatching_id = dispatchingId;
+            branchIn.branch_id = LoginUserInfo.branchId;
+            branchIn.user_id = LoginUserInfo.id;
+            float number = 0;
+            float weight = 0;
+            float money = 0;
+            List<BranchInItem> list = new List<BranchInItem>();
             //确定收货
             for (int i = 0; i < itemDataGridView.RowCount; i++)
             {
-                DailyReceiveGoods obj = new DailyReceiveGoods();
-                DataGridViewRow dc = itemDataGridView.Rows[i];
-                obj.Id = Guid.NewGuid().ToString().Replace("-", "");
-                obj.CreateTime = DateTime.Now;
-                obj.UpdateTime = DateTime.Now;
-                obj.SerialNumber = dc.Cells[0].Value == null ? string.Empty : dc.Cells[0].Value.ToString();
-                obj.Name = dc.Cells[1].Value == null ? string.Empty : dc.Cells[1].Value.ToString();
-                obj.Classify = dc.Cells[11].Value == null ? string.Empty : dc.Cells[11].Value.ToString();
-                obj.GoodsUnit = dc.Cells[10].Value == null ? string.Empty :dc.Cells[10].Value.ToString();
-                obj.GoodsSpecifications = dc.Cells[9].Value == null ? string.Empty : dc.Cells[9].Value.ToString();
-                obj.GooodsPrice = dc.Cells[2].Value == null ? string.Empty : dc.Cells[2].Value.ToString();
-                obj.Nums = dc.Cells[3].Value == null ? string.Empty : dc.Cells[3].Value.ToString();
-                obj.ActualQuantity = dc.Cells[5].Value == null ? "" : dc.Cells[5].Value.ToString();
-                obj.OrderAmount = dc.Cells[7].Value == null ? string.Empty: dc.Cells[7].Value.ToString();
-                obj.ReceiveAmount = dc.Cells[8].Value == null ? "" : dc.Cells[8].Value.ToString();
-                obj.sortenum = dc.Cells[4].Value == null ? string.Empty : dc.Cells[4].Value.ToString();
-                obj.Salesman = LoginUserInfo.id;
-                obj.BranchId = LoginUserInfo.branchId;
-                obj.receiveDate = DateTime.Now;
-                obj.GoodsFileId = dc.Cells[12].Value == null ? "" : dc.Cells[12].Value.ToString();
+                BranchInItem obj = new BranchInItem();
+                float nums = float.Parse(string.IsNullOrEmpty(itemDataGridView[4, i].Value.ToString()) ? "0" : itemDataGridView[4, i].Value.ToString());
+                if(nums == 0){
+                    continue;
+                }
+                number += nums;
+                obj.id = Guid.NewGuid().ToString().Replace("-", "");
+                obj.createTime = DateTime.Now;
+                obj.updateTime = DateTime.Now;
+                obj.branchIn_id = branchIn.id;
+                obj.nums = string.IsNullOrEmpty(itemDataGridView[4, i].Value.ToString()) ? "0" : itemDataGridView[4, i].Value.ToString();
+                obj.weight = string.IsNullOrEmpty(itemDataGridView[6, i].Value.ToString()) ? "0" : itemDataGridView[6, i].Value.ToString();
+                weight += float.Parse(obj.weight);
+                obj.money = string.IsNullOrEmpty(itemDataGridView[7, i].Value.ToString()) ? "0" : itemDataGridView[7, i].Value.ToString();
+                money += float.Parse(obj.money);
+                obj.goodsFile_id = itemDataGridView[8, i].Value.ToString();
+                obj.price = string.IsNullOrEmpty(itemDataGridView[2, i].Value.ToString()) ? "0" : itemDataGridView[2, i].Value.ToString();
                 list.Add(obj);
             }
-            BranchDailyReceiveGoodsService branchservice = new BranchDailyReceiveGoodsService();
+            branchIn.nums = number.ToString();
+            branchIn.weight = weight.ToString();
+            branchIn.money = money.ToString();
+
+            if (prompt)
+            {
+                BranchDiff diff = new BranchDiff();
+                diff.id = Guid.NewGuid().ToString().Replace("-", "");
+                diff.createTime = DateTime.Now;
+                diff.updateTime = DateTime.Now;
+                diff.DiffOdd ="TDCYD"+ DateTime.Now.ToString("yyyyMMddHHmmssSSS");
+                diff.branchIn_id = branchIn.id;
+                diff.branch_id = LoginUserInfo.branchId;
+                diff.user_id = LoginUserInfo.id;
+                List<BranchDiffItem> diffList = new List<BranchDiffItem>();
+                float diffNums = 0;
+                for (int i = 0; i < itemDataGridView.RowCount; i++)
+                {
+                    if (float.Parse(itemDataGridView[5, i].Value == null ? "0" : itemDataGridView[5, i].Value.ToString()) != 0)
+                    {
+                        BranchDiffItem diffItem = new BranchDiffItem();
+                        diffItem.id = Guid.NewGuid().ToString().Replace("-", "");
+                        diffItem.branchDiff_id = diff.id;
+                        diffItem.createTime = DateTime.Now;
+                        diffItem.updateTime = DateTime.Now;
+                        diffItem.nums = itemDataGridView[5, i].Value.ToString();
+                        diffNums += float.Parse(diffItem.nums);
+                        diffItem.goodsFile_id = itemDataGridView[8, i].Value.ToString();
+                        diffItem.price = string.IsNullOrEmpty(itemDataGridView[2, i].Value.ToString()) ? "0" : itemDataGridView[2, i].Value.ToString();
+                        diffList.Add(diffItem);
+                    }
+                }
+                diff.nums = diffNums.ToString();
+
+                BranchDiffDao diffDao = new BranchDiffDao();
+                BranchDiffItemDao diffItemDao = new BranchDiffItemDao();
+
+                //存入本地差异单表
+                diffDao.addObj(diff);
+                diffItemDao.addList(diffList);
+
+                if (PingTask.IsConnected)
+                {
+                    MasterBranchDiffDao masterDiffDao = new MasterBranchDiffDao();
+                    masterDiffDao.addObj(diff);
+                    MasterBranchDiffItemDao masterDiffItemDao = new MasterBranchDiffItemDao();
+                    masterDiffItemDao.addList(diffList);
+                }
+                else 
+                {
+                    List<UploadInfo> uploadList = new List<UploadInfo>();
+                    UploadInfo uploadInfo1 = new UploadInfo();
+                    uploadInfo1.Id = diff.id;
+                    uploadInfo1.Type = Constant.ZC_BRANCH_DIFF;
+                    uploadInfo1.CreateTime = DateTime.Now;
+                    uploadInfo1.UpdateTime = DateTime.Now;
+                    uploadList.Add(uploadInfo1);
+                    foreach (BranchDiffItem obj in diffList)
+                    {
+                        UploadInfo uploadInfo = new UploadInfo();
+                        uploadInfo.Id = obj.id;
+                        uploadInfo.CreateTime = DateTime.Now;
+                        uploadInfo.UpdateTime = DateTime.Now;
+                        uploadInfo.Type = Constant.ZC_BRANCH_DIFF_ITEM;
+                        uploadList.Add(uploadInfo);
+                    }
+                    UploadDao uploadDao = new UploadDao();
+                    uploadDao.AddUploadInfo(uploadList);
+                }
+            }
+
+
+
             //存入本地数据库
-            branchservice.AddDailyReceiveGoods(list);
+            branchInDao.addObj(branchIn);
+            branchInItemDao.addList(list);
 
             //将全部订单改为待提货  
             BranchZcOrderTransitService branchZcOrderTransitService = new BranchZcOrderTransitService();
@@ -311,22 +435,30 @@ namespace Branch.com.proem.exm.window.receive
             if (PingTask.IsConnected)
             {
                 //上传每日收货数据
-                DailyReceiveGoodsService service = new DailyReceiveGoodsService();
-                service.AddDailyReceiveGoods(list);
-
+                MasterBranchInDao masterBranchInDao = new MasterBranchInDao();
+                masterBranchInDao.addObj(branchIn);
+                MasterBranchInItemDao masterBranchInItemDao = new MasterBranchInItemDao();
+                masterBranchInItemDao.addList(list);
+    
                 ZcOrderTransitService zcOderTransitService = new ZcOrderTransitService();
                 zcOderTransitService.UpdateStatus(tranlist);
             }
             else
             {
                 List<UploadInfo> uploadList = new List<UploadInfo>();
-                foreach (DailyReceiveGoods obj in list)
+                UploadInfo uploadInfo1 = new UploadInfo();
+                uploadInfo1.Id = branchIn.id;
+                uploadInfo1.Type = Constant.ZC_BRANCH_IN;
+                uploadInfo1.CreateTime = DateTime.Now;
+                uploadInfo1.UpdateTime = DateTime.Now;
+                uploadList.Add(uploadInfo1);
+                foreach (BranchInItem obj in list)
                 {
                     UploadInfo uploadInfo = new UploadInfo();
-                    uploadInfo.Id = obj.Id;
+                    uploadInfo.Id = obj.id;
                     uploadInfo.CreateTime = DateTime.Now;
                     uploadInfo.UpdateTime = DateTime.Now;
-                    uploadInfo.Type = Constant.DAILY_RECEIVE_GOODS;
+                    uploadInfo.Type = Constant.ZC_BRANCH_IN_ITEM;
                     uploadList.Add(uploadInfo);
                 }
                 foreach (ZcOrderTransit obj in tranlist)
@@ -348,19 +480,20 @@ namespace Branch.com.proem.exm.window.receive
             BranchZcStoreHouseService branchStoreService = new BranchZcStoreHouseService();
             List<ZcStoreHouse> storeList = new List<ZcStoreHouse>();
             ZcStoreHouseService storeService = new ZcStoreHouseService();
-            foreach(DailyReceiveGoods dg in list)
+            foreach(BranchInItem dg in list)
             {
-                String goodsFileId = dg.GoodsFileId;
-                float nums = float.Parse(dg.Nums);
-                bool isGoodsWeight = branchGoodsService.IsWeightGoods(dg.GoodsFileId);
+                String goodsFileId = dg.goodsFile_id;
+                float nums = float.Parse(dg.nums);
+                bool isGoodsWeight = branchGoodsService.IsWeightGoods(dg.goodsFile_id);
                 ZcStoreHouse storeHouse = branchStoreService.FindByGoodsFileIdAndBranchId(goodsFileId, LoginUserInfo.branchId);
                 if (storeHouse != null)
                 {
-                    float oldNums = float.Parse(storeHouse.Store);
-                    float oldMoney = float.Parse(storeHouse.StoreMoney);
+                    bool zeroFlag = string.IsNullOrEmpty(storeHouse.Store) || storeHouse.Store.Equals("0");
+                    float oldNums = string.IsNullOrEmpty(storeHouse.Store) ? 0F: float.Parse(storeHouse.Store);
+                    float oldMoney = string.IsNullOrEmpty(storeHouse.Store) ? 0F: float.Parse(storeHouse.StoreMoney);
                     storeHouse.UpdateTime = DateTime.Now;
                     storeHouse.Store = (oldNums - nums).ToString();
-                    storeHouse.StoreMoney = (oldMoney * (oldNums - nums) / oldNums).ToString();
+                    storeHouse.StoreMoney = zeroFlag ? "0" : (oldMoney * (oldNums - nums) / oldNums).ToString();
                     storeList.Add(storeHouse);
                 }
                 else
@@ -372,10 +505,10 @@ namespace Branch.com.proem.exm.window.receive
                     storeHouse.CreateTime = DateTime.Now;
                     storeHouse.UpdateTime = DateTime.Now;
                     storeHouse.Store = nums.ToString();
-                    storeHouse.StoreMoney = (nums * (float.Parse(dg.GooodsPrice))).ToString();
+                    storeHouse.StoreMoney = dg.money;
                     storeHouse.BranchId = branchInfoService.FindIdByBranchTotalId(LoginUserInfo.branchId);
                     storeHouse.CreateUserId = LoginUserInfo.id;
-                    storeHouse.GoodsFileId = dg.GoodsFileId;
+                    storeHouse.GoodsFileId = dg.goodsFile_id;
                     branchStoreService.AddZcStoreHouse(storeHouse);
                     if (PingTask.IsConnected)
                     {
@@ -425,16 +558,15 @@ namespace Branch.com.proem.exm.window.receive
         /// <summary>
         /// 加载商品
         /// </summary>
-        private void loadGoods()
+        private void loadGoods(string id)
         {
-            DateTime first = DateTime.Today;
-            DateTime last = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd 23:59:59"));
-            DateTime begin = first.AddDays(-1);
-            DateTime end = last.AddDays(-1);
-            string sql = "select sum(nums) as nums,name,sum(g_price*nums) as totalprice,classify_name,goods_unit,delFlag,goods_specifications,serialNumber,g_price as actualnums,goodsfile_id,goods_class_id,g_price, sortenum, address_id  from "
-                + " (select a.goods_state, a.nums ,b.goods_name as name ,b.goods_specifications,b.goods_unit,a.g_price,b.id as goodsfile_id,b.delFlag,b.serialNumber,c.classify_name,b.goods_class_id,b.goods_supplier_id ,e.sortenum, e.address as address_id  "
-                + " from zc_order_transit_item a left join zc_goods_master b on a.goodsfile_id = b.id left join zc_classify_info c on b.goods_class_id = c.id  left join (select sum(sortenum) as sortenum, address, goods_id from zc_order_sorte where createTime >=@first and createTime <=@last group by goods_id) e on a.GOODSFILE_ID = e.goods_id  "
-                + "  where a.createTime >=@begin and a.createTime <=@end) as d where address_id ='" + LoginUserInfo.street + "' group by name,delFlag,classify_name,goods_unit,goods_specifications,serialNumber,g_price,goodsfile_id,goods_class_id order by serialNumber";
+            dispatchingId = id;
+            string sql = "select m.*,n.actual_nums from (select sum(a.nums) as nums, sum(a.weight) as weight, sum(a.money) as money, a.goods_name, a.serialNumber, "
+                + " a.goodsPrice, a.dispatchingWarehouseId, b.branch_total_id, c.id as goodsFile_id "
+                + " from zc_dispatching_warehouse_items a left join zc_dispatching_warehouse b on a.dispatchingWarehouseId = b.id "
+                + " left join zc_goods_master c on a.goodsFile_id = b.id where 1=1 and b.id = '" + id + "' group by a.goods_name, c.id)m "
+                + " left join (select a.nums as actual_nums,a.goodsfile_id from zc_branch_in_item a left join zc_branch_in b on a.branchin_id = b.id) n "
+                + " on m.goodsFile_id = n.goodsfile_id where 1=1 order by m.serialNumber asc";
             MySqlConnection conn = null;
             MysqlDBHelper dbHelper = new MysqlDBHelper();
             try
@@ -443,16 +575,12 @@ namespace Branch.com.proem.exm.window.receive
                 MySqlCommand cmd = new MySqlCommand();
                 cmd.CommandText = sql;
                 cmd.Connection = conn;
-                cmd.Parameters.AddWithValue("@first", first);
-                cmd.Parameters.AddWithValue("@last", last);
-                cmd.Parameters.AddWithValue("@begin", begin);
-                cmd.Parameters.AddWithValue("@end", end);
                 MySqlDataAdapter da = new MySqlDataAdapter(cmd);
                 DataSet ds = new DataSet();
-                da.Fill(ds, "zc_order_transit_item");
+                da.Fill(ds, "zc_dispatching_warehouse_items");
                 itemDataGridView.AutoGenerateColumns = false;
                 itemDataGridView.DataSource = ds;
-                itemDataGridView.DataMember = "zc_order_transit_item";
+                itemDataGridView.DataMember = "zc_dispatching_warehouse_items";
                 itemDataGridView.CurrentCell = null;//不默认选中
             }
             catch (Exception ex)
@@ -595,13 +723,13 @@ namespace Branch.com.proem.exm.window.receive
         private void Calculate()
         {
             float totalSum = 0;
-            float totalAmount = 0;
+            //float totalAmount = 0;
             try
             {
                 for (int i = 0; i < itemDataGridView.RowCount; i++)
                 {
-                    totalSum += Convert.ToInt32((itemDataGridView[5, i].Value == null || itemDataGridView[5, i].Value.ToString().Trim() == "") ? "0" : itemDataGridView[5, i].Value.ToString());
-                    totalAmount += float.Parse((itemDataGridView[8, i].Value == null || itemDataGridView[8, i].Value.ToString().Trim() == "") ? "0" : itemDataGridView[8, i].Value.ToString());
+                    totalSum += Convert.ToInt32((itemDataGridView[4, i].Value == null || itemDataGridView[5, i].Value.ToString().Trim() == "") ? "0" : itemDataGridView[5, i].Value.ToString());
+                    //totalAmount += float.Parse((itemDataGridView[8, i].Value == null || itemDataGridView[8, i].Value.ToString().Trim() == "") ? "0" : itemDataGridView[8, i].Value.ToString());
                 }
             }
             catch (Exception ex)
@@ -609,7 +737,7 @@ namespace Branch.com.proem.exm.window.receive
                 log.Error("类型转换异常", ex);
             }
             this.totalSum.Text = MoneyFormat.RountFormat(totalSum);
-            this.totalAmount.Text = MoneyFormat.RountFormat(totalAmount);
+            //this.totalAmount.Text = MoneyFormat.RountFormat(totalAmount);
         }
 
         private void DeliveryGoods_KeyDown(object sender, KeyEventArgs e)
@@ -689,10 +817,9 @@ namespace Branch.com.proem.exm.window.receive
             {
                 try
                 {
-                    float num = (itemDataGridView.Rows[e.RowIndex].Cells[5].Value == null || string.IsNullOrEmpty(itemDataGridView.Rows[e.RowIndex].Cells[5].Value.ToString())) ? 0 : float.Parse(itemDataGridView.Rows[e.RowIndex].Cells[5].Value.ToString());
-                    float price =float.Parse(itemDataGridView.Rows[e.RowIndex].Cells[2].Value.ToString());
-                    float difference = float.Parse(itemDataGridView.Rows[e.RowIndex].Cells[4].Value.ToString()) - num;
-                    itemDataGridView.Rows[e.RowIndex].Cells[6].Value = MoneyFormat.RountFormat(difference);
+                    float num = (itemDataGridView.Rows[e.RowIndex].Cells[4].Value == null || string.IsNullOrEmpty(itemDataGridView.Rows[e.RowIndex].Cells[4].Value.ToString())) ? 0 : float.Parse(itemDataGridView.Rows[e.RowIndex].Cells[4].Value.ToString());
+                    //float price =float.Parse(itemDataGridView.Rows[e.RowIndex].Cells[2].Value.ToString());
+                    float difference = float.Parse(itemDataGridView.Rows[e.RowIndex].Cells[5].Value.ToString());
                     if (difference != 0)
                     {
                         itemDataGridView.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.FromArgb(201, 67, 65);// Color.Red;
@@ -701,7 +828,6 @@ namespace Branch.com.proem.exm.window.receive
                     {
                         itemDataGridView.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.FromArgb(51, 153, 255);// Color.Blue;//51,153,255
                     }
-                    itemDataGridView.Rows[e.RowIndex].Cells[8].Value = MoneyFormat.RountFormat(num * price);
                     Calculate();
                 }
                 catch (Exception ex)
@@ -709,30 +835,6 @@ namespace Branch.com.proem.exm.window.receive
                     log.Error("自动计算金额错误", ex);
                 }
             }
-            //if (e.RowIndex != -1 && e.ColumnIndex == 5)
-            //{//
-            //    int cot = Convert.ToInt32(itemDataGridView.Rows[e.RowIndex].Cells[5].Value.ToString());
-            //    if (cot != 0)
-            //    {
-            //        this.itemDataGridView.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.Red;
-            //    }
-            //    else
-            //    {
-            //        this.itemDataGridView.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.Blue;
-            //    }
-            //}
-
-            //if (e.RowIndex != -1 && e.ColumnIndex == 7)
-            //{
-            //    string a = itemDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
-            //    if (! Regex.IsMatch(itemDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString(), "^([0-9]{1,})$"))
-            //    {
-            //        MessageBox.Show("只能输入整数");
-            //        itemDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = 0;
-            //        return;
-            //    }
-            //    
-            //}
         }
 
         private void itemDataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -748,23 +850,26 @@ namespace Branch.com.proem.exm.window.receive
         /// <param name="e"></param>
         private void itemDataGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            if (itemDataGridView.Columns[e.ColumnIndex].Name == "goods_specifications")
+            if (itemDataGridView.Columns[e.ColumnIndex].Name == "weight")
             {
                 if (e.Value == null || e.Value.ToString() == "")
                 {
                     return;
                 }
-                string str = e.Value.ToString();
-                e.Value = str.Replace("商品规格：", "");
+                float weight = float.Parse(e.Value.ToString());
+                e.Value = weight.ToString("0.0000");
             }
-            if (itemDataGridView.Columns[e.ColumnIndex].Name == "goods_price")
+            if (itemDataGridView.Columns[e.ColumnIndex].Name == "goodsprice")
             {
                 if (e.Value == null || e.Value.ToString() == "")
                 {
-                    return;
+                    e.Value = "0.00";
                 }
-                float price = float.Parse(e.Value.ToString());
-                e.Value = MoneyFormat.RountFormat(price);
+                else 
+                {
+                    float price = float.Parse(e.Value.ToString());
+                    e.Value = MoneyFormat.RountFormat(price);
+                }
             }
         }
 
@@ -902,7 +1007,7 @@ namespace Branch.com.proem.exm.window.receive
                     column = 5;//
                     flag = true;
                     //itemDataGridView[5, i].Value = good_num;
-                    this.itemDataGridView.CurrentCell = itemDataGridView[5, row]; //单元格设置可编辑状态-
+                    this.itemDataGridView.CurrentCell = itemDataGridView[4, row]; //单元格设置可编辑状态-
                     itemDataGridView.BeginEdit(true);
                 }
             }
@@ -943,5 +1048,11 @@ namespace Branch.com.proem.exm.window.receive
             itemDataGridView.ClearSelection();
         }
 
+
+        public void loadById(string id)
+        {
+            loadGoods(id);
+            initDifference(id);
+        }
     }
 }

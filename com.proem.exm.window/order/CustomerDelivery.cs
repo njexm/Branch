@@ -1235,7 +1235,7 @@ namespace Branch.com.proem.exm.window.order
                     float price = itemDataGridView.Rows[i].Cells[2].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[2].Value.ToString());
                     float oldNums = itemDataGridView.Rows[i].Cells[3].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[3].Value.ToString());
                     float refundNums = itemDataGridView.Rows[i].Cells[4].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[4].Value.ToString());
-                    float oldWeight = itemDataGridView.Rows[i].Cells[8].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[8].Value.ToString());
+                    float oldWeight = (itemDataGridView.Rows[i].Cells[8].Value == null || string.IsNullOrEmpty(itemDataGridView.Rows[i].Cells[8].Value.ToString())) ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[8].Value.ToString());
                     float refundWeight = itemDataGridView.Rows[i].Cells[17].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[17].Value.ToString());
                     GoodsPrint goodsPrint = new GoodsPrint();
                     goodsPrint.SerialNumber = serial;

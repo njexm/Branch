@@ -1,4 +1,5 @@
 ﻿using Branch.com.proem.exm.dao.branch;
+using Branch.com.proem.exm.dao.master;
 using Branch.com.proem.exm.domain;
 using Branch.com.proem.exm.service;
 using Branch.com.proem.exm.service.branch;
@@ -48,20 +49,21 @@ namespace Branch.com.proem.exm.util
                 List<UploadInfo> list = dao.FindAll();
                 foreach(UploadInfo obj in list)
                 {
-                    if(obj.Type == Constant.DAILY_RECEIVE_GOODS)
-                    {
-                        BranchDailyReceiveGoodsDao dailyDao = new BranchDailyReceiveGoodsDao();
-                        DailyReceiveGoods drg = dailyDao.FindById(obj.Id);
-                        drg.CreateTime = DateTime.Now;
-                        drg.UpdateTime = DateTime.Now;
-                        DailyReceiveGoodsService service = new DailyReceiveGoodsService();
-                        bool flag = service.AddDailyReceiveGoods(drg);
-                        if(flag)
-                        {
-                            dao.DeleteByIdAndType(obj.Id, obj.Type);
-                        }
-                    }
-                    else if (obj.Type == Constant.ZC_ORDER_TRANSIT_UPDATE)
+                    //if(obj.Type == Constant.DAILY_RECEIVE_GOODS)
+                    //{
+                    //    BranchDailyReceiveGoodsDao dailyDao = new BranchDailyReceiveGoodsDao();
+                    //    DailyReceiveGoods drg = dailyDao.FindById(obj.Id);
+                    //    drg.CreateTime = DateTime.Now;
+                    //    drg.UpdateTime = DateTime.Now;
+                    //    DailyReceiveGoodsService service = new DailyReceiveGoodsService();
+                    //    bool flag = service.AddDailyReceiveGoods(drg);
+                    //    if(flag)
+                    //    {
+                    //        dao.DeleteByIdAndType(obj.Id, obj.Type);
+                    //    }
+                    //}
+                    //else 
+                    if (obj.Type == Constant.ZC_ORDER_TRANSIT_UPDATE)
                     {
                         ZcOrderTransitService service = new ZcOrderTransitService();
                         bool flag = service.UpdateStatus(obj.Id, Constant.ORDER_STATUS_RECEIPT);
@@ -226,7 +228,49 @@ namespace Branch.com.proem.exm.util
                             dao.DeleteByIdAndType(obj.Id, obj.Type);
                         }
                     }
-
+                    else if(obj.Type == Constant.ZC_BRANCH_IN){
+                        BranchInDao branchdao = new BranchInDao();
+                        BranchIn branchIn = branchdao.FindById(obj.Id);
+                        MasterBranchInDao masterDao = new MasterBranchInDao();
+                        bool flag = masterDao.addObjI(branchIn);
+                        if (flag)
+                        {
+                            dao.DeleteByIdAndType(obj.Id, obj.Type);
+                        }
+                    }
+                    else if (obj.Type == Constant.ZC_BRANCH_IN_ITEM)
+                    {
+                        BranchInItemDao branchDao = new BranchInItemDao();
+                        BranchInItem item = branchDao.FindById(obj.Id);
+                        MasterBranchInItemDao masterItemDao = new MasterBranchInItemDao();
+                        bool flag = masterItemDao.addObj(item);
+                        if (flag)
+                        {
+                            dao.DeleteByIdAndType(obj.Id, obj.Type);
+                        }
+                    }
+                    else if (obj.Type == Constant.ZC_BRANCH_DIFF)
+                    {
+                        BranchDiffDao branchDao = new BranchDiffDao();
+                        BranchDiff diff = branchDao.FindById(obj.Id);
+                        MasterBranchDiffDao matserDao = new MasterBranchDiffDao();
+                        bool flag = matserDao.addObjI(diff);
+                        if (flag)
+                        {
+                            dao.DeleteByIdAndType(obj.Id, obj.Type);
+                        }
+                    }
+                    else if (obj.Type == Constant.ZC_BRANCH_DIFF_ITEM)
+                    {
+                        BranchDiffItemDao branchDao = new BranchDiffItemDao();
+                        BranchDiffItem item = branchDao.FindById(obj.Id);
+                        MasterBranchDiffItemDao masterDao = new MasterBranchDiffItemDao();
+                        bool flag = masterDao.addObj(item);
+                        if (flag)
+                        {
+                            dao.DeleteByIdAndType(obj.Id, obj.Type);
+                        }
+                    }
 
                 }
             }

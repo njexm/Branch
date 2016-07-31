@@ -177,6 +177,10 @@ namespace Branch.com.proem.exm.window.order
         /// </summary>
         private void chooseDocket()
         {
+            if (listDataGridView.DataSource == null || listDataGridView.RowCount == 0)
+            {
+                return;
+            }
             customerDelivery.initNumberAndAmount();
             string id = listDataGridView.CurrentRow.Cells[5].Value.ToString();
             BranchZcOrderTransitService branchService = new BranchZcOrderTransitService();

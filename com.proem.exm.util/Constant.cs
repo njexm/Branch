@@ -171,5 +171,25 @@ namespace Branch.com.proem.exm.util
         public const string ZC_STOREHOUSE_UPDATE = "ZC_STOREHOUSE_UPDATE";
 
         public const string ZC_STORE_HOSUE = "ZC_STORE_HOSUE";
+
+        /// <summary>
+        /// 亭点入库单
+        /// </summary>
+        public const string ZC_BRANCH_IN = "ZC_BRANCH_IN";
+
+        /// <summary>
+        /// 亭点入库单明细
+        /// </summary>
+        public const string ZC_BRANCH_IN_ITEM = "ZC_BRANCH_IN_ITEM";
+
+        /// <summary>
+        /// 亭点差异单
+        /// </summary>
+        public const string ZC_BRANCH_DIFF = "ZC_BRANCH_DIFF";
+
+        /// <summary>
+        /// 亭点差异单明细
+        /// </summary>
+        public const string ZC_BRANCH_DIFF_ITEM = "ZC_BRANCH_DIFF_ITEM";
     }
 }

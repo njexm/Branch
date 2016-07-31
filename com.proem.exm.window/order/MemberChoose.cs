@@ -195,8 +195,24 @@ namespace Branch.com.proem.exm.window.order
                     int orderCounts = branchTransitService.GetOrderCount(obj.Id);
                     if (orderCounts == 0)
                     {
-                        MessageBox.Show("暂无" + obj.Name + "提货的订单!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
+                        int counts = branchTransitService.getCountBy(searchTextbox.Text);
+                        if (counts == 0)
+                        {
+                            MessageBox.Show("暂无" + searchTextbox.Text + "需要提货的订单!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                        else if (counts == 1)
+                        {
+                            List<ZcOrderTransit> list = branchTransitService.FindByCondition(searchTextbox.Text);
+                            ZcOrderTransit zcOrderTransit = list[0];
+                            customerDelivery.showTransitOrder(zcOrderTransit);
+                            this.Close();
+                        }
+                        else
+                        {
+                            CDQueryList cdQueryList = new CDQueryList(this, searchTextbox.Text, workMode, customerDelivery, 1);
+                            cdQueryList.ShowDialog();
+                        }
                     }
                     else if (orderCounts == 1)
                     {

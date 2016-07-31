@@ -10,6 +10,8 @@ using System.Threading;
 using Branch.com.proem.exm.window.main;
 using System.Diagnostics;
 using log4net;
+using Branch.com.proem.exm.dao.branch;
+using Branch.com.proem.exm.dao.master;
 
 namespace Branch.com.proem.exm.service.main
 {
@@ -124,6 +126,10 @@ namespace Branch.com.proem.exm.service.main
             DownloadOrderDigits();
             a.Stop();
             p.AppendMessage("下载数据精度信息成功,耗时：" + a.ElapsedMilliseconds + "毫秒\n");
+            a.Reset();
+            DownloadDispatchingWarehouse();
+            a.Stop();
+            p.AppendMessage("下载配送出货单信息成功,耗时：" + a.ElapsedMilliseconds + "毫秒\n");
             p.Close();
         }
 
@@ -336,6 +342,23 @@ namespace Branch.com.proem.exm.service.main
              OrderDigitsService service = new OrderDigitsService();
              List<OrderDigits> list = service.FindAll();
              branchService.AddDigits(list);
+         }
+
+        /// <summary>
+        /// 下载配送出库单信息
+        /// </summary>
+         void DownloadDispatchingWarehouse() {
+             BranchDispatchingWarehouseDao branchDao = new BranchDispatchingWarehouseDao();
+             DispatchingWarehouseDao dao = new DispatchingWarehouseDao();
+             List<DispatchingWarehouse> list = dao.getAll();
+             branchDao.addObj(list);
+             BranchDispatchingWarehouseItemDao branchItemDao = new BranchDispatchingWarehouseItemDao();
+             DispatchingWarehouseItemDao itemDao = new DispatchingWarehouseItemDao();
+             for (int i = 0; i < list.Count; i++ )
+             {
+                 DispatchingWarehouse obj = list[i];
+                 branchItemDao.addObj(itemDao.getBy(obj.id));
+             }
          }
     }
 }

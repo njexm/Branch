@@ -77,6 +77,12 @@
     <Compile Include="com.proem.exm.dao\branch\BranchAssociatorInfoDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchDailyReceiveGoodsDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchDeliverAmountInfoDao.cs" />
+    <Compile Include="com.proem.exm.dao\branch\BranchDiffDao.cs" />
+    <Compile Include="com.proem.exm.dao\branch\BranchDiffItemDao.cs" />
+    <Compile Include="com.proem.exm.dao\branch\BranchDispatchingWarehouseDao.cs" />
+    <Compile Include="com.proem.exm.dao\branch\BranchDispatchingWarehouseItemDao.cs" />
+    <Compile Include="com.proem.exm.dao\branch\BranchInDao.cs" />
+    <Compile Include="com.proem.exm.dao\branch\BranchInItemDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchOrderDigitsDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchPayInfoDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchPayInfoItemDao.cs" />
@@ -109,6 +115,12 @@
     <Compile Include="com.proem.exm.dao\master\AssociatorInfoDao.cs" />
     <Compile Include="com.proem.exm.dao\master\DailyReceiveGoodsDao.cs" />
     <Compile Include="com.proem.exm.dao\master\DeliverAmountInfoDao.cs" />
+    <Compile Include="com.proem.exm.dao\master\DispatchingWarehouseDao.cs" />
+    <Compile Include="com.proem.exm.dao\master\DispatchingWarehouseItemDao.cs" />
+    <Compile Include="com.proem.exm.dao\master\MasterBranchDiffDao.cs" />
+    <Compile Include="com.proem.exm.dao\master\MasterBranchDiffItemDao.cs" />
+    <Compile Include="com.proem.exm.dao\master\MasterBranchInDao.cs" />
+    <Compile Include="com.proem.exm.dao\master\MasterBranchInItemDao.cs" />
     <Compile Include="com.proem.exm.dao\master\OrderDigitsDao.cs" />
     <Compile Include="com.proem.exm.dao\master\PayInfoDao.cs" />
     <Compile Include="com.proem.exm.dao\master\PayInfoItemDao.cs" />
@@ -137,8 +149,16 @@
     <Compile Include="com.proem.exm.dao\master\ZcUserInfoDao.cs" />
     <Compile Include="com.proem.exm.dao\master\ZcZoningDao.cs" />
     <Compile Include="com.proem.exm.domain\AssociatorInfo.cs" />
+    <Compile Include="com.proem.exm.domain\BranchDiff.cs" />
+    <Compile Include="com.proem.exm.domain\BranchDiffItem.cs" />
+    <Compile Include="com.proem.exm.domain\BranchIn.cs" />
+    <Compile Include="com.proem.exm.domain\BranchInItem.cs" />
+    <Compile Include="com.proem.exm.domain\BranchOut.cs" />
+    <Compile Include="com.proem.exm.domain\BranchOutItem.cs" />
     <Compile Include="com.proem.exm.domain\DailyReceiveGoods.cs" />
     <Compile Include="com.proem.exm.domain\DeliverAmountInfo.cs" />
+    <Compile Include="com.proem.exm.domain\DispatchingWarehouse.cs" />
+    <Compile Include="com.proem.exm.domain\DispatchingWarehouseItem.cs" />
     <Compile Include="com.proem.exm.domain\DownloadIdentify.cs" />
     <Compile Include="com.proem.exm.domain\OrderDigits.cs" />
     <Compile Include="com.proem.exm.domain\PayInfo.cs" />
@@ -416,6 +436,12 @@
     <Compile Include="com.proem.exm.window\receive\DGPrompt.Designer.cs">
       <DependentUpon>DGPrompt.cs</DependentUpon>
     </Compile>
+    <Compile Include="com.proem.exm.window\receive\DispatchChoose.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="com.proem.exm.window\receive\DispatchChoose.Designer.cs">
+      <DependentUpon>DispatchChoose.cs</DependentUpon>
+    </Compile>
     <Compile Include="com.proem.exm.window\require\BranchZcRequire.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -664,6 +690,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="com.proem.exm.window\receive\DGPrompt.resx">
       <DependentUpon>DGPrompt.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="com.proem.exm.window\receive\DispatchChoose.resx">
+      <DependentUpon>DispatchChoose.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="com.proem.exm.window\require\BranchZcRequire.resx">
       <DependentUpon>BranchZcRequire.cs</DependentUpon>
