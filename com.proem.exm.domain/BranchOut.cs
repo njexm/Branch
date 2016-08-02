@@ -47,5 +47,12 @@ namespace Branch.com.proem.exm.domain
         /// 制单人
         /// </summary>
         public string user_id { get; set; }
+
+        /// <summary>
+        /// 亭点出库单状态
+        /// </summary>
+        public string status { get; set; }
+
+        public string remark { get; set; }
     }
 }

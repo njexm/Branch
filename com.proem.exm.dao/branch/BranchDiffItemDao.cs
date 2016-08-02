@@ -98,5 +98,50 @@ namespace Branch.com.proem.exm.dao.branch
             }
             return obj;
         }
+
+        public List<BranchDiffItem> FindByDiffId(string id)
+        {
+            List<BranchDiffItem> list = new List<BranchDiffItem>();
+            string sql = "select id, createTime, updateTime, branchDiff_id, nums, weight, money, goodsFile_id, price  from zc_branch_diff_item where 1=1 and branchDiff_id='" + id + "'";
+            MySqlConnection conn = null;
+            MySqlCommand cmd = new MySqlCommand();
+            MySqlDataReader reader = null;
+            MysqlDBHelper dbHelper = new MysqlDBHelper();
+            try
+            {
+                conn = dbHelper.GetConnection();
+                cmd.Connection = conn;
+                cmd.CommandText = sql;
+                reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    BranchDiffItem obj = new BranchDiffItem();
+                    obj.id = reader.IsDBNull(0) ? string.Empty : reader.GetString(0);
+                    obj.createTime = reader.IsDBNull(1) ? default(DateTime) : reader.GetDateTime(1);
+                    obj.updateTime = reader.IsDBNull(2) ? default(DateTime) : reader.GetDateTime(2);
+                    obj.branchDiff_id = reader.IsDBNull(3) ? string.Empty : reader.GetString(3);
+                    obj.nums = reader.IsDBNull(4) ? string.Empty : reader.GetString(4);
+                    obj.weight = reader.IsDBNull(5) ? string.Empty : reader.GetString(5);
+                    obj.money = reader.IsDBNull(6) ? string.Empty : reader.GetString(6);
+                    obj.goodsFile_id = reader.IsDBNull(7) ? string.Empty : reader.GetString(7);
+                    obj.price = reader.IsDBNull(8) ? string.Empty : reader.GetString(8);
+                    list.Add(obj);
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("根据Id获取差异单明细失败", ex);
+            }
+            finally
+            {
+                if (reader != null)
+                {
+                    reader.Close();
+                }
+                cmd.Dispose();
+                dbHelper.CloseConnection(conn);
+            }
+            return list;
+        }
     }
 }

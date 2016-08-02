@@ -271,6 +271,28 @@ namespace Branch.com.proem.exm.util
                             dao.DeleteByIdAndType(obj.Id, obj.Type);
                         }
                     }
+                    else if (obj.Type == Constant.ZC_BRANCH_OUT)
+                    {
+                        BranchOutDao branchDao = new BranchOutDao();
+                        BranchOut item = branchDao.FindById(obj.Id);
+                        MasterBranchOutDao masterDao = new MasterBranchOutDao();
+                        bool flag = masterDao.addObjI(item);
+                        if (flag)
+                        {
+                            dao.DeleteByIdAndType(obj.Id, obj.Type);
+                        }
+                    }
+                    else if (obj.Type == Constant.ZC_BRANCH_OUT_ITEM)
+                    {
+                        BranchOutItemDao branchDao = new BranchOutItemDao();
+                        BranchOutItem item = branchDao.FindById(obj.Id);
+                        MasterBranchOutItemDao masterDao = new MasterBranchOutItemDao();
+                        bool flag = masterDao.addObj(item);
+                        if (flag)
+                        {
+                            dao.DeleteByIdAndType(obj.Id, obj.Type);
+                        }
+                    }
 
                 }
             }

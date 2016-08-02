@@ -84,6 +84,8 @@
     <Compile Include="com.proem.exm.dao\branch\BranchInDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchInItemDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchOrderDigitsDao.cs" />
+    <Compile Include="com.proem.exm.dao\branch\BranchOutDao.cs" />
+    <Compile Include="com.proem.exm.dao\branch\BranchOutItemDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchPayInfoDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchPayInfoItemDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchRelUserRoleDao.cs" />
@@ -121,6 +123,8 @@
     <Compile Include="com.proem.exm.dao\master\MasterBranchDiffItemDao.cs" />
     <Compile Include="com.proem.exm.dao\master\MasterBranchInDao.cs" />
     <Compile Include="com.proem.exm.dao\master\MasterBranchInItemDao.cs" />
+    <Compile Include="com.proem.exm.dao\master\MasterBranchOutDao.cs" />
+    <Compile Include="com.proem.exm.dao\master\MasterBranchOutItemDao.cs" />
     <Compile Include="com.proem.exm.dao\master\OrderDigitsDao.cs" />
     <Compile Include="com.proem.exm.dao\master\PayInfoDao.cs" />
     <Compile Include="com.proem.exm.dao\master\PayInfoItemDao.cs" />
@@ -291,6 +295,24 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="com.proem.exm.util\ZcOrderHelper.cs" />
+    <Compile Include="com.proem.exm.window\branchOut\BranchDiifForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="com.proem.exm.window\branchOut\BranchDiifForm.Designer.cs">
+      <DependentUpon>BranchDiifForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="com.proem.exm.window\branchOut\BranchOutChoose.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="com.proem.exm.window\branchOut\BranchOutChoose.Designer.cs">
+      <DependentUpon>BranchOutChoose.cs</DependentUpon>
+    </Compile>
+    <Compile Include="com.proem.exm.window\branchOut\BranchOutForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="com.proem.exm.window\branchOut\BranchOutForm.Designer.cs">
+      <DependentUpon>BranchOutForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="com.proem.exm.window\history\HIQueryList.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -619,6 +641,15 @@
     <Compile Include="WxPayAPI\lib\WxPayApi.cs">
       <SubType>Code</SubType>
     </Compile>
+    <EmbeddedResource Include="com.proem.exm.window\branchOut\BranchDiifForm.resx">
+      <DependentUpon>BranchDiifForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="com.proem.exm.window\branchOut\BranchOutChoose.resx">
+      <DependentUpon>BranchOutChoose.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="com.proem.exm.window\branchOut\BranchOutForm.resx">
+      <DependentUpon>BranchOutForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="com.proem.exm.window\history\HIQueryList.resx">
       <DependentUpon>HIQueryList.cs</DependentUpon>
     </EmbeddedResource>

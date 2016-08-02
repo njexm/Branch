@@ -236,7 +236,6 @@
             this.returnApplicationButton.BackgroundImage = global::Branch.Properties.Resources.mk_04;
             this.returnApplicationButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.returnApplicationButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.returnApplicationButton.Enabled = false;
             this.returnApplicationButton.FlatAppearance.BorderSize = 0;
             this.returnApplicationButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.returnApplicationButton.Font = new System.Drawing.Font("宋体", 20F);

@@ -1,6 +1,7 @@
 ﻿using Branch.com.proem.exm.domain;
 using Branch.com.proem.exm.service.branch;
 using Branch.com.proem.exm.util;
+using Branch.com.proem.exm.window.branchOut;
 using Branch.com.proem.exm.window.require;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,14 @@ namespace Branch.com.proem.exm.window.retreat
         public RGSupplierChoose()
         {
             InitializeComponent();
+        }
+
+        private BranchOutForm branchOutForm;
+
+        public RGSupplierChoose(BranchOutForm obj)
+        {
+            InitializeComponent();
+            this.branchOutForm = obj;
         }
 
         /// <summary>
@@ -71,12 +80,23 @@ namespace Branch.com.proem.exm.window.retreat
             zcBranchTotal.Id = supplierDataGridView.SelectedRows[0].Cells[0].Value.ToString();
             zcBranchTotal.BranchCode = supplierDataGridView.SelectedRows[0].Cells[1].Value.ToString();
             zcBranchTotal.BranchName = supplierDataGridView.SelectedRows[0].Cells[2].Value.ToString();
-            
-            try{
-             this.branchZcRequire.addBranchToTalInfo(zcBranchTotal);
-            }catch (NullReferenceException e){
-                chooseBranchTotalInfo2();
+
+            if (branchZcRequire != null)
+            {
+                try
+                {
+                    this.branchZcRequire.addBranchToTalInfo(zcBranchTotal);
+                }
+                catch (NullReferenceException e)
+                {
+                    chooseBranchTotalInfo2();
+                }
             }
+            else if (branchOutForm != null)
+            {
+                this.branchOutForm.AddBranchTotalInfo(zcBranchTotal);
+            }
+            
             
            
 

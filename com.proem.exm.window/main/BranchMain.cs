@@ -21,6 +21,7 @@ using Branch.com.proem.exm.service.branch;
 using Branch.com.proem.exm.service.master;
 using Branch.com.proem.exm.window.history;
 using Branch.com.proem.exm.window.require;
+using Branch.com.proem.exm.window.branchOut;
 
 namespace Branch.com.proem.exm.window.main
 {
@@ -71,6 +72,9 @@ namespace Branch.com.proem.exm.window.main
         private void returnApplicationButton_Click(object sender, EventArgs e)
         {
             //ReturnApplication退货申请
+            BranchOutForm form = new BranchOutForm(this);
+            form.Show();
+            this.Hide();
         }
 
         private void memberManagementButton_Click(object sender, EventArgs e)

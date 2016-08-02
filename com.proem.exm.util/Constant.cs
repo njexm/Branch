@@ -191,5 +191,15 @@ namespace Branch.com.proem.exm.util
         /// 亭点差异单明细
         /// </summary>
         public const string ZC_BRANCH_DIFF_ITEM = "ZC_BRANCH_DIFF_ITEM";
+
+        /// <summary>
+        /// 亭点出库单
+        /// </summary>
+        public static string ZC_BRANCH_OUT = "ZC_BRANCH_OUT";
+
+        /// <summary>
+        /// 亭点出库单明细
+        /// </summary>
+        public static string ZC_BRANCH_OUT_ITEM = "ZC_BRANCH_OUT_ITEM";
     }
 }

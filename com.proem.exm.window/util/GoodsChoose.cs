@@ -1,5 +1,6 @@
 ﻿using Branch.com.proem.exm.domain;
 using Branch.com.proem.exm.util;
+using Branch.com.proem.exm.window.branchOut;
 using Branch.com.proem.exm.window.require;
 using Branch.com.proem.exm.window.retreat;
 using log4net;
@@ -93,6 +94,13 @@ namespace Branch.com.proem.exm.window.util
         {
             InitializeComponent();
             this.branchZcRequire = obj;
+        }
+
+        private BranchOutForm branchOutForm;
+
+        public GoodsChoose(BranchOutForm obj) {
+            InitializeComponent();
+            this.branchOutForm = obj;
         }
 
         public GoodsChoose(ReturnGoods obj)
@@ -315,10 +323,16 @@ namespace Branch.com.proem.exm.window.util
                 list.Add(zcGoodsMaster);
                 
              }
-            
-            this.branchZcRequire.AddGoods(list);
-            
+            if(branchZcRequire != null){
+                this.branchZcRequire.AddGoods(list);
             }
+            else if (branchOutForm != null)
+            {
+                this.branchOutForm.AddGoods(list);
+            }
+            
+            
+         }
             
 
 
