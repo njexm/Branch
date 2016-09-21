@@ -37,10 +37,11 @@
   <ItemGroup>
     <Reference Include="AopSdk, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Users\myseft\Desktop\Branch\AopSdk.dll</HintPath>
+      <HintPath>C:\Users\admin\Desktop\众彩项目\F2FPay_Demo_DotNet\Projects\Alipay-demo-project\F2FPayDll\bin\Debug\AopSdk.dll</HintPath>
     </Reference>
-    <Reference Include="F2FPayDll">
-      <HintPath>C:\Users\myseft\Desktop\Branch\F2FPayDll.dll</HintPath>
+    <Reference Include="F2FPayDll, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Users\admin\Desktop\众彩项目\F2FPay_Demo_DotNet\Projects\Alipay-demo-project\F2FPayDll\bin\Debug\F2FPayDll.dll</HintPath>
     </Reference>
     <Reference Include="LitJson">
       <HintPath>C:\Users\myseft\Desktop\Branch\LitJson.dll</HintPath>
@@ -799,6 +800,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Fakes Include="Fakes\LitJson.fakes" />
+    <None Include="Demo\alipay_rsa_public_key.pem" />
     <None Include="Demo\rsa_private_key.pem" />
     <None Include="Demo\rsa_private_key_pkcs8.pem" />
     <None Include="Demo\rsa_public_key.pem" />

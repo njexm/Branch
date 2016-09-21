@@ -64,7 +64,7 @@
             this.WIDdynamic_id.Font = new System.Drawing.Font("宋体", 15F);
             this.WIDdynamic_id.Location = new System.Drawing.Point(174, 127);
             this.WIDdynamic_id.Name = "WIDdynamic_id";
-            this.WIDdynamic_id.Size = new System.Drawing.Size(119, 30);
+            this.WIDdynamic_id.Size = new System.Drawing.Size(160, 30);
             this.WIDdynamic_id.TabIndex = 8;
             this.WIDdynamic_id.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.WIDdynamic_id_KeyPress);
             // 
@@ -74,8 +74,8 @@
             this.WIDtotal_fee.Font = new System.Drawing.Font("宋体", 15F);
             this.WIDtotal_fee.Location = new System.Drawing.Point(174, 83);
             this.WIDtotal_fee.Name = "WIDtotal_fee";
-            this.WIDtotal_fee.Size = new System.Drawing.Size(119, 30);
-            this.WIDtotal_fee.TabIndex = 12;
+            this.WIDtotal_fee.Size = new System.Drawing.Size(160, 30);
+            this.WIDtotal_fee.TabIndex = 7;
             this.WIDtotal_fee.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.WIDtotal_fee_KeyPress);
             // 
             // textBox3
@@ -84,7 +84,7 @@
             this.textBox3.Font = new System.Drawing.Font("宋体", 15F);
             this.textBox3.Location = new System.Drawing.Point(174, 47);
             this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(119, 30);
+            this.textBox3.Size = new System.Drawing.Size(160, 30);
             this.textBox3.TabIndex = 6;
             // 
             // leaveButton

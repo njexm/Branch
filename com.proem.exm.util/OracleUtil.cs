@@ -28,7 +28,7 @@ namespace Branch.com.proem.exm.util
             }
             catch (Exception ex)
             {
-                log.Error("oracle数据连接错误，请简直配置!", ex);
+                log.Error("oracle数据连接错误，请检查配置!", ex);
             }
              return conn;
          }

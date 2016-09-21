@@ -97,23 +97,21 @@ namespace Branch.com.proem.exm.window.order
                     break;
                 case ResultEnum.UNKNOWN:
                     result = "网络异常，请检查网络配置后，更换外部订单号重试";
+                    MessageBox.Show("" + result);
                     break;
             }
-            MessageBox.Show("" + result);
         }
         
         private AlipayTradePayContentBuilder BuildPayContent()
         {
             //线上联调时，请输入真实的外部订单号。
             string out_trade_no = "";
-            //if (String.IsNullOrEmpty(WIDout_request_no.Text.Trim()))
             if (String.IsNullOrEmpty(OrderNumber))
             {
                 out_trade_no = System.DateTime.Now.ToString("yyyyMMddHHmmss") + "0000" + (new Random()).Next(1, 10000).ToString();
             }
             else
             {
-                //out_trade_no = WIDout_request_no.Text.Trim();
                 out_trade_no = OrderNumber;
             }
 
@@ -130,15 +128,15 @@ namespace Branch.com.proem.exm.window.order
             builder.subject = "条码支付";
             builder.timeout_express = "2m";
             builder.body = "订单描述";
-            builder.store_id = "test store id";    //很重要的参数，可以用作之后的营销     
+            builder.store_id = LoginUserInfo.street;    //很重要的参数，可以用作之后的营销     
             builder.seller_id = Config.pid;       //可以是具体的收款账号。
 
             //传入商品信息详情
             List<GoodsInfo> gList = new List<GoodsInfo>();
 
             GoodsInfo goods = new GoodsInfo();
-            goods.goods_id = "goods id";
-            goods.goods_name = "goods name";
+            goods.goods_id = "304";
+            goods.goods_name = "goods#name";
             goods.price = "0.01";
             goods.quantity = "1";
             gList.Add(goods);
@@ -148,7 +146,7 @@ namespace Branch.com.proem.exm.window.order
             //ExtendParams exParam = new ExtendParams();
             //exParam.sysServiceProviderId = "20880000000000";
             //builder.extendParams = exParam;
-
+            
             return builder;
 
         }
@@ -173,15 +171,12 @@ namespace Branch.com.proem.exm.window.order
             obj.PayInfoId = PayInfoId;
             obj.PayMode = BranchPay.ZFBPay;
             this.payForm.AddPayInfo(obj);
+            this.payForm.AddPaidAmount(obj.Money);
             this.Close();
         }
 
         private void DoFailedProcess(AlipayF2FPayResult payResult)
         {
-            //请添加支付失败后的处理
-            //System.Console.WriteLine("支付失败");
-            //result = payResult.response.Body;
-
             MessageBox.Show("支付失败!");
         }
 
@@ -232,13 +227,16 @@ namespace Branch.com.proem.exm.window.order
             }
             if (e.KeyChar != '\b')
             {
-                if (WIDtotal_fee.Text.IndexOf(".") > -1)
+                if (string.IsNullOrEmpty(WIDtotal_fee.SelectedText))
                 {
-                    string[] str = WIDtotal_fee.Text.Split('.');
-                    //已经有小数点2位了则取消输入
-                    if (str[1].Length > 1)
+                    if (WIDtotal_fee.Text.IndexOf(".") > -1)
                     {
-                        e.Handled = true;
+                        string[] str = WIDtotal_fee.Text.Split('.');
+                        //已经有小数点2位了则取消输入
+                        if (str[1].Length > 1)
+                        {
+                            e.Handled = true;
+                        }
                     }
                 }
             }
