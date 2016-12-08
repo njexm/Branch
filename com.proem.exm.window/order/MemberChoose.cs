@@ -1,4 +1,5 @@
-﻿using Branch.com.proem.exm.domain;
+﻿using Branch.com.proem.exm.dao.branch;
+using Branch.com.proem.exm.domain;
 using Branch.com.proem.exm.service.branch;
 using Branch.com.proem.exm.util;
 using Branch.com.proem.exm.window.order.controller;
@@ -66,12 +67,12 @@ namespace Branch.com.proem.exm.window.order
         private void button1_Click(object sender, EventArgs e)
         {
             string searchString = searchTextbox.Text;
-            string sql = "select id, ASSOCIATOR_CARDNUMBER as cardNumber,ASSOCIATOR_NAME as name, ASSOCIATOR_MOBILEPHONE as phone "+
-                "from ZC_ASSOCIATOR_INFO where ASSOCIATOR_NAME like '%" + searchString + "%' or ASSOCIATOR_MOBILEPHONE like '%" + searchString + "%' or ASSOCIATOR_CARDNUMBER like '%" + searchString + "%' order by id limit 50 ";
+            string sql = "select id, MEMBERNAME as name, MEMBERMOBILE as phone " +
+                "from zc_member where MEMBERNAME like '%" + searchString + "%' or MEMBERMOBILE like '%" + searchString + "%' order by id limit 50 ";
             MysqlDBHelper dbHelper = new MysqlDBHelper();
-            DataSet ds = dbHelper.GetDataSet(sql, "ZC_ASSOCIATOR_INFO");
+            DataSet ds = dbHelper.GetDataSet(sql, "zc_member");
             dataGridView1.DataSource = ds;
-            dataGridView1.DataMember = "ZC_ASSOCIATOR_INFO";
+            dataGridView1.DataMember = "zc_member";
             dataGridView1.Focus();
         }
 
@@ -113,7 +114,7 @@ namespace Branch.com.proem.exm.window.order
                 int count = dataGridView1.RowCount;
                 if(index > 0){
                     dataGridView1.Rows[index-1].Selected = true;
-                    dataGridView1.CurrentCell = dataGridView1.Rows[index - 1].Cells[1];
+                    dataGridView1.CurrentCell = dataGridView1.Rows[index - 1].Cells[2];
                 }
             }else if(e.KeyCode == Keys.Down)
             {
@@ -126,7 +127,7 @@ namespace Branch.com.proem.exm.window.order
                 if (index < count - 1)
                 {
                     dataGridView1.Rows[index + 1].Selected = true;
-                    dataGridView1.CurrentCell = dataGridView1.Rows[index + 1].Cells[1];
+                    dataGridView1.CurrentCell = dataGridView1.Rows[index + 1].Cells[2];
                 }
             }
         }
@@ -179,11 +180,14 @@ namespace Branch.com.proem.exm.window.order
             }
             else
             {
-                AssociatorInfo obj = new AssociatorInfo();
-                obj.Id = dataGridView1.CurrentRow.Cells[0].Value.ToString();
-                obj.CardNumber = dataGridView1.CurrentRow.Cells[1].Value == null ? string.Empty : dataGridView1.CurrentRow.Cells[1].Value.ToString();
-                obj.Name = dataGridView1.CurrentRow.Cells[2].Value == null ? string.Empty : dataGridView1.CurrentRow.Cells[2].Value.ToString();
-                obj.MobilePhone = dataGridView1.CurrentRow.Cells[3].Value == null ? string.Empty : dataGridView1.CurrentRow.Cells[3].Value.ToString();
+               // AssociatorInfo obj = new AssociatorInfo();
+                ZcMember obj = new ZcMember();
+                obj.id = dataGridView1.CurrentRow.Cells[1].Value.ToString();
+                BranchZcMemberDao branchZcMemberDao = new BranchZcMemberDao();
+                obj = branchZcMemberDao.FindById(obj.id);
+                //obj.CardNumber = dataGridView1.CurrentRow.Cells[1].Value == null ? string.Empty : dataGridView1.CurrentRow.Cells[1].Value.ToString();
+                //obj.memberName = dataGridView1.CurrentRow.Cells[2].Value == null ? string.Empty : dataGridView1.CurrentRow.Cells[2].Value.ToString();
+                //obj.memberMobile = dataGridView1.CurrentRow.Cells[3].Value == null ? string.Empty : dataGridView1.CurrentRow.Cells[3].Value.ToString();
                 if (workMode.Equals(Constant.RETAIL))
                 {
                     ///nothing todo 
@@ -192,7 +196,7 @@ namespace Branch.com.proem.exm.window.order
                 {
                     ///查询该用户的订单有几条
                     BranchZcOrderTransitService branchTransitService = new BranchZcOrderTransitService();
-                    int orderCounts = branchTransitService.GetOrderCount(obj.Id);
+                    int orderCounts = branchTransitService.GetOrderCount(obj.id);
                     if (orderCounts == 0)
                     {
                         int counts = branchTransitService.getCountBy(searchTextbox.Text);
@@ -216,28 +220,28 @@ namespace Branch.com.proem.exm.window.order
                     }
                     else if (orderCounts == 1)
                     {
-                        List<ZcOrderTransit> list = branchTransitService.FindByMemberId(obj.Id);
+                        List<ZcOrderTransit> list = branchTransitService.FindByMemberId(obj.id);
                         ZcOrderTransit zcOrderTransit = list[0];
                         customerDelivery.showTransitOrder(zcOrderTransit);
                     }
                     else
                     {
-                        CDQueryList cdQueryList = new CDQueryList(this, obj.Id, workMode, customerDelivery, 0);
+                        CDQueryList cdQueryList = new CDQueryList(this, obj.id, workMode, customerDelivery, 0);
                         cdQueryList.ShowDialog();
                     }
                 }
                 else if (workMode.Equals(Constant.REFUND))
                 {
                     BranchResaleService branchResaleService = new BranchResaleService();
-                    int count = branchResaleService.FindCountByMemberId(obj.Id);
+                    int count = branchResaleService.FindCountByMemberId(obj.id);
                     if (count == 0)
                     {
-                        MessageBox.Show("暂无" + obj.Name + "的销售流水信息!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("暂无" + obj.memberName + "的销售流水信息!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
                     else if (count == 1)
                     {
-                        List<Resale> list = branchResaleService.FindByMemberId(obj.Id);
+                        List<Resale> list = branchResaleService.FindByMemberId(obj.id);
                         Resale resale = list[0];
                         customerDelivery.showRefundInfo(resale);
                     }

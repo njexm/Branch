@@ -109,8 +109,12 @@ namespace Branch.com.proem.exm.service.main
             p.Step();
             a.Start();
 
+            //下载数据字典
+            DownloadZcCodeData();
+
             ///新增下载  date 2016-1-7 11:25
-            DownloadZcAssociatorInfoData();
+            //DownloadZcAssociatorInfoData();
+            DownloadZcMemberData();
             a.Stop();
             p.AppendMessage("下载会员表数据成功,耗时：" + a.ElapsedMilliseconds + "毫秒\n");
             a.Reset();
@@ -130,6 +134,17 @@ namespace Branch.com.proem.exm.service.main
             DownloadDispatchingWarehouse();
             a.Stop();
             p.AppendMessage("下载配送出货单信息成功,耗时：" + a.ElapsedMilliseconds + "毫秒\n");
+            a.Reset();
+            a.Start();
+            DownloadPromotion();
+            a.Stop();
+            p.AppendMessage("下载促销方案信息成功,耗时：" + a.ElapsedMilliseconds + "毫秒\n");
+            a.Reset();
+            a.Start();
+            DownloadPromotionItem();
+            a.Stop();
+            p.AppendMessage("下载促销方案明细信息成功,耗时：" + a.ElapsedMilliseconds + "毫秒\n");
+
             p.Close();
         }
 
@@ -321,6 +336,27 @@ namespace Branch.com.proem.exm.service.main
          }
 
         /// <summary>
+        /// 下载会员表数据
+        /// </summary>
+         void DownloadZcMemberData()
+         {
+             DownloadIdentifyService service = new DownloadIdentifyService();
+             //最后一次下载时间
+             DateTime updateTime = service.GetLastUpdate();
+             BranchZcMemberDao branchDao = new BranchZcMemberDao();
+             ZcMemberDao dao = new ZcMemberDao();
+             List<ZcMember> list = dao.FindUpdateBy(updateTime);
+             for (int i = 0; i < list.Count; i++ )
+             {
+                 long count = branchDao.getCountById(list[i].id);
+                 if(count != 0){
+                     branchDao.deleteById(list[i].id);
+                 }
+             }
+             branchDao.AddZcMember(list);
+         }
+
+        /// <summary>
         /// 根据时间戳下载分拣信息表
         /// </summary>
          void DownloadZcOrderSorteData()
@@ -359,6 +395,53 @@ namespace Branch.com.proem.exm.service.main
                  DispatchingWarehouse obj = list[i];
                  branchItemDao.addObj(itemDao.getBy(obj.id));
              }
+         }
+
+        /// <summary>
+        /// 下载促销方案
+        /// </summary>
+         void DownloadPromotion() {
+             PromotionDao dao = new PromotionDao();
+             BranchPromotionDao branchDao = new BranchPromotionDao();
+             BranchPromotionItemDao branchItemDao = new BranchPromotionItemDao();
+             DownloadIdentifyService service = new DownloadIdentifyService();
+             DateTime updateTime = service.GetLastUpdate();
+             List<Promotion> list = dao.getUpdateBy(updateTime);
+             for (int i = 0; i < list.Count; i++ )
+             {
+                 Promotion obj = list[i];
+                 int count = branchDao.getCountBy(obj.id);
+                 if(count != 0){
+                     branchItemDao.deleteByPromotionId(obj.id);
+                     branchDao.deleteById(obj.id);
+                 }
+             }
+             branchDao.addPromotion(list);
+         }
+
+        /// <summary>
+        /// 下载促销方案明细
+        /// </summary>
+         void DownloadPromotionItem() 
+         {
+             PromotionItemDao dao = new PromotionItemDao();
+             BranchPromotionItemDao branchDao = new BranchPromotionItemDao();
+             DownloadIdentifyService service = new DownloadIdentifyService();
+             DateTime updateTime = service.GetLastUpdate();
+             List<PromotionItem> list = dao.getUpdateBy(updateTime);
+             branchDao.addPromotionItem(list);
+         }
+
+        /// <summary>
+        /// 下载数据字典
+        /// </summary>
+         void DownloadZcCodeData() 
+         {
+             BranchCodeDao branchDao = new BranchCodeDao();
+             CodeDao dao = new CodeDao();
+             branchDao.DeleteAll("zc_code");
+             List<ZcCode> list = dao.getAll();
+             branchDao.addCode(list);
          }
     }
 }

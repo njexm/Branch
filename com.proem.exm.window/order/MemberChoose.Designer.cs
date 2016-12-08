@@ -28,14 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.id = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.name = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.number = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.phone = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label1 = new System.Windows.Forms.Label();
             this.cancelButton = new System.Windows.Forms.Button();
@@ -43,6 +39,10 @@
             this.label2 = new System.Windows.Forms.Label();
             this.searchButton = new System.Windows.Forms.Button();
             this.searchTextbox = new System.Windows.Forms.TextBox();
+            this.id = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.name = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.number = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.phone = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -74,8 +74,8 @@
             // 
             this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.AllowUserToDeleteRows = false;
-            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(250)))), ((int)(((byte)(250)))));
-            this.dataGridView1.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(250)))), ((int)(((byte)(250)))));
+            this.dataGridView1.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             this.dataGridView1.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(250)))), ((int)(((byte)(250)))));
             this.dataGridView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dataGridView1.ColumnHeadersHeight = 26;
@@ -97,44 +97,6 @@
             this.dataGridView1.Size = new System.Drawing.Size(584, 261);
             this.dataGridView1.TabIndex = 0;
             this.dataGridView1.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dataGridView1_RowPostPaint);
-            // 
-            // id
-            // 
-            this.id.DataPropertyName = "id";
-            this.id.HeaderText = "id";
-            this.id.Name = "id";
-            this.id.ReadOnly = true;
-            this.id.Visible = false;
-            // 
-            // name
-            // 
-            this.name.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.name.DataPropertyName = "name";
-            this.name.FillWeight = 0.3F;
-            this.name.HeaderText = "会员名";
-            this.name.Name = "name";
-            this.name.ReadOnly = true;
-            this.name.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            // 
-            // number
-            // 
-            this.number.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.number.DataPropertyName = "cardNumber";
-            this.number.FillWeight = 0.3F;
-            this.number.HeaderText = "会员卡号";
-            this.number.Name = "number";
-            this.number.ReadOnly = true;
-            this.number.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            // 
-            // phone
-            // 
-            this.phone.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.phone.DataPropertyName = "phone";
-            this.phone.FillWeight = 0.4F;
-            this.phone.HeaderText = "手机号";
-            this.phone.Name = "phone";
-            this.phone.ReadOnly = true;
-            this.phone.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             // 
             // groupBox1
             // 
@@ -242,6 +204,45 @@
             this.searchTextbox.TextChanged += new System.EventHandler(this.searchTextbox_TextChanged);
             this.searchTextbox.Leave += new System.EventHandler(this.searchTextbox_Leave);
             // 
+            // id
+            // 
+            this.id.DataPropertyName = "id";
+            this.id.HeaderText = "id";
+            this.id.Name = "id";
+            this.id.ReadOnly = true;
+            this.id.Visible = false;
+            // 
+            // name
+            // 
+            this.name.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.name.DataPropertyName = "name";
+            this.name.FillWeight = 0.3F;
+            this.name.HeaderText = "会员名";
+            this.name.Name = "name";
+            this.name.ReadOnly = true;
+            this.name.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            // 
+            // number
+            // 
+            this.number.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.number.DataPropertyName = "cardNumber";
+            this.number.FillWeight = 0.3F;
+            this.number.HeaderText = "会员卡号";
+            this.number.Name = "number";
+            this.number.ReadOnly = true;
+            this.number.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.number.Visible = false;
+            // 
+            // phone
+            // 
+            this.phone.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.phone.DataPropertyName = "phone";
+            this.phone.FillWeight = 0.4F;
+            this.phone.HeaderText = "手机号";
+            this.phone.Name = "phone";
+            this.phone.ReadOnly = true;
+            this.phone.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            // 
             // MemberChoose
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -276,12 +277,12 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button cancelButton;
+        private System.Windows.Forms.Button confirmButton;
+        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.DataGridViewTextBoxColumn id;
         private System.Windows.Forms.DataGridViewTextBoxColumn name;
         private System.Windows.Forms.DataGridViewTextBoxColumn number;
         private System.Windows.Forms.DataGridViewTextBoxColumn phone;
-        private System.Windows.Forms.Button cancelButton;
-        private System.Windows.Forms.Button confirmButton;
-        private System.Windows.Forms.Label label1;
     }
 }

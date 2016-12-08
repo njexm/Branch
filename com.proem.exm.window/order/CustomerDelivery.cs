@@ -55,6 +55,11 @@ namespace Branch.com.proem.exm.window.order
         /// </summary>
         private List<GoodsPrint> printObjectlist = new List<GoodsPrint>();
 
+        /// <summary>
+        /// 赠送商品
+        /// </summary>
+        private List<ZcGoodsMaster> givingList = new List<ZcGoodsMaster>();
+
 
         //ItemInput itemsInput = null;
 
@@ -116,7 +121,9 @@ namespace Branch.com.proem.exm.window.order
         /// <summary>
         /// 会员信息类
         /// </summary>
-        private AssociatorInfo associatorInfo;
+        //private AssociatorInfo associatorInfo;
+        private ZcMember zcMember;
+
 
         public delegate void child_close();
         public event child_close customer;
@@ -134,7 +141,12 @@ namespace Branch.com.proem.exm.window.order
         private void CustomerDelivery_Load(object sender, EventArgs e)
         {
             numberTextBox.Focus();
-            resaleInit();
+
+            //初始化
+            initData();
+
+            //初始化促销信息列表
+            SalesPromotionUtil.initPromotion(null);
 
             inNameLabel.Text = LoginUserInfo.branchName;
             Times times = new Times();
@@ -568,9 +580,252 @@ namespace Branch.com.proem.exm.window.order
         {
             if(WorkMode.Equals(Constant.RETAIL))
             {
+                //零售
+                float totalMoney = float.Parse(totalAmount.Text);
+                BranchCodeDao branchCodeDao = new BranchCodeDao();
+                BranchPromotionItemDao branchPromotionItemDao = new BranchPromotionItemDao();
+                List<Promotion> promotionList = SalesPromotionUtil.promotionList;
+                float fullMoney = 0;
+                float reduceMoney = 0;
+                //1买满减   2买满送商品
+                string fullByType = "";
+                List<ZcGoodsMaster> goodsList = new List<ZcGoodsMaster>();
+                if ( promotionList != null && promotionList.Count > 0)
+                {
+                    BranchZcGoodsMasterDao branchZcGoodsMasterDao = new BranchZcGoodsMasterDao();
+                    for (int i = 0; i < promotionList.Count; i++ )
+                    {
+                        Promotion promotion = promotionList[i];
+                        List<PromotionItem> promotionItemList = branchPromotionItemDao.FindByPromotionId(promotion.id);
+                        //促销明细方案非空判断
+                        if (promotionItemList == null || promotionItemList.Count == 0)
+                        {
+                            continue;
+                        }
+                        //促销模式
+                        ZcCode mode = branchCodeDao.FindById(promotion.zccode_modeId);
+                        //促销范围
+                        ZcCode scope = branchCodeDao.FindById(promotion.zccode_scopeId);
+                        if ( mode != null && "FullBuySendType".Equals(mode.codeType))
+                        {
+                            
+                            if ("1".Equals(mode.codeValue))
+                            {
+                                //买满N元减m元
+                                
+                                if (scope != null && "1".Equals(scope.codeValue))
+                                {
+                                    //全场
+                                    for (int j = 0; j < promotionItemList.Count; j++ )
+                                    {
+                                        PromotionItem item = promotionItemList[j];
+                                        if(totalMoney > item.full_buy_money){
+                                            if (item.reduce_money > reduceMoney)
+                                            {
+                                                fullMoney = item.full_buy_money;
+                                                reduceMoney = item.reduce_money;
+                                                fullByType = "1";
+                                            }
+                                        }
+                                    }
+                                }
+                                else if (scope != null && "2".Equals(scope.codeValue))
+                                { 
+                                    //类别
+                                    float a = 0;
+                                    float b = 0;
+                                    for (int j = 0; j < promotionItemList.Count; j++ )
+                                    {
+                                        PromotionItem item = promotionItemList[j];
+                                        //BranchZcGoodsMasterDao branchZcGoodsMasterDao = new BranchZcGoodsMasterDao();
+                                        float c = 0;
+                                        for (int m = 0; m < itemDataGridView.RowCount; m++ )
+                                        {
+                                            string serailNumber = itemDataGridView[0, m].Value.ToString();
+                                            ZcGoodsMaster zcGoodsMaster = branchZcGoodsMasterDao.FindBySerialNumber(serailNumber);
+                                            if (zcGoodsMaster.GoodsClassId.Equals(item.class_classify_id))
+                                            {
+                                                c += float.Parse(itemDataGridView[16, m].Value.ToString());
+                                            }
+                                            
+                                        }
+                                        if(c > item.full_buy_money){
+                                            a += item.full_buy_money;
+                                            b += item.reduce_money;
+                                        }
+                                    }
+                                    if(b > reduceMoney){
+                                        fullMoney = a;
+                                        reduceMoney = b;
+                                        fullByType = "1";
+                                    }
+                                }
+                                else if (scope != null && "3".Equals(scope.codeValue))
+                                {
+                                    //商品
+                                    float a = 0;
+                                    float b = 0;
+                                    for (int j = 0; j < promotionItemList.Count; j++)
+                                    {
+                                        PromotionItem item = promotionItemList[j];
+                                        
+                                        float c = 0;
+                                        for (int m = 0; m < itemDataGridView.RowCount; m++)
+                                        {
+                                            string serailNumber = itemDataGridView[0, m].Value.ToString();
+                                            ZcGoodsMaster zcGoodsMaster = branchZcGoodsMasterDao.FindBySerialNumber(serailNumber);
+                                            if (zcGoodsMaster.Id.Equals(item.goodsFile_id))
+                                            {
+                                                c += float.Parse(itemDataGridView[16, m].Value.ToString());
+                                            }
+
+                                        }
+                                        if (c > item.full_buy_money)
+                                        {
+                                            a += item.full_buy_money;
+                                            b += item.reduce_money;
+                                        }
+                                    }
+                                    if (b > reduceMoney)
+                                    {
+                                        fullMoney = a;
+                                        reduceMoney = b;
+                                        fullByType = "1";
+                                    }
+                                }
+                                //暂时认定买满送只有一种模式
+                                break;
+                            }
+                            else if ("2".Equals(mode.codeValue))
+                            {
+                                //买满N元送商品
+                                if(scope!= null && "1".Equals(scope.codeValue)){
+                                    //全场
+                                    for (int j = 0; j < promotionItemList.Count; j++)
+                                    {
+                                        PromotionItem item = promotionItemList[j];
+                                        if (totalMoney > item.full_buy_money)
+                                        {
+                                            string goodsFileString = item.free_goodsIds;
+                                            string [] idArr = goodsFileString.Split('|');
+                                            if(idArr.Length > 0){
+                                                for (int m = 0; m < idArr.Length; m++ )
+                                                {
+                                                    ZcGoodsMaster zcGoodsMaster = branchZcGoodsMasterDao.FindById(idArr[m]);
+                                                    if (zcGoodsMaster != null)
+                                                    {
+                                                        givingList.Add(zcGoodsMaster);
+                                                    }
+                                                }
+                                                fullByType = "2";
+                                            }
+                                        }
+                                    }
+                                }else if(scope != null && "2".Equals(scope.codeValue)){
+                                    //类别
+                                    for (int j = 0; j < promotionItemList.Count; j++ )
+                                    {
+                                        PromotionItem item = promotionItemList[j];
+                                        float c = 0;
+                                        for (int m = 0; m < itemDataGridView.RowCount; m++)
+                                        {
+                                            string serailNumber = itemDataGridView[0, m].Value.ToString();
+                                            ZcGoodsMaster zcGoodsMaster = branchZcGoodsMasterDao.FindBySerialNumber(serailNumber);
+                                            if (zcGoodsMaster.GoodsClassId.Equals(item.class_classify_id))
+                                            {
+                                                c += float.Parse(itemDataGridView[16, m].Value.ToString());
+                                            }
+
+                                        }
+                                        if (c > item.full_buy_money)
+                                        {
+                                            string goodsFileString = item.free_goodsIds;
+                                            string[] idArr = goodsFileString.Split('|');
+                                            if (idArr.Length > 0)
+                                            {
+                                                for (int m = 0; m < idArr.Length; m++)
+                                                {
+                                                    ZcGoodsMaster zcGoodsMaster = branchZcGoodsMasterDao.FindById(idArr[m]);
+                                                    if (zcGoodsMaster != null)
+                                                    {
+                                                        givingList.Add(zcGoodsMaster);
+                                                    }
+                                                }
+                                                fullByType = "2";
+                                            }
+                                        }
+                                    }
+                                }else if(scope != null && "3".Equals(scope.codeValue)){
+                                    //商品
+                                    for (int j = 0; j < promotionItemList.Count; j++)
+                                    {
+                                        PromotionItem item = promotionItemList[j];
+                                        float c = 0;
+                                        for (int m = 0; m < itemDataGridView.RowCount; m++)
+                                        {
+                                            string serailNumber = itemDataGridView[0, m].Value.ToString();
+                                            ZcGoodsMaster zcGoodsMaster = branchZcGoodsMasterDao.FindBySerialNumber(serailNumber);
+                                            if (zcGoodsMaster.Id.Equals(item.goodsFile_id))
+                                            {
+                                                c += float.Parse(itemDataGridView[16, m].Value.ToString());
+                                            }
+
+                                        }
+                                        if (c > item.full_buy_money)
+                                        {
+                                            string goodsFileString = item.free_goodsIds;
+                                            string[] idArr = goodsFileString.Split('|');
+                                            if (idArr.Length > 0)
+                                            {
+                                                for (int m = 0; m < idArr.Length; m++)
+                                                {
+                                                    ZcGoodsMaster zcGoodsMaster = branchZcGoodsMasterDao.FindById(idArr[m]);
+                                                    if (zcGoodsMaster != null)
+                                                    {
+                                                        givingList.Add(zcGoodsMaster);
+                                                    }
+                                                }
+                                                fullByType = "2";
+                                            }
+                                        }
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                        else {
+                            continue;
+                        }
+                    }
+                }
                 PayForm pay = new PayForm();
-                pay.totalAmount = totalAmount.Text;
-                pay.memberId = associatorInfo == null ? string.Empty : associatorInfo.Id;
+                if(fullByType.Equals("1")){
+                    //买满减
+                    pay.totalAmount = MoneyFormat.RountFormat(float.Parse(totalAmount.Text) - reduceMoney);
+                    MessageBox.Show("本次交易符合买满"+MoneyFormat.RountFormat(fullMoney)+"元减"+MoneyFormat.RountFormat(reduceMoney)+"元!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else if (fullByType.Equals("2"))
+                {
+                    //买满送
+                    pay.totalAmount = totalAmount.Text;
+                    string str = "";
+                    for (int i = 0; i < givingList.Count; i++ )
+                    {
+                        if (i < givingList.Count - 1)
+                        {
+                            str += givingList[i].GoodsName + ",";
+                        }
+                        else {
+                            str += givingList[i].GoodsName ;
+                        }
+                        
+                    }
+                    MessageBox.Show("本次交易符合买满送条件，赠送"+str+"的商品各1份!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else {
+                    pay.totalAmount = totalAmount.Text;
+                }
+                pay.memberId = zcMember == null ? string.Empty : zcMember.id;
                 ResaleWaterNumber = "LS" + DateTime.Now.ToString("yyyyMMddhhmmss") + LoginUserInfo.street;
                 pay.orderId = ResaleWaterNumber;
                 pay.ModeFlag = 2;
@@ -578,6 +833,7 @@ namespace Branch.com.proem.exm.window.order
                 pay.ShowDialog();
             }else if(WorkMode.Equals(Constant.PICK_UP_GOODS))
             {
+                //按单取货
                 pickUpSettlement();
             }else if(WorkMode.Equals(Constant.REFUND)){
                 refundSettlement();
@@ -989,6 +1245,8 @@ namespace Branch.com.proem.exm.window.order
             totalAmount.Text = MoneyFormat.RountFormat(0);
             itemDataGridView.DataSource = null;
             itemDataGridView.Rows.Clear();
+            printObjectlist.Clear();
+            givingList.Clear();
             resaleInit();
         }
 
@@ -999,18 +1257,20 @@ namespace Branch.com.proem.exm.window.order
         {
             string bar = numberTextBox.Text;
             numberTextBox.Text = "";
-            string serial = "";
-            string weight = "";
-            if (string.IsNullOrEmpty(bar) || (!bar.StartsWith("28") && !bar.StartsWith("69")) || (bar.Length != 18 && bar.Length != 13))
+            if (string.IsNullOrEmpty(bar) || (bar.Length != 18 && bar.Length != 13 && bar.Length != 5))
             {
                 MessageBox.Show("扫描的条码不正确，请重新扫描", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+
+            string serial = "";
+            string weight = "";
+            string money = "";
             if (bar.Length == 18)
             {
                 serial = bar.Substring(2, 5);
             }
-            else if (bar.StartsWith("28"))
+            else if (bar.Length == 13 && bar.StartsWith("28"))
             {
                 serial = bar.Substring(2, 5);
             }
@@ -1026,17 +1286,41 @@ namespace Branch.com.proem.exm.window.order
                 return;
             }
             bool isWeightGoods = branchGoodsService.IsWeightGoods(zcGoodsMaster.Id);
-            if (isWeightGoods)
+
+            if (bar.Length == 18)
             {
-                if (bar.Length == 18)
+
+                if ("00001".Equals(bar.Substring(12, 5)))
                 {
-                    weight = float.Parse(bar.Substring(12, 5).Insert(2, ".")).ToString();
+                    weight = "1";
+                    //isWeight = false;
                 }
                 else
                 {
-                    weight = float.Parse(bar.Substring(7, 5).Insert(2, ".")).ToString();
+                    weight = (float.Parse(bar.Substring(7, 5).Insert(3, ".")) / zcGoodsMaster.GoodsPrice).ToString("0.0000");
+                    //isWeight = true;
                 }
+                money = float.Parse(bar.Substring(7, 5).Insert(3, ".")).ToString();
             }
+            else if (bar.Length == 13 && bar.StartsWith("28"))
+            {
+                ///现在是肉类
+                //weight = float.Parse(num.Substring(7, 5).Insert(3, ".")).ToString("0.0000");
+                weight = (float.Parse(bar.Substring(7, 5).Insert(3, ".")) / zcGoodsMaster.GoodsPrice).ToString("0.0000");
+                money = (zcGoodsMaster.GoodsPrice * float.Parse(weight)).ToString("0.00");
+                //isWeight = true;
+            }
+            else
+            {
+                weight = "1";
+                //isWeight = false;
+                money = zcGoodsMaster.GoodsPrice.ToString("0.00");
+            }
+
+            BranchCodeDao branchCodeDao = new BranchCodeDao();
+            BranchPromotionItemDao branchPromotionItemDao = new BranchPromotionItemDao();
+            BranchZcClassifyInfoDao branchZcClassIfyInfoDao = new BranchZcClassifyInfoDao();
+
             DataSet ds = (DataSet)itemDataGridView.DataSource;
             if (ds == null || itemDataGridView.RowCount == 0)
             {
@@ -1065,44 +1349,157 @@ namespace Branch.com.proem.exm.window.order
                     }
                     if (AddOrDelete)
                     {
+                        float existP_nums = itemDataGridView[21, i].Value != null ? float.Parse(itemDataGridView[21, i].Value.ToString()) : 0;
+                        float p_price = 0;
+                        float p_money = float.Parse(money);
+                        bool isPromotion = false;
+                        ///  1 折扣   2特价   3买满减
+                        string p_mode = "";
+                        List<Promotion> promotionList = SalesPromotionUtil.promotionList;
+                        if (promotionList != null && promotionList.Count > 0)
+                        {
+                            for (int m = 0; m < promotionList.Count; m++)
+                            {
+                                Promotion promotion = promotionList[m];
+                                List<PromotionItem> promotionItemList = branchPromotionItemDao.FindByPromotionId(promotion.id);
+                                //促销模式
+                                ZcCode mode = branchCodeDao.FindById(promotion.zccode_modeId);
+                                //促销范围
+                                ZcCode scope = branchCodeDao.FindById(promotion.zccode_scopeId);
+                                //  DiscountType     SpecialPriceType   FullBuySendType
+                                if (promotionItemList != null && promotionItemList.Count > 0)
+                                {
+                                    if ("DiscountType".Equals(mode.codeType))
+                                    {
+                                        //折扣
+                                        if ("1".Equals(scope.codeValue))
+                                        {
+                                            PromotionItem promotionItem = promotionItemList[0];
+                                            //全场
+                                            float discount = string.IsNullOrEmpty(promotionItem.all_discount) ? 0 : float.Parse(promotionItem.all_discount);
+                                            float newMoney = discount * float.Parse(money);
+                                            if (newMoney < p_money)
+                                            {
+                                                p_money = newMoney;
+                                                isPromotion = true;
+                                                p_mode = "1";
+                                            }
+                                        }
+                                        else if ("2".Equals(scope.codeValue))
+                                        {
+                                            //类别
+                                            ZcClassIfyInfo classIfyInfo = branchZcClassIfyInfoDao.getById(zcGoodsMaster.GoodsClassId);
+                                            for (int n = 0; n < promotionItemList.Count; n++)
+                                            {
+                                                if (classIfyInfo.Id.Equals(promotionItemList[n].class_classify_id) || classIfyInfo.ParentId.Equals(promotionItemList[n].class_classify_id))
+                                                {
+                                                    float discount = string.IsNullOrEmpty(promotionItemList[n].discount) ? 0 : float.Parse(promotionItemList[n].discount);
+                                                    float newMoney = discount * float.Parse(money);
+                                                    if (newMoney < p_money)
+                                                    {
+                                                        p_money = newMoney;
+                                                        isPromotion = true;
+                                                        p_mode = "1";
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else if ("3".Equals(scope.codeValue))
+                                        {
+                                            //商品
+                                            for (int n = 0; n < promotionItemList.Count; n++)
+                                            {
+                                                if (zcGoodsMaster.Id.Equals(promotionItemList[n].goodsFile_id))
+                                                {
+                                                    float discount = string.IsNullOrEmpty(promotionItemList[n].discount) ? 0 : float.Parse(promotionItemList[n].discount);
+                                                    float newMoney = discount * float.Parse(money);
+                                                    if (newMoney < p_money)
+                                                    {
+                                                        p_money = newMoney;
+                                                        isPromotion = true;
+                                                        p_mode = "1";
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                    }
+                                    else if ("SpecialPriceType".Equals(mode.codeType))
+                                    {
+                                        //特价
+                                        for (int n = 0; n < promotionItemList.Count; n++)
+                                        {
+                                            if (zcGoodsMaster.Id.Equals(promotionItemList[n].goodsFile_id))
+                                            {
+                                                float limitNums = promotionItemList[n].limit_number;
+                                                if (limitNums > existP_nums)
+                                                {
+                                                    p_price = promotionItemList[n].bargain_price;
+                                                    float newMoney = p_price * float.Parse(weight);
+                                                    if (newMoney < p_money)
+                                                    {
+                                                        p_money = newMoney;
+                                                        isPromotion = true;
+                                                        p_mode = "2";
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else if ("FullBuySendType".Equals(mode.codeType))
+                                    {
+                                        //买满送放在结算之前运算见Settlement()
+                                    }
+                                }
+                            }
+                        }
+                        goodsPrint.money = p_money;
+                        goodsPrint.Weight = float.Parse(weight);
+                        goodsPrint.isPromotion = isPromotion;
+
                         itemDataGridView[4, i].Value = Convert.ToInt32(itemDataGridView[4, i].Value == null ? "0" : itemDataGridView[4, i].Value.ToString()) + 1;
                         if (isWeightGoods)
                         {
-                            itemDataGridView[7, i].Value = MoneyFormat.RountFormat((float.Parse(itemDataGridView[7, i].Value == null ? "0" : itemDataGridView[7, i].Value.ToString())) + goodsPrice * float.Parse(weight));
+                            itemDataGridView[7, i].Value = MoneyFormat.RountFormat((float.Parse(itemDataGridView[7, i].Value == null ? "0" : itemDataGridView[7, i].Value.ToString())) + p_money);
                             itemDataGridView[8, i].Value = (float.Parse(itemDataGridView[8, i].Value == null ? "0" : itemDataGridView[8, i].Value.ToString()) +  float.Parse(weight)).ToString("0.000");
                         }
                         else
                         {
-                            itemDataGridView[7, i].Value = MoneyFormat.RountFormat(float.Parse(itemDataGridView[7, i].Value == null ? "0" : itemDataGridView[7, i].Value.ToString()) + goodsPrice * 1);
-                            itemDataGridView[8, i].Value = (float.Parse(itemDataGridView[8, i].Value == null ? "0" : itemDataGridView[8, i].Value.ToString()) + 1).ToString("0.000");
+                            itemDataGridView[7, i].Value = MoneyFormat.RountFormat(float.Parse(itemDataGridView[7, i].Value == null ? "0" : itemDataGridView[7, i].Value.ToString()) + p_money);
+                            itemDataGridView[8, i].Value = (float.Parse(itemDataGridView[8, i].Value == null ? "0" : itemDataGridView[8, i].Value.ToString()) + float.Parse(weight)).ToString("0.000");
                         }
-                        bool isExist = false;
-                        for (int j = 0; j < printObjectlist.Count; j++)
-                        {
-                            GoodsPrint obj = printObjectlist[j];
+                        if(isPromotion && p_mode.Equals("2")){
+                            itemDataGridView[21, i].Value = (existP_nums + 1).ToString();
+                        }
+                        //bool isExist = false;
+                        //for (int j = 0; j < printObjectlist.Count; j++)
+                        //{
+                        //    GoodsPrint obj = printObjectlist[j];
                             
-                            if(obj.SerialNumber.Equals(goodsPrint.SerialNumber))
-                            {
-                                ///存在商品
-                                isExist = true;
-                                ///称重商品
-                                if (isWeightGoods)
-                                {
-                                    printObjectlist.Add(goodsPrint);
-                                    break;
-                                }
-                                else ///非称重商品，数量自增
-                                {
-                                    obj.Nums += 1;
-                                    break;
-                                }
-                            }
-                        }
-                        ///不存在   都要添加
-                        if(!isExist)
-                        {
-                            printObjectlist.Add(goodsPrint);
-                        }
+                        //    if(obj.SerialNumber.Equals(goodsPrint.SerialNumber))
+                        //    {
+                        //        ///存在商品
+                        //        isExist = true;
+                        //        ///称重商品
+                        //        if (isWeightGoods)
+                        //        {
+                        //            printObjectlist.Add(goodsPrint);
+                        //            break;
+                        //        }
+                        //        else ///非称重商品，数量自增
+                        //        {
+                        //            obj.Nums += 1;
+                        //            obj.Weight += 1;
+                        //            break;
+                        //        }
+                        //    }
+                        //}
+                        /////不存在   都要添加
+                        //if(!isExist)
+                        //{
+                        //    printObjectlist.Add(goodsPrint);
+                        //}
+                        printObjectlist.Add(goodsPrint);
                         
                     }
                     else
@@ -1117,31 +1514,11 @@ namespace Branch.com.proem.exm.window.order
                         for (int j = 0; j < printObjectlist.Count; j++ )
                         {
                             GoodsPrint obj = printObjectlist[j];
-                            if(goodsPrint.SerialNumber.Equals(obj.SerialNumber))
+                            if(goodsPrint.SerialNumber.Equals(obj.SerialNumber) && obj.Weight.ToString("0.0000").Equals(float.Parse(weight).ToString("0.0000")))
                             {
-                                if (isWeightGoods)
-                                {
-                                    if (obj.Weight == float.Parse(weight))
-                                    {
-                                        printObjectlist.RemoveAt(j);
-                                        isDone = true;
-                                        break;
-                                    }
-                                }
-                                else
-                                {
-                                    isDone = true;
-                                    if (obj.Nums == 1)
-                                    {
-                                        printObjectlist.RemoveAt(j);
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        obj.Nums = obj.Nums - 1;
-                                        break;
-                                    }
-                                }
+
+                                isDone = true;
+                                break;
                             }
                         }
                         if( !isDone)
@@ -1150,16 +1527,147 @@ namespace Branch.com.proem.exm.window.order
                             setFlagLabel();
                             return;
                         }
+
+
+                        float existP_nums = itemDataGridView[21, i].Value != null ? float.Parse(itemDataGridView[21, i].Value.ToString()) : 0;
+                        float p_price = 0;
+                        float p_money = float.Parse(money);
+                        float max_money = 0;
+                        for (int j = 0; j < printObjectlist.Count; j++ )
+                        {
+                            if(printObjectlist[j].SerialNumber.Equals(serial) && p_money > printObjectlist[j].money ){
+                                p_money = printObjectlist[j].money;
+                            }
+                            if (printObjectlist[j].SerialNumber.Equals(serial) && max_money < printObjectlist[j].money)
+                            {
+                                max_money = printObjectlist[j].money;
+                            }
+                        }
+                        bool isPromotion = false;
+                        ///  1 折扣   2特价   3买满减
+                        string p_mode = "";
+                        List<Promotion> promotionList = SalesPromotionUtil.promotionList;
+                        if (promotionList != null && promotionList.Count > 0)
+                        {
+                            for (int m = 0; m < promotionList.Count; m++)
+                            {
+                                Promotion promotion = promotionList[m];
+                                List<PromotionItem> promotionItemList = branchPromotionItemDao.FindByPromotionId(promotion.id);
+                                //促销模式
+                                ZcCode mode = branchCodeDao.FindById(promotion.zccode_modeId);
+                                //促销范围
+                                ZcCode scope = branchCodeDao.FindById(promotion.zccode_scopeId);
+                                //  DiscountType     SpecialPriceType   FullBuySendType
+                                if (promotionItemList != null && promotionItemList.Count > 0)
+                                {
+                                    if ("DiscountType".Equals(mode.codeType))
+                                    {
+                                        //折扣
+                                        if ("1".Equals(scope.codeValue))
+                                        {
+                                            PromotionItem promotionItem = promotionItemList[0];
+                                            //全场
+                                            float discount = string.IsNullOrEmpty(promotionItem.all_discount) ? 0 : float.Parse(promotionItem.all_discount);
+                                            float newMoney = discount * float.Parse(money);
+                                            if (newMoney > p_money && newMoney <= max_money)
+                                            {
+                                                p_money = newMoney;
+                                                isPromotion = true;
+                                                p_mode = "1";
+                                            }
+                                        }
+                                        else if ("2".Equals(scope.codeValue))
+                                        {
+                                            //类别
+                                            ZcClassIfyInfo classIfyInfo = branchZcClassIfyInfoDao.getById(zcGoodsMaster.GoodsClassId);
+                                            for (int n = 0; n < promotionItemList.Count; n++)
+                                            {
+                                                if (classIfyInfo.Id.Equals(promotionItemList[n].class_classify_id) || classIfyInfo.ParentId.Equals(promotionItemList[n].class_classify_id))
+                                                {
+                                                    float discount = string.IsNullOrEmpty(promotionItemList[n].discount) ? 0 : float.Parse(promotionItemList[n].discount);
+                                                    float newMoney = discount * float.Parse(money);
+                                                    if (newMoney > p_money && newMoney <= max_money)
+                                                    {
+                                                        p_money = newMoney;
+                                                        isPromotion = true;
+                                                        p_mode = "1";
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else if ("3".Equals(scope.codeValue))
+                                        {
+                                            //商品
+                                            for (int n = 0; n < promotionItemList.Count; n++)
+                                            {
+                                                if (zcGoodsMaster.Id.Equals(promotionItemList[n].goodsFile_id))
+                                                {
+                                                    float discount = string.IsNullOrEmpty(promotionItemList[n].discount) ? 0 : float.Parse(promotionItemList[n].discount);
+                                                    float newMoney = discount * float.Parse(money);
+                                                    if (existP_nums > 0 && newMoney > p_money && newMoney <= max_money)
+                                                    {
+                                                        p_money = newMoney;
+                                                        isPromotion = true;
+                                                        p_mode = "1";
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                    }
+                                    else if ("SpecialPriceType".Equals(mode.codeType))
+                                    {
+                                        //特价
+                                        for (int n = 0; n < promotionItemList.Count; n++)
+                                        {
+                                            if (zcGoodsMaster.Id.Equals(promotionItemList[n].goodsFile_id))
+                                            {
+                                                float limitNums = promotionItemList[n].limit_number;
+                                                if (limitNums > 0 && existP_nums > 0 && limitNums >= existP_nums)
+                                                {
+                                                    p_price = promotionItemList[n].bargain_price;
+                                                    float newMoney = p_price * float.Parse(weight);
+                                                    if (newMoney > p_money && newMoney <= max_money)
+                                                    {
+                                                        p_money = newMoney;
+                                                        isPromotion = true;
+                                                        p_mode = "2";
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else if ("FullBuySendType".Equals(mode.codeType))
+                                    {
+                                        //买满送放在结算之前运算见Settlement()
+                                    }
+                                }
+                            }
+                        }
+
+                        for (int j = 0; j < printObjectlist.Count; j++ )
+                        {
+                            GoodsPrint gp = printObjectlist[j];
+                            if(gp.SerialNumber.Equals(serial) && gp.Weight.ToString("0.0000").Equals(float.Parse(weight).ToString("0.0000")) && gp.money.ToString("0.00").Equals(p_money.ToString("0.00"))){
+                                printObjectlist.Remove(gp);
+                                break;
+                            }
+                        }
+
                         itemDataGridView[4, i].Value = Convert.ToInt32(itemDataGridView[4, i].Value == null ? "0" : itemDataGridView[4, i].Value.ToString()) - 1;
                         if (isWeightGoods)
                         {
-                            itemDataGridView[7, i].Value = MoneyFormat.RountFormat((float.Parse(itemDataGridView[7, i].Value == null ? "0" : itemDataGridView[7, i].Value.ToString())) - goodsPrice * float.Parse(weight));
+                            itemDataGridView[7, i].Value = MoneyFormat.RountFormat((float.Parse(itemDataGridView[7, i].Value == null ? "0" : itemDataGridView[7, i].Value.ToString())) - p_money);
                             itemDataGridView[8, i].Value = (float.Parse(itemDataGridView[8, i].Value == null ? "0" : itemDataGridView[8, i].Value.ToString()) - float.Parse(weight)).ToString("0.000");
                         }
                         else
                         {
-                            itemDataGridView[7, i].Value = MoneyFormat.RountFormat(float.Parse(itemDataGridView[7, i].Value == null ? "0" : itemDataGridView[7, i].Value.ToString()) - goodsPrice * 1);
-                            itemDataGridView[8, i].Value = (float.Parse(itemDataGridView[8, i].Value == null ? "0" : itemDataGridView[8, i].Value.ToString()) - 1).ToString("0.000");
+                            itemDataGridView[7, i].Value = MoneyFormat.RountFormat(float.Parse(itemDataGridView[7, i].Value == null ? "0" : itemDataGridView[7, i].Value.ToString()) - p_money);
+                            itemDataGridView[8, i].Value = (float.Parse(itemDataGridView[8, i].Value == null ? "0" : itemDataGridView[8, i].Value.ToString()) - float.Parse(weight)).ToString("0.000");
+                        }
+                        if (isPromotion && "2".Equals(p_mode))
+                        {
+                            itemDataGridView[21, i].Value = (existP_nums - 1).ToString();
                         }
                         setFlagLabel();
                     }
@@ -1183,18 +1691,20 @@ namespace Branch.com.proem.exm.window.order
         {
             string bar = numberTextBox.Text;
             numberTextBox.Text = "";
-            string serial = "";
-            string weight = "";
-            if (string.IsNullOrEmpty(bar) || (!bar.StartsWith("28") && !bar.StartsWith("69")) || (bar.Length != 18 && bar.Length != 13))
+
+            if (string.IsNullOrEmpty(bar) || (bar.Length != 18 && bar.Length != 13 && bar.Length != 5))
             {
                 MessageBox.Show("扫描的条码不正确，请重新扫描", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+            string serial = "";
+            string weight = "";
+            string money = "";
             if (bar.Length == 18)
             {
                 serial = bar.Substring(2, 5);
             }
-            else if (bar.StartsWith("28"))
+            else if (bar.Length == 13 && bar.StartsWith("28"))
             {
                 serial = bar.Substring(2, 5);
             }
@@ -1210,190 +1720,349 @@ namespace Branch.com.proem.exm.window.order
                 return;
             }
             bool isWeightGoods = branchGoodsService.IsWeightGoods(zcGoodsMaster.Id);
-            if (isWeightGoods)
+
+            if (bar.Length == 18)
             {
-                if (bar.Length == 18)
+
+                if ("00001".Equals(bar.Substring(12, 5)))
                 {
-                    weight = float.Parse(bar.Substring(12, 5).Insert(2, ".")).ToString();
+                    weight = "1";
+                    //isWeight = false;
                 }
                 else
                 {
-                    weight = float.Parse(bar.Substring(7, 5).Insert(2, ".")).ToString();
+                    weight = (float.Parse(bar.Substring(7, 5).Insert(3, ".")) / zcGoodsMaster.GoodsPrice).ToString("0.0000");
+                    //isWeight = true;
                 }
+                money = float.Parse(bar.Substring(7, 5).Insert(3, ".")).ToString();
             }
+            else if (bar.Length == 13 && bar.StartsWith("28"))
+            {
+                ///现在是肉类
+                //weight = float.Parse(num.Substring(7, 5).Insert(3, ".")).ToString("0.0000");
+                weight = (float.Parse(bar.Substring(7, 5).Insert(3, ".")) / zcGoodsMaster.GoodsPrice).ToString("0.0000");
+                money = (zcGoodsMaster.GoodsPrice * float.Parse(weight)).ToString("0.00");
+                //isWeight = true;
+            }
+            else
+            {
+                weight = "1";
+                //isWeight = false;
+                money = zcGoodsMaster.GoodsPrice.ToString("0.00");
+            }
+
+
+            //string serial = "";
+            //string weight = "";
+            //if (string.IsNullOrEmpty(bar) || (!bar.StartsWith("28") && !bar.StartsWith("69")) || (bar.Length != 18 && bar.Length != 13))
+            //{
+            //    MessageBox.Show("扫描的条码不正确，请重新扫描", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            //    return;
+            //}
+            //if (bar.Length == 18)
+            //{
+            //    serial = bar.Substring(2, 5);
+            //}
+            //else if (bar.StartsWith("28"))
+            //{
+            //    serial = bar.Substring(2, 5);
+            //}
+            //else
+            //{
+            //    serial = bar;
+            //}
+            //BranchZcGoodsMasterService branchGoodsService = new BranchZcGoodsMasterService();
+            //ZcGoodsMaster zcGoodsMaster = branchGoodsService.FindBySerialNumber(serial);
+            //if (zcGoodsMaster == null)
+            //{
+            //    MessageBox.Show("没有此货号对应的商品信息，请检查后重新操作!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            //    return;
+            //}
+            //bool isWeightGoods = branchGoodsService.IsWeightGoods(zcGoodsMaster.Id);
+            //if (isWeightGoods)
+            //{
+            //    if (bar.Length == 18)
+            //    {
+            //        weight = float.Parse(bar.Substring(12, 5).Insert(2, ".")).ToString();
+            //    }
+            //    else
+            //    {
+            //        weight = float.Parse(bar.Substring(7, 5).Insert(2, ".")).ToString();
+            //    }
+            //}
             DataSet ds = (DataSet)itemDataGridView.DataSource;
             if (ds == null || itemDataGridView.RowCount == 0)
             {
                 MessageBox.Show("当前未选择任意订单，请先选择一条订单再进行扫码操作!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            bool flag = false;
+
+            float totalNums = 0;
+            float totalRefunds = 0;
             for (int i = 0; i < itemDataGridView.RowCount; i++)
             {
-                if (itemDataGridView[0, i].Value.ToString().Equals(serial))
+                if (itemDataGridView[0, i].Value.ToString().Equals(serial)){
+                    totalNums += itemDataGridView.Rows[i].Cells[3].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[3].Value.ToString());
+                    totalRefunds += itemDataGridView.Rows[i].Cells[4].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[4].Value.ToString());
+                }
+            }
+            if (AddOrDelete)
+            {
+                //添加
+                if (totalNums > totalRefunds)
                 {
-                    float price = itemDataGridView.Rows[i].Cells[2].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[2].Value.ToString());
-                    float oldNums = itemDataGridView.Rows[i].Cells[3].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[3].Value.ToString());
-                    float refundNums = itemDataGridView.Rows[i].Cells[4].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[4].Value.ToString());
-                    float oldWeight = (itemDataGridView.Rows[i].Cells[8].Value == null || string.IsNullOrEmpty(itemDataGridView.Rows[i].Cells[8].Value.ToString())) ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[8].Value.ToString());
-                    float refundWeight = itemDataGridView.Rows[i].Cells[17].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[17].Value.ToString());
-                    GoodsPrint goodsPrint = new GoodsPrint();
-                    goodsPrint.SerialNumber = serial;
-                    goodsPrint.Name = itemDataGridView[1, i].Value == null ? "" : itemDataGridView[1, i].Value.ToString();
-                    goodsPrint.Nums = 1;
-                    goodsPrint.Price = price;
-                    goodsPrint.GoodsFileId = zcGoodsMaster.Id;
-                    goodsPrint.BarCode = bar;
-                    if (isWeightGoods)
+                    for (int i = 0; i < itemDataGridView.RowCount; i++)
                     {
-                        goodsPrint.Weight = float.Parse(weight);
-                    }
-                    if(AddOrDelete){
-                        if (refundNums + 1 > oldNums)
+                        if (itemDataGridView[0, i].Value.ToString().Equals(serial))
                         {
-                            MessageBox.Show("退货数量不能超过销售数量", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            return;
-                        }
-                        else
-                        {
-                            if (isWeightGoods)
+                            float price = itemDataGridView.Rows[i].Cells[2].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[2].Value.ToString());
+                            float oldNums = itemDataGridView.Rows[i].Cells[3].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[3].Value.ToString());
+                            float refundNums = itemDataGridView.Rows[i].Cells[4].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[4].Value.ToString());
+                            float oldWeight = (itemDataGridView.Rows[i].Cells[8].Value == null || string.IsNullOrEmpty(itemDataGridView.Rows[i].Cells[8].Value.ToString())) ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[8].Value.ToString());
+                            float refundWeight = itemDataGridView.Rows[i].Cells[17].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[17].Value.ToString());
+                            if (refundNums < oldNums)
                             {
-                                if (oldWeight < float.Parse(weight) + refundWeight)
-                                {
-                                    MessageBox.Show("退货重量不能超过销售重量", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                    return;
-                                }
-                                else 
-                                {
-                                    itemDataGridView.Rows[i].Cells[4].Value = refundNums + 1;
-                                    itemDataGridView.Rows[i].Cells[17].Value = refundWeight + float.Parse(weight);
-                                    itemDataGridView.Rows[i].Cells[19].Value = MoneyFormat.RountFormat((refundWeight + float.Parse(weight)) * price);
-                                    itemDataGridView.Rows[i].Selected = true;
-                                    itemDataGridView.CurrentCell = itemDataGridView.Rows[i].Cells[0];
-                                    printObjectlist.Add(goodsPrint);
-                                    flag = true;
-                                }
-                            }
-                            else 
-                            {
+                                GoodsPrint goodsPrint = new GoodsPrint();
+                                goodsPrint.SerialNumber = serial;
+                                goodsPrint.Name = itemDataGridView[1, i].Value == null ? "" : itemDataGridView[1, i].Value.ToString();
+                                goodsPrint.Nums = 1;
+                                goodsPrint.Price = price;
+                                goodsPrint.GoodsFileId = zcGoodsMaster.Id;
+                                goodsPrint.BarCode = bar;
+                                goodsPrint.Weight = float.Parse(weight);
+                                goodsPrint.money = float.Parse(weight) * price;
                                 itemDataGridView.Rows[i].Cells[4].Value = refundNums + 1;
-                                itemDataGridView.Rows[i].Cells[19].Value = MoneyFormat.RountFormat((refundNums + 1) * price);
-                                foreach(GoodsPrint obj in printObjectlist){
-                                    if(obj.SerialNumber.Equals(serial)){
-                                        obj.Nums += 1;
-                                    }else{
-                                        continue;
-                                    }
-                                }
-                                flag = true;
+                                itemDataGridView.Rows[i].Cells[17].Value = refundWeight + float.Parse(weight);
+                                itemDataGridView.Rows[i].Cells[19].Value = MoneyFormat.RountFormat(float.Parse(weight) * price);
+                                itemDataGridView.Rows[i].Selected = true;
+                                itemDataGridView.CurrentCell = itemDataGridView.Rows[i].Cells[0];
+                                printObjectlist.Add(goodsPrint);
+                                break;
                             }
                         }
-                    }else
+                    }
+                }
+                else {
+                    MessageBox.Show("退货数量不能超过销售数量", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                refundCalculate();
+            }
+            else 
+            {
+                //减去操作
+                if (totalRefunds > 0)
+                {
+                    for (int i = itemDataGridView.RowCount -1; i >=0 ; i--)
                     {
-                        setFlagLabel();
-                        if (refundNums == 0)
+                        if (itemDataGridView[0, i].Value.ToString().Equals(serial))
                         {
-                            MessageBox.Show("退货数量已经为0，无法进行扫码减去操作", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            return;
-                        }
-                        else if (refundNums == 1)
-                        {
-                            if(isWeightGoods){
-                                bool isDone = false;
-                                foreach (GoodsPrint obj in printObjectlist)
+                            float price = itemDataGridView.Rows[i].Cells[2].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[2].Value.ToString());
+                            float oldNums = itemDataGridView.Rows[i].Cells[3].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[3].Value.ToString());
+                            float refundNums = itemDataGridView.Rows[i].Cells[4].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[4].Value.ToString());
+                            float oldWeight = (itemDataGridView.Rows[i].Cells[8].Value == null || string.IsNullOrEmpty(itemDataGridView.Rows[i].Cells[8].Value.ToString())) ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[8].Value.ToString());
+                            float refundWeight = itemDataGridView.Rows[i].Cells[17].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[17].Value.ToString());
+                            if (refundNums > 0)
+                            {
+                                bool isDelete = false;
+                                for (int j = 0; j < printObjectlist.Count; j++ )
                                 {
-                                    if (obj.SerialNumber.Equals(serial) && obj.Weight == float.Parse(weight))
-                                    {
-                                        printObjectlist.Remove(obj);
-                                        isDone = true;
-                                        flag = true;
-                                        itemDataGridView.Rows[i].Cells[4].Value = 0;
-                                        itemDataGridView.Rows[i].Cells[17].Value = 0;
-                                        itemDataGridView.Rows[i].Cells[19].Value = MoneyFormat.RountFormat(0);
+                                    GoodsPrint gp = printObjectlist[j];
+                                    if(gp.SerialNumber.Equals(serial) && gp.Weight.ToString("0.0000").Equals(float.Parse(weight).ToString("0.0000"))){
+                                        printObjectlist.Remove(gp);
+                                        isDelete = true;
+                                        itemDataGridView.Rows[i].Cells[4].Value = "0";
+                                        itemDataGridView.Rows[i].Cells[17].Value = "0";
+                                        itemDataGridView.Rows[i].Cells[19].Value = "0.00";
+                                        itemDataGridView.Rows[i].Selected = true;
+                                        itemDataGridView.CurrentCell = itemDataGridView.Rows[i].Cells[0];
                                         break;
                                     }
-                                    else
-                                    {
-                                        continue;
-                                    }
                                 }
-                                if(! isDone){
-                                    MessageBox.Show("没有此商品对应的退货扫码记录，无法进行扫码减去操作", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                    return;
+                                if(isDelete){
+                                    break;
                                 }
-                            }else{
-                                foreach (GoodsPrint obj in printObjectlist)
-                                {
-                                    if (obj.SerialNumber.Equals(serial))
-                                    {
-                                        printObjectlist.Remove(obj);
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        continue;
-                                    }
-                                }
-                                flag = true;
-                                itemDataGridView.Rows[i].Cells[4].Value = 0;
-                                itemDataGridView.Rows[i].Cells[19].Value = MoneyFormat.RountFormat(0);
-                            }
-                        }
-                        else 
-                        {
-                            if(isWeightGoods){
-                                bool isDone = false;
-                                foreach (GoodsPrint obj in printObjectlist)
-                                {
-                                    if (obj.SerialNumber.Equals(serial) && obj.Weight == float.Parse(weight))
-                                    {
-                                        printObjectlist.Remove(obj);
-                                        isDone = true;
-                                        flag = true;
-                                        itemDataGridView.Rows[i].Cells[4].Value = refundNums - 1;
-                                        itemDataGridView.Rows[i].Cells[17].Value = refundWeight - float.Parse(weight);
-                                        itemDataGridView.Rows[i].Cells[19].Value = MoneyFormat.RountFormat((refundWeight - float.Parse(weight)) * price);
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        continue;
-                                    }
-                                }
-                                if (!isDone)
-                                {
-                                    MessageBox.Show("没有此商品对应的退货扫码记录，无法进行扫码减去操作", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                    return;
-                                }
-                            }else{
-                                foreach (GoodsPrint obj in printObjectlist)
-                                {
-                                    if (obj.SerialNumber.Equals(serial))
-                                    {
-                                        obj.Nums -= 1;
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        continue;
-                                    }
-                                }
-                                flag = true;
-                                itemDataGridView.Rows[i].Cells[4].Value = refundNums - 1;
-                                itemDataGridView.Rows[i].Cells[19].Value = MoneyFormat.RountFormat((refundNums - 1) * price);
                             }
                         }
                     }
                     refundCalculate();
+                    setFlagLabel();
                 }
                 else {
-                    continue;
+                    MessageBox.Show("没有此商品对应的销售信息记录，无法进行退货", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
                 }
             }
-            if(!flag){
-                MessageBox.Show("没有此商品对应的销售信息记录，无法进行退货", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+            
+
+            //bool flag = false;
+            //for (int i = 0; i < itemDataGridView.RowCount; i++)
+            //{
+            //    if (itemDataGridView[0, i].Value.ToString().Equals(serial))
+            //    {
+            //        float price = itemDataGridView.Rows[i].Cells[2].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[2].Value.ToString());
+            //        float oldNums = itemDataGridView.Rows[i].Cells[3].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[3].Value.ToString());
+            //        float refundNums = itemDataGridView.Rows[i].Cells[4].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[4].Value.ToString());
+            //        float oldWeight = (itemDataGridView.Rows[i].Cells[8].Value == null || string.IsNullOrEmpty(itemDataGridView.Rows[i].Cells[8].Value.ToString())) ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[8].Value.ToString());
+            //        float refundWeight = itemDataGridView.Rows[i].Cells[17].Value == null ? 0 : float.Parse(itemDataGridView.Rows[i].Cells[17].Value.ToString());
+            //        GoodsPrint goodsPrint = new GoodsPrint();
+            //        goodsPrint.SerialNumber = serial;
+            //        goodsPrint.Name = itemDataGridView[1, i].Value == null ? "" : itemDataGridView[1, i].Value.ToString();
+            //        goodsPrint.Nums = 1;
+            //        goodsPrint.Price = price;
+            //        goodsPrint.GoodsFileId = zcGoodsMaster.Id;
+            //        goodsPrint.BarCode = bar;
+            //        if (isWeightGoods)
+            //        {
+            //            goodsPrint.Weight = float.Parse(weight);
+            //        }
+            //        if(AddOrDelete){
+            //            if (refundNums + 1 > oldNums)
+            //            {
+            //                MessageBox.Show("退货数量不能超过销售数量", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            //                return;
+            //            }
+            //            else
+            //            {
+            //                if (isWeightGoods)
+            //                {
+            //                    if (oldWeight < float.Parse(weight) + refundWeight)
+            //                    {
+            //                        MessageBox.Show("退货重量不能超过销售重量", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            //                        return;
+            //                    }
+            //                    else 
+            //                    {
+            //                        itemDataGridView.Rows[i].Cells[4].Value = refundNums + 1;
+            //                        itemDataGridView.Rows[i].Cells[17].Value = refundWeight + float.Parse(weight);
+            //                        itemDataGridView.Rows[i].Cells[19].Value = MoneyFormat.RountFormat((refundWeight + float.Parse(weight)) * price);
+            //                        itemDataGridView.Rows[i].Selected = true;
+            //                        itemDataGridView.CurrentCell = itemDataGridView.Rows[i].Cells[0];
+            //                        printObjectlist.Add(goodsPrint);
+            //                        flag = true;
+            //                    }
+            //                }
+            //                else 
+            //                {
+            //                    itemDataGridView.Rows[i].Cells[4].Value = refundNums + 1;
+            //                    itemDataGridView.Rows[i].Cells[19].Value = MoneyFormat.RountFormat((refundNums + 1) * price);
+            //                    foreach(GoodsPrint obj in printObjectlist){
+            //                        if(obj.SerialNumber.Equals(serial)){
+            //                            obj.Nums += 1;
+            //                        }else{
+            //                            continue;
+            //                        }
+            //                    }
+            //                    flag = true;
+            //                }
+            //            }
+            //        }else
+            //        {
+            //            setFlagLabel();
+            //            if (refundNums == 0)
+            //            {
+            //                MessageBox.Show("退货数量已经为0，无法进行扫码减去操作", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            //                return;
+            //            }
+            //            else if (refundNums == 1)
+            //            {
+            //                if(isWeightGoods){
+            //                    bool isDone = false;
+            //                    foreach (GoodsPrint obj in printObjectlist)
+            //                    {
+            //                        if (obj.SerialNumber.Equals(serial) && obj.Weight == float.Parse(weight))
+            //                        {
+            //                            printObjectlist.Remove(obj);
+            //                            isDone = true;
+            //                            flag = true;
+            //                            itemDataGridView.Rows[i].Cells[4].Value = 0;
+            //                            itemDataGridView.Rows[i].Cells[17].Value = 0;
+            //                            itemDataGridView.Rows[i].Cells[19].Value = MoneyFormat.RountFormat(0);
+            //                            break;
+            //                        }
+            //                        else
+            //                        {
+            //                            continue;
+            //                        }
+            //                    }
+            //                    if(! isDone){
+            //                        MessageBox.Show("没有此商品对应的退货扫码记录，无法进行扫码减去操作", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            //                        return;
+            //                    }
+            //                }else{
+            //                    foreach (GoodsPrint obj in printObjectlist)
+            //                    {
+            //                        if (obj.SerialNumber.Equals(serial))
+            //                        {
+            //                            printObjectlist.Remove(obj);
+            //                            break;
+            //                        }
+            //                        else
+            //                        {
+            //                            continue;
+            //                        }
+            //                    }
+            //                    flag = true;
+            //                    itemDataGridView.Rows[i].Cells[4].Value = 0;
+            //                    itemDataGridView.Rows[i].Cells[19].Value = MoneyFormat.RountFormat(0);
+            //                }
+            //            }
+            //            else 
+            //            {
+            //                if(isWeightGoods){
+            //                    bool isDone = false;
+            //                    foreach (GoodsPrint obj in printObjectlist)
+            //                    {
+            //                        if (obj.SerialNumber.Equals(serial) && obj.Weight == float.Parse(weight))
+            //                        {
+            //                            printObjectlist.Remove(obj);
+            //                            isDone = true;
+            //                            flag = true;
+            //                            itemDataGridView.Rows[i].Cells[4].Value = refundNums - 1;
+            //                            itemDataGridView.Rows[i].Cells[17].Value = refundWeight - float.Parse(weight);
+            //                            itemDataGridView.Rows[i].Cells[19].Value = MoneyFormat.RountFormat((refundWeight - float.Parse(weight)) * price);
+            //                            break;
+            //                        }
+            //                        else
+            //                        {
+            //                            continue;
+            //                        }
+            //                    }
+            //                    if (!isDone)
+            //                    {
+            //                        MessageBox.Show("没有此商品对应的退货扫码记录，无法进行扫码减去操作", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            //                        return;
+            //                    }
+            //                }else{
+            //                    foreach (GoodsPrint obj in printObjectlist)
+            //                    {
+            //                        if (obj.SerialNumber.Equals(serial))
+            //                        {
+            //                            obj.Nums -= 1;
+            //                            break;
+            //                        }
+            //                        else
+            //                        {
+            //                            continue;
+            //                        }
+            //                    }
+            //                    flag = true;
+            //                    itemDataGridView.Rows[i].Cells[4].Value = refundNums - 1;
+            //                    itemDataGridView.Rows[i].Cells[19].Value = MoneyFormat.RountFormat((refundNums - 1) * price);
+            //                }
+            //            }
+            //        }
+            //        refundCalculate();
+            //        break;
+            //    }
+            //    else {
+            //        continue;
+            //    }
+            //}
+            //if(!flag){
+            //    MessageBox.Show("没有此商品对应的销售信息记录，无法进行退货", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            //    return;
+            //}
         }
 
         /// <summary>
@@ -1421,6 +2090,7 @@ namespace Branch.com.proem.exm.window.order
         /// </summary>
         private void pickUpSettlement()
         {
+            float totalMoney = float.Parse(totalAmount.Text);
             if (itemDataGridView.DataSource == null || itemDataGridView.RowCount == 0)
             {
                 MessageBox.Show("当前没有要结算的订单", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -1450,8 +2120,263 @@ namespace Branch.com.proem.exm.window.order
             {
                 ///不存在拒收情况，直接进入结算  
                 PayForm pay = new PayForm();
-                pay.totalAmount = totalAmount.Text;
-                pay.memberId = associatorInfo == null ? string.Empty : associatorInfo.Id;
+
+                BranchCodeDao branchCodeDao = new BranchCodeDao();
+                BranchPromotionItemDao branchPromotionItemDao = new BranchPromotionItemDao();
+                List<Promotion> promotionList = SalesPromotionUtil.promotionList;
+                float fullMoney = 0;
+                float reduceMoney = 0;
+                //1买满减   2买满送商品
+                string fullByType = "";
+                List<ZcGoodsMaster> goodsList = new List<ZcGoodsMaster>();
+                if (promotionList != null && promotionList.Count > 0)
+                {
+                    BranchZcGoodsMasterDao branchZcGoodsMasterDao = new BranchZcGoodsMasterDao();
+                    for (int i = 0; i < promotionList.Count; i++)
+                    {
+                        Promotion promotion = promotionList[i];
+                        List<PromotionItem> promotionItemList = branchPromotionItemDao.FindByPromotionId(promotion.id);
+                        //促销明细方案非空判断
+                        if (promotionItemList == null || promotionItemList.Count == 0)
+                        {
+                            continue;
+                        }
+                        //促销模式
+                        ZcCode mode = branchCodeDao.FindById(promotion.zccode_modeId);
+                        //促销范围
+                        ZcCode scope = branchCodeDao.FindById(promotion.zccode_scopeId);
+                        if (mode != null && "FullBuySendType".Equals(mode.codeType))
+                        {
+
+                            if ("1".Equals(mode.codeValue))
+                            {
+                                //买满N元减m元
+
+                                if (scope != null && "1".Equals(scope.codeValue))
+                                {
+                                    //全场
+                                    for (int j = 0; j < promotionItemList.Count; j++)
+                                    {
+                                        PromotionItem item = promotionItemList[j];
+                                        if (totalMoney > item.full_buy_money)
+                                        {
+                                            if (item.reduce_money > reduceMoney)
+                                            {
+                                                fullMoney = item.full_buy_money;
+                                                reduceMoney = item.reduce_money;
+                                                fullByType = "1";
+                                            }
+                                        }
+                                    }
+                                }
+                                else if (scope != null && "2".Equals(scope.codeValue))
+                                {
+                                    //类别
+                                    float a = 0;
+                                    float b = 0;
+                                    for (int j = 0; j < promotionItemList.Count; j++)
+                                    {
+                                        PromotionItem item = promotionItemList[j];
+                                        //BranchZcGoodsMasterDao branchZcGoodsMasterDao = new BranchZcGoodsMasterDao();
+                                        float c = 0;
+                                        for (int m = 0; m < itemDataGridView.RowCount; m++)
+                                        {
+                                            string serailNumber = itemDataGridView[0, m].Value.ToString();
+                                            ZcGoodsMaster zcGoodsMaster = branchZcGoodsMasterDao.FindBySerialNumber(serailNumber);
+                                            if (zcGoodsMaster.GoodsClassId.Equals(item.class_classify_id))
+                                            {
+                                                c += float.Parse(itemDataGridView[7, m].Value.ToString());
+                                            }
+
+                                        }
+                                        if (c > item.full_buy_money)
+                                        {
+                                            a += item.full_buy_money;
+                                            b += item.reduce_money;
+                                        }
+                                    }
+                                    if (b > reduceMoney)
+                                    {
+                                        fullMoney = a;
+                                        reduceMoney = b;
+                                        fullByType = "1";
+                                    }
+                                }
+                                else if (scope != null && "3".Equals(scope.codeValue))
+                                {
+                                    //商品
+                                    float a = 0;
+                                    float b = 0;
+                                    for (int j = 0; j < promotionItemList.Count; j++)
+                                    {
+                                        PromotionItem item = promotionItemList[j];
+
+                                        float c = 0;
+                                        for (int m = 0; m < itemDataGridView.RowCount; m++)
+                                        {
+                                            string serailNumber = itemDataGridView[0, m].Value.ToString();
+                                            ZcGoodsMaster zcGoodsMaster = branchZcGoodsMasterDao.FindBySerialNumber(serailNumber);
+                                            if (zcGoodsMaster.Id.Equals(item.goodsFile_id))
+                                            {
+                                                c += float.Parse(itemDataGridView[7, m].Value.ToString());
+                                            }
+
+                                        }
+                                        if (c > item.full_buy_money)
+                                        {
+                                            a += item.full_buy_money;
+                                            b += item.reduce_money;
+                                        }
+                                    }
+                                    if (b > reduceMoney)
+                                    {
+                                        fullMoney = a;
+                                        reduceMoney = b;
+                                        fullByType = "1";
+                                    }
+                                }
+                                //暂时认定买满送只有一种模式
+                                break;
+                            }
+                            else if ("2".Equals(mode.codeValue))
+                            {
+                                //买满N元送商品
+                                if (scope != null && "1".Equals(scope.codeValue))
+                                {
+                                    //全场
+                                    for (int j = 0; j < promotionItemList.Count; j++)
+                                    {
+                                        PromotionItem item = promotionItemList[j];
+                                        if (totalMoney > item.full_buy_money)
+                                        {
+                                            string goodsFileString = item.free_goodsIds;
+                                            string[] idArr = goodsFileString.Split('|');
+                                            if (idArr.Length > 0)
+                                            {
+                                                for (int m = 0; m < idArr.Length; m++)
+                                                {
+                                                    ZcGoodsMaster zcGoodsMaster = branchZcGoodsMasterDao.FindById(idArr[m]);
+                                                    if (zcGoodsMaster != null)
+                                                    {
+                                                        givingList.Add(zcGoodsMaster);
+                                                    }
+                                                }
+                                                fullByType = "2";
+                                            }
+                                        }
+                                    }
+                                }
+                                else if (scope != null && "2".Equals(scope.codeValue))
+                                {
+                                    //类别
+                                    for (int j = 0; j < promotionItemList.Count; j++)
+                                    {
+                                        PromotionItem item = promotionItemList[j];
+                                        float c = 0;
+                                        for (int m = 0; m < itemDataGridView.RowCount; m++)
+                                        {
+                                            string serailNumber = itemDataGridView[0, m].Value.ToString();
+                                            ZcGoodsMaster zcGoodsMaster = branchZcGoodsMasterDao.FindBySerialNumber(serailNumber);
+                                            if (zcGoodsMaster.GoodsClassId.Equals(item.class_classify_id))
+                                            {
+                                                c += float.Parse(itemDataGridView[16, m].Value.ToString());
+                                            }
+
+                                        }
+                                        if (c > item.full_buy_money)
+                                        {
+                                            string goodsFileString = item.free_goodsIds;
+                                            string[] idArr = goodsFileString.Split('|');
+                                            if (idArr.Length > 0)
+                                            {
+                                                for (int m = 0; m < idArr.Length; m++)
+                                                {
+                                                    ZcGoodsMaster zcGoodsMaster = branchZcGoodsMasterDao.FindById(idArr[m]);
+                                                    if (zcGoodsMaster != null)
+                                                    {
+                                                        givingList.Add(zcGoodsMaster);
+                                                    }
+                                                }
+                                                fullByType = "2";
+                                            }
+                                        }
+                                    }
+                                }
+                                else if (scope != null && "3".Equals(scope.codeValue))
+                                {
+                                    //商品
+                                    for (int j = 0; j < promotionItemList.Count; j++)
+                                    {
+                                        PromotionItem item = promotionItemList[j];
+                                        float c = 0;
+                                        for (int m = 0; m < itemDataGridView.RowCount; m++)
+                                        {
+                                            string serailNumber = itemDataGridView[0, m].Value.ToString();
+                                            ZcGoodsMaster zcGoodsMaster = branchZcGoodsMasterDao.FindBySerialNumber(serailNumber);
+                                            if (zcGoodsMaster.Id.Equals(item.goodsFile_id))
+                                            {
+                                                c += float.Parse(itemDataGridView[16, m].Value.ToString());
+                                            }
+
+                                        }
+                                        if (c > item.full_buy_money)
+                                        {
+                                            string goodsFileString = item.free_goodsIds;
+                                            string[] idArr = goodsFileString.Split('|');
+                                            if (idArr.Length > 0)
+                                            {
+                                                for (int m = 0; m < idArr.Length; m++)
+                                                {
+                                                    ZcGoodsMaster zcGoodsMaster = branchZcGoodsMasterDao.FindById(idArr[m]);
+                                                    if (zcGoodsMaster != null)
+                                                    {
+                                                        givingList.Add(zcGoodsMaster);
+                                                    }
+                                                }
+                                                fullByType = "2";
+                                            }
+                                        }
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+                }
+                if (fullByType.Equals("1"))
+                {
+                    //买满减
+                    pay.totalAmount = MoneyFormat.RountFormat(float.Parse(totalAmount.Text) - reduceMoney);
+                    MessageBox.Show("本次交易符合买满" + MoneyFormat.RountFormat(fullMoney) + "元减" + MoneyFormat.RountFormat(reduceMoney) + "元!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else if (fullByType.Equals("2"))
+                {
+                    //买满送
+                    pay.totalAmount = totalAmount.Text;
+                    string str = "";
+                    for (int i = 0; i < givingList.Count; i++)
+                    {
+                        if (i < givingList.Count - 1)
+                        {
+                            str += givingList[i].GoodsName + ",";
+                        }
+                        else
+                        {
+                            str += givingList[i].GoodsName;
+                        }
+
+                    }
+                    MessageBox.Show("本次交易符合买满送条件，赠送" + str + "的商品各1份!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    pay.totalAmount = totalAmount.Text;
+                }
+                pay.memberId = zcMember == null ? string.Empty : zcMember.id;
                 ResaleWaterNumber = "TH" + DateTime.Now.ToString("yyyyMMddhhmmss") + LoginUserInfo.street;
                 pay.orderId = ResaleWaterNumber;
                 pay.ModeFlag = 0;
@@ -1481,7 +2406,7 @@ namespace Branch.com.proem.exm.window.order
                         }
 
                         actualTotalMoney = "0";
-                        saveRefuseInform(Constant.ORDER_STATUS_ALL_REFUSE, "", "");
+                        saveRefuseInform(Constant.ORDER_STATUS_ALL_REFUSE, "", "", "0");
                         MessageBox.Show("整单拒收成功");
                         initData();
                     }
@@ -1507,8 +2432,265 @@ namespace Branch.com.proem.exm.window.order
                         }
                         ///先结算  
                         PayForm pay = new PayForm();
+
+                        BranchCodeDao branchCodeDao = new BranchCodeDao();
+                        BranchPromotionItemDao branchPromotionItemDao = new BranchPromotionItemDao();
+                        List<Promotion> promotionList = SalesPromotionUtil.promotionList;
+                        float fullMoney = 0;
+                        float reduceMoney = 0;
+                        //1买满减   2买满送商品
+                        string fullByType = "";
+                        List<ZcGoodsMaster> goodsList = new List<ZcGoodsMaster>();
+                        if (promotionList != null && promotionList.Count > 0)
+                        {
+                            BranchZcGoodsMasterDao branchZcGoodsMasterDao = new BranchZcGoodsMasterDao();
+                            for (int i = 0; i < promotionList.Count; i++)
+                            {
+                                Promotion promotion = promotionList[i];
+                                List<PromotionItem> promotionItemList = branchPromotionItemDao.FindByPromotionId(promotion.id);
+                                //促销明细方案非空判断
+                                if (promotionItemList == null || promotionItemList.Count == 0)
+                                {
+                                    continue;
+                                }
+                                //促销模式
+                                ZcCode mode = branchCodeDao.FindById(promotion.zccode_modeId);
+                                //促销范围
+                                ZcCode scope = branchCodeDao.FindById(promotion.zccode_scopeId);
+                                if (mode != null && "FullBuySendType".Equals(mode.codeType))
+                                {
+
+                                    if ("1".Equals(mode.codeValue))
+                                    {
+                                        //买满N元减m元
+
+                                        if (scope != null && "1".Equals(scope.codeValue))
+                                        {
+                                            //全场
+                                            for (int j = 0; j < promotionItemList.Count; j++)
+                                            {
+                                                PromotionItem item = promotionItemList[j];
+                                                if (totalMoney > item.full_buy_money)
+                                                {
+                                                    if (item.reduce_money > reduceMoney)
+                                                    {
+                                                        fullMoney = item.full_buy_money;
+                                                        reduceMoney = item.reduce_money;
+                                                        fullByType = "1";
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else if (scope != null && "2".Equals(scope.codeValue))
+                                        {
+                                            //类别
+                                            float a = 0;
+                                            float b = 0;
+                                            for (int j = 0; j < promotionItemList.Count; j++)
+                                            {
+                                                PromotionItem item = promotionItemList[j];
+                                                //BranchZcGoodsMasterDao branchZcGoodsMasterDao = new BranchZcGoodsMasterDao();
+                                                float c = 0;
+                                                for (int m = 0; m < itemDataGridView.RowCount; m++)
+                                                {
+                                                    string serailNumber = itemDataGridView[0, m].Value.ToString();
+                                                    ZcGoodsMaster zcGoodsMaster = branchZcGoodsMasterDao.FindBySerialNumber(serailNumber);
+                                                    if (zcGoodsMaster.GoodsClassId.Equals(item.class_classify_id))
+                                                    {
+                                                        c += float.Parse(itemDataGridView[16, m].Value.ToString());
+                                                    }
+
+                                                }
+                                                if (c > item.full_buy_money)
+                                                {
+                                                    a += item.full_buy_money;
+                                                    b += item.reduce_money;
+                                                }
+                                            }
+                                            if (b > reduceMoney)
+                                            {
+                                                fullMoney = a;
+                                                reduceMoney = b;
+                                                fullByType = "1";
+                                            }
+                                        }
+                                        else if (scope != null && "3".Equals(scope.codeValue))
+                                        {
+                                            //商品
+                                            float a = 0;
+                                            float b = 0;
+                                            for (int j = 0; j < promotionItemList.Count; j++)
+                                            {
+                                                PromotionItem item = promotionItemList[j];
+
+                                                float c = 0;
+                                                for (int m = 0; m < itemDataGridView.RowCount; m++)
+                                                {
+                                                    string serailNumber = itemDataGridView[0, m].Value.ToString();
+                                                    ZcGoodsMaster zcGoodsMaster = branchZcGoodsMasterDao.FindBySerialNumber(serailNumber);
+                                                    if (zcGoodsMaster.Id.Equals(item.goodsFile_id))
+                                                    {
+                                                        c += float.Parse(itemDataGridView[16, m].Value.ToString());
+                                                    }
+
+                                                }
+                                                if (c > item.full_buy_money)
+                                                {
+                                                    a += item.full_buy_money;
+                                                    b += item.reduce_money;
+                                                }
+                                            }
+                                            if (b > reduceMoney)
+                                            {
+                                                fullMoney = a;
+                                                reduceMoney = b;
+                                                fullByType = "1";
+                                            }
+                                        }
+                                        //暂时认定买满送只有一种模式
+                                        break;
+                                    }
+                                    else if ("2".Equals(mode.codeValue))
+                                    {
+                                        //买满N元送商品
+                                        if (scope != null && "1".Equals(scope.codeValue))
+                                        {
+                                            //全场
+                                            for (int j = 0; j < promotionItemList.Count; j++)
+                                            {
+                                                PromotionItem item = promotionItemList[j];
+                                                if (totalMoney > item.full_buy_money)
+                                                {
+                                                    string goodsFileString = item.free_goodsIds;
+                                                    string[] idArr = goodsFileString.Split('|');
+                                                    if (idArr.Length > 0)
+                                                    {
+                                                        for (int m = 0; m < idArr.Length; m++)
+                                                        {
+                                                            ZcGoodsMaster zcGoodsMaster = branchZcGoodsMasterDao.FindById(idArr[m]);
+                                                            if (zcGoodsMaster != null)
+                                                            {
+                                                                givingList.Add(zcGoodsMaster);
+                                                            }
+                                                        }
+                                                        fullByType = "2";
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else if (scope != null && "2".Equals(scope.codeValue))
+                                        {
+                                            //类别
+                                            for (int j = 0; j < promotionItemList.Count; j++)
+                                            {
+                                                PromotionItem item = promotionItemList[j];
+                                                float c = 0;
+                                                for (int m = 0; m < itemDataGridView.RowCount; m++)
+                                                {
+                                                    string serailNumber = itemDataGridView[0, m].Value.ToString();
+                                                    ZcGoodsMaster zcGoodsMaster = branchZcGoodsMasterDao.FindBySerialNumber(serailNumber);
+                                                    if (zcGoodsMaster.GoodsClassId.Equals(item.class_classify_id))
+                                                    {
+                                                        c += float.Parse(itemDataGridView[16, m].Value.ToString());
+                                                    }
+
+                                                }
+                                                if (c > item.full_buy_money)
+                                                {
+                                                    string goodsFileString = item.free_goodsIds;
+                                                    string[] idArr = goodsFileString.Split('|');
+                                                    if (idArr.Length > 0)
+                                                    {
+                                                        for (int m = 0; m < idArr.Length; m++)
+                                                        {
+                                                            ZcGoodsMaster zcGoodsMaster = branchZcGoodsMasterDao.FindById(idArr[m]);
+                                                            if (zcGoodsMaster != null)
+                                                            {
+                                                                givingList.Add(zcGoodsMaster);
+                                                            }
+                                                        }
+                                                        fullByType = "2";
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else if (scope != null && "3".Equals(scope.codeValue))
+                                        {
+                                            //商品
+                                            for (int j = 0; j < promotionItemList.Count; j++)
+                                            {
+                                                PromotionItem item = promotionItemList[j];
+                                                float c = 0;
+                                                for (int m = 0; m < itemDataGridView.RowCount; m++)
+                                                {
+                                                    string serailNumber = itemDataGridView[0, m].Value.ToString();
+                                                    ZcGoodsMaster zcGoodsMaster = branchZcGoodsMasterDao.FindBySerialNumber(serailNumber);
+                                                    if (zcGoodsMaster.Id.Equals(item.goodsFile_id))
+                                                    {
+                                                        c += float.Parse(itemDataGridView[16, m].Value.ToString());
+                                                    }
+
+                                                }
+                                                if (c > item.full_buy_money)
+                                                {
+                                                    string goodsFileString = item.free_goodsIds;
+                                                    string[] idArr = goodsFileString.Split('|');
+                                                    if (idArr.Length > 0)
+                                                    {
+                                                        for (int m = 0; m < idArr.Length; m++)
+                                                        {
+                                                            ZcGoodsMaster zcGoodsMaster = branchZcGoodsMasterDao.FindById(idArr[m]);
+                                                            if (zcGoodsMaster != null)
+                                                            {
+                                                                givingList.Add(zcGoodsMaster);
+                                                            }
+                                                        }
+                                                        fullByType = "2";
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        break;
+                                    }
+                                }
+                                else
+                                {
+                                    continue;
+                                }
+                            }
+                        }
+                        if (fullByType.Equals("1"))
+                        {
+                            //买满减
+                            pay.totalAmount = MoneyFormat.RountFormat(fullMoney - reduceMoney);
+                            MessageBox.Show("本次交易符合买满" + MoneyFormat.RountFormat(fullMoney) + "元减" + MoneyFormat.RountFormat(reduceMoney) + "元!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else if (fullByType.Equals("2"))
+                        {
+                            //买满送
+                            pay.totalAmount = totalAmount.Text;
+                            string str = "";
+                            for (int i = 0; i < givingList.Count; i++)
+                            {
+                                if (i < givingList.Count - 1)
+                                {
+                                    str += givingList[i].GoodsName + ",";
+                                }
+                                else
+                                {
+                                    str += givingList[i].GoodsName;
+                                }
+
+                            }
+                            MessageBox.Show("本次交易符合买满送条件，赠送" + str + "的商品各1份!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            pay.totalAmount = totalAmount.Text;
+                        }
+
                         pay.totalAmount = totalAmount.Text;
-                        pay.memberId = associatorInfo == null ? string.Empty : associatorInfo.Id;
+                        pay.memberId = zcMember == null ? string.Empty : zcMember.id;
                         ResaleWaterNumber = "TH" + DateTime.Now.ToString("yyyyMMddhhmmss") + LoginUserInfo.street;
                         pay.orderId = ResaleWaterNumber;
                         pay.ModeFlag = 1;
@@ -1545,7 +2727,7 @@ namespace Branch.com.proem.exm.window.order
         /// <summary>
         /// 保存拒收信息和明细
         /// </summary>
-        public void saveRefuseInform(string orderstatus, string waterNumber, string payInfoId)
+        public void saveRefuseInform(string orderstatus, string waterNumber, string payInfoId, string payMoney)
         {
             List<UploadInfo> uploadList = new List<UploadInfo>();
             if (orderstatus.Equals(Constant.ORDER_STATUS_PART_REFUSE))
@@ -1557,12 +2739,12 @@ namespace Branch.com.proem.exm.window.order
                 resale.UpdateTime = DateTime.Now;
                 resale.WaterNumber = waterNumber;
                 resale.Nums = totalSum.Text;
-                resale.Money = totalAmount.Text;
-                ///TODO  暂时未加入折扣，优惠金额等算法
-                resale.ActualMoney = totalAmount.Text;
+                resale.Money = payMoney;
+                /// 暂时未加入折扣，优惠金额等算法
+                resale.ActualMoney = payMoney;
                 resale.BranchId = LoginUserInfo.branchId;
                 resale.SaleManId = LoginUserInfo.id;
-                resale.memberId = associatorInfo == null ? string.Empty : associatorInfo.Id;
+                resale.memberId = zcMember == null ? string.Empty : zcMember.id;
                 resale.OrderId = zc_order_transit_id;
                 resale.WaterNumber = waterNumber;
                 resale.PayInfoId = payInfoId;
@@ -1578,20 +2760,35 @@ namespace Branch.com.proem.exm.window.order
                     obj.ResaleId = resale.Id;
                     obj.GoodsFileId = goodsPrint.GoodsFileId;
                     obj.Nums = goodsPrint.Nums.ToString();
-                    if (goodsPrint.Weight != 0)
-                    {
-                        obj.weight = goodsPrint.Weight.ToString();
-                        obj.Money = MoneyFormat.RountFormat(goodsPrint.Price * goodsPrint.Weight);
-                    }
-                    else 
-                    {
-                        obj.Money = MoneyFormat.RountFormat(goodsPrint.Price * goodsPrint.Nums);
-                    }
-                    ///TODO  暂时未加入折扣，优惠金额等算法
+
+                    obj.weight = goodsPrint.Weight.ToString();
+                    obj.Money = MoneyFormat.RountFormat(goodsPrint.money);
+                    
+                    ///  暂时未加入折扣，优惠金额等算法
                     obj.ActualMoney = obj.Money;
                     obj.BarCode = goodsPrint.BarCode;
                     obj.Price = goodsPrint.Price.ToString();
                     list.Add(obj);
+                }
+                //赠送商品信息
+                if (givingList.Count > 0)
+                {
+                    for (int i = 0; i < givingList.Count; i++)
+                    {
+                        ZcGoodsMaster zcGoodsMaster = givingList[i];
+                        ResaleItem obj = new ResaleItem();
+                        obj.Id = Guid.NewGuid().ToString();
+                        obj.CreateTime = DateTime.Now;
+                        obj.UpdateTime = DateTime.Now;
+                        obj.ResaleId = resale.Id;
+                        obj.GoodsFileId = zcGoodsMaster.Id;
+                        obj.Nums = "1";
+                        obj.Price = zcGoodsMaster.GoodsPrice.ToString();
+                        obj.weight = "1.0000";
+                        obj.Money = "0.00";
+                        obj.ActualMoney = "0.00";
+                        list.Add(obj);
+                    }
                 }
                 BranchResaleItemService branchItemService = new BranchResaleItemService();
                 BranchResaleService branchService = new BranchResaleService();
@@ -1843,7 +3040,7 @@ namespace Branch.com.proem.exm.window.order
         /// <summary>
         /// 全部收取，没有拒收
         /// </summary>
-        public void saveAllPay(string orderstatus, string waterNumber, string payInfoId)
+        public void saveAllPay(string orderstatus, string waterNumber, string payInfoId, string payMoney)
         {
             ///零售主表
             Resale resale = new Resale();
@@ -1852,12 +3049,12 @@ namespace Branch.com.proem.exm.window.order
             resale.UpdateTime = DateTime.Now;
             resale.WaterNumber = waterNumber;
             resale.Nums = totalSum.Text;
-            resale.Money = totalAmount.Text;
-            ///TODO  暂时未加入折扣，优惠金额等算法
-            resale.ActualMoney = totalAmount.Text;
+            resale.Money = payMoney;
+            // 暂时未加入折扣，优惠金额等算法
+            resale.ActualMoney = payMoney;
             resale.BranchId = LoginUserInfo.branchId;
             resale.SaleManId = LoginUserInfo.id;
-            resale.memberId = associatorInfo == null ? string.Empty : associatorInfo.Id;
+            resale.memberId = zcMember == null ? string.Empty : zcMember.id;
             resale.OrderId = zc_order_transit_id;
             resale.WaterNumber = waterNumber;
             resale.PayInfoId = payInfoId;
@@ -1875,18 +3072,32 @@ namespace Branch.com.proem.exm.window.order
                 obj.Nums = goodsPrint.Nums.ToString();
                 obj.BarCode = goodsPrint.BarCode;
                 obj.Price = goodsPrint.Price.ToString();
-                if (goodsPrint.Weight != 0)
-                {
-                    obj.weight = goodsPrint.Weight.ToString();
-                    obj.Money = MoneyFormat.RountFormat(goodsPrint.Weight * goodsPrint.Price);
-                }
-                else
-                {
-                    obj.Money = MoneyFormat.RountFormat(goodsPrint.Price * goodsPrint.Nums);
-                }
-                ///TODO  暂时未加入折扣，优惠金额等算法
-                obj.ActualMoney = obj.Money;
+                obj.weight = goodsPrint.Weight.ToString();
+                obj.Money = goodsPrint.money.ToString();
+                
+                /// 暂时未加入折扣，优惠金额等算法
+                obj.ActualMoney = goodsPrint.money.ToString();
                 list.Add(obj);
+            }
+            //赠送商品信息
+            if (givingList.Count > 0)
+            {
+                for (int i = 0; i < givingList.Count; i++)
+                {
+                    ZcGoodsMaster zcGoodsMaster = givingList[i];
+                    ResaleItem obj = new ResaleItem();
+                    obj.Id = Guid.NewGuid().ToString();
+                    obj.CreateTime = DateTime.Now;
+                    obj.UpdateTime = DateTime.Now;
+                    obj.ResaleId = resale.Id;
+                    obj.GoodsFileId = zcGoodsMaster.Id;
+                    obj.Nums = "1";
+                    obj.Price = zcGoodsMaster.GoodsPrice.ToString();
+                    obj.weight = "1.0000";
+                    obj.Money = "0.00";
+                    obj.ActualMoney = "0.00";
+                    list.Add(obj);
+                }
             }
             BranchResaleItemService branchItemService = new BranchResaleItemService();
             BranchResaleService branchService = new BranchResaleService();
@@ -2081,6 +3292,8 @@ namespace Branch.com.proem.exm.window.order
 
             //PrintPreviewDialog ppd = new PrintPreviewDialog();
             PrintDocument pd = new PrintDocument();
+            PrintController printController = new StandardPrintController();
+            pd.PrintController = printController;
             //设置边距
 
             Margins margin = new Margins(20, 20, 20, 20);
@@ -2174,7 +3387,7 @@ namespace Branch.com.proem.exm.window.order
             for (int i = 0; i < printObjectlist.Count; i++ )
             {
                 GoodsPrint obj = printObjectlist[i];
-                string name = obj.Name;
+                string name = obj.Name.Trim();
                 if (name.Length < 4)
                 {
                     name += "\t\t";
@@ -2189,17 +3402,44 @@ namespace Branch.com.proem.exm.window.order
                 }
                 if (obj.SerialNumber.Length == 5)
                 {
-                    sb.Append(name + obj.Price.ToString("0.00") + "\t" + obj.Weight.ToString("0.000") + "\t" + (obj.Price * obj.Weight).ToString("0.00") + "\n");
+                    sb.Append(name + obj.Price.ToString("0.00") + "\t" + obj.Weight.ToString("0.000") + "\t" + obj.money.ToString("0.00") + "\n");
                 }
                 else
                 {
-                    sb.Append(name + obj.Price.ToString("0.00") + "\t" + obj.Nums + "\t" + (obj.Price*obj.Nums).ToString("0.00") + "\n");
+                    sb.Append(name + obj.Price.ToString("0.00") + "\t" + obj.Nums + "\t" + obj.money.ToString("0.00") + "\n");
                 }
                
             }
-
-
+          
             sb.Append("-----------------------------------------------------------------\n");
+            if(givingList.Count > 0){
+                sb.Append("促销赠送商品-------------------------------------------------------\n");
+                for (int i = 0; i < givingList.Count; i++ )
+                {
+                    ZcGoodsMaster zcGoodsMatser = givingList[i];
+                    string name = zcGoodsMatser.GoodsName.Trim();
+                    if (name.Length < 4)
+                    {
+                        name += "\t\t";
+                    }
+                    else if (name.Length <= 6)
+                    {
+                        name += "\t";
+                    }
+                    else
+                    {
+                        name = name.Substring(0, 6) + "... ";
+                    }
+                    if (zcGoodsMatser.SerialNumber.Length == 5)
+                    {
+                        sb.Append(name + zcGoodsMatser.GoodsPrice.ToString("0.00") + "\t" + "1.0000" + "\t" + "0.00" + "\n");
+                    }
+                    else
+                    {
+                        sb.Append(name + zcGoodsMatser.GoodsPrice.ToString("0.00") + "\t" + "1" + "\t" + "0.00" + "\n");
+                    }
+                }
+            }
             if(isResale)
             {
                 //sb.Append("数量: " + resaletotalNumlabel.Text + "\t\t 合计: " + resaletotalsum.Text + "\n");
@@ -2250,12 +3490,12 @@ namespace Branch.com.proem.exm.window.order
         /// 设置会员信息类
         /// </summary>
         /// <param name="obj"></param>
-        public void SetAssociatorInfo(AssociatorInfo obj)
+        public void SetAssociatorInfo(ZcMember obj)
         {
-            associatorInfo = obj;
-            memberName.Text = obj.Name;
-            memberCard.Text = obj.CardNumber;
-            memberPhone.Text = obj.MobilePhone;
+            zcMember = obj;
+            memberName.Text = obj.memberName;
+            //memberCard.Text = obj.CardNumber;
+            memberPhone.Text = obj.memberMobile;
         }
 
         /// <summary>
@@ -2265,18 +3505,19 @@ namespace Branch.com.proem.exm.window.order
         {
             string numberString = numberTextBox.Text;
             numberTextBox.Text = "";
-            if (string.IsNullOrEmpty(numberString) || (!numberString.StartsWith("28") && !numberString.StartsWith("69")) || (numberString.Length != 18 && numberString.Length != 13))
+            if (string.IsNullOrEmpty(numberString) || (numberString.Length != 18 && numberString.Length != 13 && numberString.Length != 5))
             {
                 MessageBox.Show("扫描的条码不正确，请重新扫描", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
             string serial = "";
             string weight = "";
+            string money = "";
             if (numberString.Length == 18)
             {
                 serial = numberString.Substring(2, 5);
             }
-            else if (numberString.StartsWith("28"))
+            else if (numberString.Length == 13 && numberString.StartsWith("28"))
             {
                 serial = numberString.Substring(2, 5);
             }
@@ -2292,206 +3533,904 @@ namespace Branch.com.proem.exm.window.order
                 return;
             }
             bool isWeightGoods = branchGoodsService.IsWeightGoods(obj.Id);
-            if (isWeightGoods)
-            {
-                if (numberString.Length == 18)
-                {
-                    weight = float.Parse(numberString.Substring(12, 5).Insert(2, ".")).ToString();
-                }
-                else 
-                {
-                    weight = float.Parse(numberString.Substring(7, 5).Insert(2, ".")).ToString();
-                }
-            }
 
-            GoodsPrint goodsPrint = new GoodsPrint();
-            bool isExist = false;
-            for (int i = 0; i < itemDataGridView.Rows.Count; i++)
+            if (numberString.Length == 18)
             {
-                if (serial.Equals(itemDataGridView[0, i].Value.ToString()))
-                {
-                    isExist = true;
-                    if (AddOrDelete)
-                    {
-                        float nums = float.Parse(itemDataGridView[15, i].Value.ToString());
-                        float price = float.Parse(itemDataGridView[2, i].Value == null ? "0" : itemDataGridView[2, i].Value.ToString());
-                        if (isWeightGoods)
-                        {
-                            float old_weight = string.IsNullOrEmpty(itemDataGridView[8, i].Value.ToString()) ? 0 : float.Parse(itemDataGridView[8, i].Value.ToString());
-                            itemDataGridView[8, i].Value = old_weight + float.Parse(weight);
-                            itemDataGridView[16, i].Value = MoneyFormat.RountFormat((old_weight + float.Parse(weight)) * price);
-                        }
-                        else 
-                        {
-                            itemDataGridView[16, i].Value = MoneyFormat.RountFormat((nums + 1) * price);
-                        }
-                        itemDataGridView[15, i].Value = nums + 1;
-                        itemDataGridView.Rows[i].Selected = true;
-                        itemDataGridView.CurrentCell = itemDataGridView.Rows[i].Cells[0];
 
-                        if (!isWeightGoods)
-                        {
-                            foreach (GoodsPrint gp in printObjectlist)
-                            {
-                                if (gp.SerialNumber.Equals(serial))
-                                {
-                                    gp.Nums += 1;
-                                    break;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            goodsPrint.SerialNumber = serial;
-                            goodsPrint.Name = obj.GoodsName;
-                            goodsPrint.Nums = 1;
-                            goodsPrint.Price = obj.GoodsPrice;
-                            goodsPrint.Weight = float.Parse(weight);
-                            goodsPrint.BarCode = numberString;
-                            goodsPrint.GoodsFileId = obj.Id;
-                            printObjectlist.Add(goodsPrint);
-                        }
-                        break;
-                    }
-                    else
-                    {
-                        float nums = float.Parse(itemDataGridView[15, i].Value.ToString());
-                        float old_weight = string.IsNullOrEmpty(itemDataGridView[8, i].Value.ToString()) ? 0 : float.Parse(itemDataGridView[8, i].Value.ToString());
-                        if (isWeightGoods)
-                        {
-                            if (float.Parse(weight) > old_weight)
-                            {
-                                MessageBox.Show("扫码减去的商品重量不能大于已扫描的商品重量", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                setFlagLabel();
-                                return;
-                            }
-                        }
-
-                        if (nums == 1)
-                        {
-                            bool isHave = false;
-                            foreach (GoodsPrint gp in printObjectlist)
-                            {
-                                if (gp.SerialNumber.Equals(serial))
-                                {
-                                    if (!isWeightGoods)
-                                    {
-                                        printObjectlist.Remove(gp);
-                                        isHave = true;
-                                        break;
-                                    }
-                                    else 
-                                    {
-                                        if (gp.Weight == float.Parse(weight))
-                                        {
-                                            printObjectlist.Remove(gp);
-                                            isHave = true;
-                                            break;
-                                        }
-                                        else 
-                                        {
-                                            break;
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    continue;
-                                    
-                                }
-                            }
-                            if( !isHave)
-                            {
-                                MessageBox.Show("没有此商品对应的扫码销售信息", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                setFlagLabel();
-                                return;
-                            }
-                            itemDataGridView.Rows.RemoveAt(i);
-                            setFlagLabel();
-                        }
-                        else
-                        {
-                            if (!isWeightGoods)
-                            {
-                                foreach (GoodsPrint gp in printObjectlist)
-                                {
-                                    if (gp.SerialNumber.Equals(serial))
-                                    {
-                                        gp.Nums -= 1;
-                                        break;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                bool isHaveResaleGoods = false;
-                                foreach (GoodsPrint gp in printObjectlist)
-                                {
-                                    if (gp.SerialNumber.Equals(serial) && gp.Weight == float.Parse(weight))
-                                    {
-                                        printObjectlist.Remove(gp);
-                                        isHaveResaleGoods = true;
-                                        break;
-                                    }
-                                }
-                                if (!isHaveResaleGoods)
-                                {
-                                    MessageBox.Show("没有此商品对应的扫码销售信息", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                    setFlagLabel();
-                                    return;
-                                }
-                            }
-                            float price = float.Parse(itemDataGridView[2, i].Value == null ? "0" : itemDataGridView[2, i].Value.ToString());
-                            itemDataGridView[15, i].Value = nums - 1;
-                            if (isWeightGoods)
-                            {
-                                itemDataGridView[8, i].Value = old_weight - float.Parse(weight);
-                                itemDataGridView[16, i].Value = MoneyFormat.RountFormat((old_weight - float.Parse(weight)) * price);
-                            }
-                            else 
-                            {
-                                itemDataGridView[16, i].Value = MoneyFormat.RountFormat((nums - 1) * price);
-                            }
-                            itemDataGridView.Rows[i].Selected = true;
-                            itemDataGridView.CurrentCell = itemDataGridView.Rows[i].Cells[0];
-                            setFlagLabel();
-                            break;
-                        }
-                    }
-                }
-            }
-            if (!isExist)
-            {
-                if (AddOrDelete)
+                if ("00001".Equals(numberString.Substring(12, 5)))
                 {
-                    if (isWeightGoods)
-                    {
-                        itemDataGridView.Rows.Add(new Object[] { serial, obj.GoodsName, obj.GoodsPrice, "", "", "", "", "", weight, "", "", "", "", "", obj.Id, 1, (obj.GoodsPrice*float.Parse(weight)).ToString("0.00") });
-                    }
-                    else
-                    {
-                        itemDataGridView.Rows.Add(new Object[] { serial, obj.GoodsName, obj.GoodsPrice, "", "", "", "", "", weight, "", "", "", "", "", obj.Id, 1, obj.GoodsPrice });
-                    }
-                    
-                    itemDataGridView.Rows[itemDataGridView.Rows.Count - 1].Selected = true;
-                    itemDataGridView.CurrentCell = itemDataGridView.Rows[itemDataGridView.Rows.Count - 1].Cells[0];
-                    ///将待打印的商品添加进去
-                    goodsPrint.SerialNumber = serial;
-                    goodsPrint.Name = obj.GoodsName;
-                    goodsPrint.Nums = 1;
-                    goodsPrint.Weight = isWeightGoods ? float.Parse(weight) : 0;
-                    goodsPrint.Price = obj.GoodsPrice;
-                    goodsPrint.BarCode = numberString;
-                    goodsPrint.GoodsFileId = obj.Id;
-                    printObjectlist.Add(goodsPrint);
+                    weight = "1";
+                    //isWeight = false;
                 }
                 else
                 {
+                    weight = (float.Parse(numberString.Substring(7, 5).Insert(3, ".")) / obj.GoodsPrice).ToString("0.0000");
+                    //isWeight = true;
+                }
+                money = float.Parse(numberString.Substring(7, 5).Insert(3, ".")).ToString();
+            }
+            else if (numberString.Length == 13 && numberString.StartsWith("28"))
+            {
+                ///现在是肉类
+                //weight = float.Parse(num.Substring(7, 5).Insert(3, ".")).ToString("0.0000");
+                weight = (float.Parse(numberString.Substring(7, 5).Insert(3, ".")) / obj.GoodsPrice).ToString("0.0000");
+                money = (obj.GoodsPrice * float.Parse(weight)).ToString("0.00");
+                //isWeight = true;
+            }
+            else
+            {
+                weight = "1";
+                //isWeight = false;
+                money = obj.GoodsPrice.ToString("0.00");
+            }
+
+            BranchCodeDao branchCodeDao = new BranchCodeDao();
+            BranchPromotionItemDao branchPromotionItemDao = new BranchPromotionItemDao();
+            BranchZcClassifyInfoDao branchZcClassIfyInfoDao = new BranchZcClassifyInfoDao();
+            GoodsPrint goodsPrint = new GoodsPrint();
+
+            if (AddOrDelete)
+            {
+                //添加
+                float p_price = obj.GoodsPrice;
+                float p_money = float.Parse(money);
+                bool isPromotion = false;
+                ///  1 折扣   2特价   3买满减
+                string p_mode = "";
+                List<Promotion> promotionList = SalesPromotionUtil.promotionList;
+                if (promotionList != null && promotionList.Count > 0)
+                {
+                    for (int m = 0; m < promotionList.Count; m++)
+                    {
+                        Promotion promotion = promotionList[m];
+                        List<PromotionItem> promotionItemList = branchPromotionItemDao.FindByPromotionId(promotion.id);
+                        //促销模式
+                        ZcCode mode = branchCodeDao.FindById(promotion.zccode_modeId);
+                        //促销范围
+                        ZcCode scope = branchCodeDao.FindById(promotion.zccode_scopeId);
+                        //  DiscountType     SpecialPriceType   FullBuySendType
+                        if (promotionItemList != null && promotionItemList.Count > 0)
+                        {
+                            if ("DiscountType".Equals(mode.codeType))
+                            {
+                                //折扣
+                                if ("1".Equals(scope.codeValue))
+                                {
+                                    PromotionItem promotionItem = promotionItemList[0];
+                                    //全场
+                                    float discount = string.IsNullOrEmpty(promotionItem.all_discount) ? 0 : float.Parse(promotionItem.all_discount);
+                                    float newMoney = discount * float.Parse(money);
+                                    if (newMoney < p_money)
+                                    {
+                                        p_price = discount * p_price;
+                                        p_money = newMoney;
+                                        isPromotion = true;
+                                        p_mode = "1";
+                                    }
+                                }
+                                else if ("2".Equals(scope.codeValue))
+                                {
+                                    //类别
+                                    ZcClassIfyInfo classIfyInfo = branchZcClassIfyInfoDao.getById(obj.GoodsClassId);
+                                    for (int n = 0; n < promotionItemList.Count; n++)
+                                    {
+                                        if (classIfyInfo.Id.Equals(promotionItemList[n].class_classify_id) || classIfyInfo.ParentId.Equals(promotionItemList[n].class_classify_id))
+                                        {
+                                            float discount = string.IsNullOrEmpty(promotionItemList[n].discount) ? 0 : float.Parse(promotionItemList[n].discount);
+                                            float newMoney = discount * float.Parse(money);
+                                            if (newMoney < p_money)
+                                            {
+                                                p_price = discount * p_price;
+                                                p_money = newMoney;
+                                                isPromotion = true;
+                                                p_mode = "1";
+                                            }
+                                        }
+                                    }
+                                }
+                                else if ("3".Equals(scope.codeValue))
+                                {
+                                    //商品
+                                    for (int n = 0; n < promotionItemList.Count; n++)
+                                    {
+                                        if (obj.Id.Equals(promotionItemList[n].goodsFile_id))
+                                        {
+                                            float discount = string.IsNullOrEmpty(promotionItemList[n].discount) ? 0 : float.Parse(promotionItemList[n].discount);
+                                            float newMoney = discount * float.Parse(money);
+                                            if (newMoney < p_money)
+                                            {
+                                                p_price = discount * p_price;
+                                                p_money = newMoney;
+                                                isPromotion = true;
+                                                p_mode = "1";
+                                            }
+                                        }
+                                    }
+                                }
+
+                            }
+                            else if ("SpecialPriceType".Equals(mode.codeType))
+                            {
+                                //特价
+                                for (int n = 0; n < promotionItemList.Count; n++)
+                                {
+                                    if (obj.Id.Equals(promotionItemList[n].goodsFile_id))
+                                    {
+                                        float existSpecialNums = 0;
+                                        for (int z = 0; z < itemDataGridView.RowCount; z++ )
+                                        {
+                                            string goodsId = itemDataGridView[14, z].Value.ToString();
+                                            string typeFlag = itemDataGridView[21, z].Value != null ? itemDataGridView[21, z].Value.ToString() : string.Empty;
+                                            if (goodsId.Equals(obj.Id) && "1".Equals(typeFlag))
+                                            {
+                                                float enums = float.Parse(itemDataGridView[15, z].Value.ToString());
+                                                existSpecialNums += enums;
+                                            }
+                                        }
+                                        float limitNums = promotionItemList[n].limit_number;
+                                        if (limitNums > existSpecialNums)
+                                        {
+                                            float a = promotionItemList[n].bargain_price;
+                                            float newMoney = a * float.Parse(weight);
+                                            if (newMoney < p_money)
+                                            {
+                                                p_price = a;
+                                                p_money = newMoney;
+                                                isPromotion = true;
+                                                p_mode = "2";
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            else if ("FullBuySendType".Equals(mode.codeType))
+                            {
+                                //买满送
+                            }
+                        }
+                    }
+                }
+                if (isWeightGoods)
+                {
+                    if (p_mode.Equals("2"))
+                    {
+                        itemDataGridView.Rows.Add(new Object[] { serial, obj.GoodsName, p_price.ToString("0.00"), "", "", "", "", "", weight, "", "", "", "", "", obj.Id, 1, p_money.ToString("0.00"), "", "", "", "", "1" });
+                    }
+                    else
+                    {
+                        itemDataGridView.Rows.Add(new Object[] { serial, obj.GoodsName, p_price.ToString("0.00"), "", "", "", "", "", weight, "", "", "", "", "", obj.Id, 1, p_money.ToString("0.00"), "", "", "", "", "0" });
+                    }
+
+                }
+                else
+                {
+                    if (p_mode.Equals("2"))
+                    {
+                        itemDataGridView.Rows.Add(new Object[] { serial, obj.GoodsName, p_price.ToString("0.00"), "", "", "", "", "", weight, "", "", "", "", "", obj.Id, 1, p_money.ToString("0.00"), "", "", "", "", "1" });
+                    }
+                    else
+                    {
+                        itemDataGridView.Rows.Add(new Object[] { serial, obj.GoodsName, p_price.ToString("0.00"), "", "", "", "", "", weight, "", "", "", "", "", obj.Id, 1, p_money.ToString("0.00"), "", "", "", "", "0" });
+                    }
+                }
+
+                itemDataGridView.Rows[itemDataGridView.Rows.Count - 1].Selected = true;
+                itemDataGridView.CurrentCell = itemDataGridView.Rows[itemDataGridView.Rows.Count - 1].Cells[0];
+                ///将待打印的商品添加进去
+                goodsPrint.SerialNumber = serial;
+                goodsPrint.Name = obj.GoodsName;
+                goodsPrint.Nums = 1;
+                goodsPrint.Weight = isWeightGoods ? float.Parse(weight) : 0;
+                goodsPrint.Price = p_price;
+                goodsPrint.BarCode = numberString;
+                goodsPrint.GoodsFileId = obj.Id;
+                goodsPrint.isPromotion = isPromotion;
+                goodsPrint.money = p_money;
+                printObjectlist.Add(goodsPrint);
+            }
+            else 
+            {
+                //减少
+                float p_price = obj.GoodsPrice;
+                float p_money = float.Parse(money);
+                float max_money = 0;
+                for (int j = 0; j < printObjectlist.Count; j++)
+                {
+                    if (printObjectlist[j].SerialNumber.Equals(serial) && p_money > printObjectlist[j].money)
+                    {
+                        p_money = printObjectlist[j].money;
+                    }
+                    if (printObjectlist[j].SerialNumber.Equals(serial) && max_money < printObjectlist[j].money)
+                    {
+                        max_money = printObjectlist[j].money;
+                    }
+                }
+                bool isPromotion = false;
+                ///  1 折扣   2特价   3买满减
+                string p_mode = "";
+                List<Promotion> promotionList = SalesPromotionUtil.promotionList;
+                if (promotionList != null && promotionList.Count > 0)
+                {
+                    for (int m = 0; m < promotionList.Count; m++)
+                    {
+                        Promotion promotion = promotionList[m];
+                        List<PromotionItem> promotionItemList = branchPromotionItemDao.FindByPromotionId(promotion.id);
+                        //促销模式
+                        ZcCode mode = branchCodeDao.FindById(promotion.zccode_modeId);
+                        //促销范围
+                        ZcCode scope = branchCodeDao.FindById(promotion.zccode_scopeId);
+                        //  DiscountType     SpecialPriceType   FullBuySendType
+                        if (promotionItemList != null && promotionItemList.Count > 0)
+                        {
+                            if ("DiscountType".Equals(mode.codeType))
+                            {
+                                //折扣
+                                if ("1".Equals(scope.codeValue))
+                                {
+                                    PromotionItem promotionItem = promotionItemList[0];
+                                    //全场
+                                    float discount = string.IsNullOrEmpty(promotionItem.all_discount) ? 0 : float.Parse(promotionItem.all_discount);
+                                    float newMoney = discount * float.Parse(money);
+                                    if (newMoney >= p_money && newMoney <= max_money)
+                                    {
+                                        p_price = discount * p_price;
+                                        p_money = newMoney;
+                                        isPromotion = true;
+                                        p_mode = "1";
+                                    }
+                                }
+                                else if ("2".Equals(scope.codeValue))
+                                {
+                                    //类别
+                                    ZcClassIfyInfo classIfyInfo = branchZcClassIfyInfoDao.getById(obj.GoodsClassId);
+                                    for (int n = 0; n < promotionItemList.Count; n++)
+                                    {
+                                        if (classIfyInfo.Id.Equals(promotionItemList[n].class_classify_id) || classIfyInfo.ParentId.Equals(promotionItemList[n].class_classify_id))
+                                        {
+                                            float discount = string.IsNullOrEmpty(promotionItemList[n].discount) ? 0 : float.Parse(promotionItemList[n].discount);
+                                            float newMoney = discount * float.Parse(money);
+                                            if (newMoney >= p_money && newMoney <= max_money)
+                                            {
+                                                p_price = discount * p_price;
+                                                p_money = newMoney;
+                                                isPromotion = true;
+                                                p_mode = "1";
+                                            }
+                                        }
+                                    }
+                                }
+                                else if ("3".Equals(scope.codeValue))
+                                {
+                                    //商品
+                                    for (int n = 0; n < promotionItemList.Count; n++)
+                                    {
+                                        if (obj.Id.Equals(promotionItemList[n].goodsFile_id))
+                                        {
+                                            float discount = string.IsNullOrEmpty(promotionItemList[n].discount) ? 0 : float.Parse(promotionItemList[n].discount);
+                                            float newMoney = discount * float.Parse(money);
+                                            if (newMoney >= p_money && newMoney <= max_money)
+                                            {
+                                                p_price = discount * p_price;
+                                                p_money = newMoney;
+                                                isPromotion = true;
+                                                p_mode = "1";
+                                            }
+                                        }
+                                    }
+                                }
+
+                            }
+                            else if ("SpecialPriceType".Equals(mode.codeType))
+                            {
+                                float existSpecialNums = 0;
+                                float existtotalNums = 0;
+                                for (int z = 0; z < itemDataGridView.RowCount; z++)
+                                {
+                                    string goodsId = itemDataGridView[14, z].Value.ToString();
+                                    string typeFlag = itemDataGridView[21, z].Value != null ? itemDataGridView[21, z].Value.ToString() : string.Empty;
+                                    if (goodsId.Equals(obj.Id))
+                                    {
+                                        float enums = float.Parse(itemDataGridView[15, z].Value.ToString());
+                                        if("1".Equals(typeFlag)){
+                                            existSpecialNums += enums;
+                                        }
+                                        existtotalNums += enums;
+                                    }
+                                }
+                                //特价
+                                for (int n = 0; n < promotionItemList.Count; n++)
+                                {
+                                    if (obj.Id.Equals(promotionItemList[n].goodsFile_id))
+                                    {
+                                        float limitNums = promotionItemList[n].limit_number;
+                                        if (limitNums >= existtotalNums && existSpecialNums > 0)
+                                        {
+                                            float a = promotionItemList[n].bargain_price;
+                                            float newMoney = a * float.Parse(weight);
+                                            if (newMoney >= p_money && newMoney <= max_money)
+                                            {
+                                                p_price = a;
+                                                p_money = newMoney;
+                                                isPromotion = true;
+                                                p_mode = "2";
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            else if ("FullBuySendType".Equals(mode.codeType))
+                            {
+                                //买满送放在结算之前运算见Settlement()
+                            }
+                        }
+                    }
+                }
+                bool isExist = false;
+                for (int i = 0; i < printObjectlist.Count; i++ )
+                {
+                    GoodsPrint gp = printObjectlist[i];
+                    if (gp.Price.ToString("0.00").Equals(p_price.ToString("0.00")) && gp.money.ToString("0.00").Equals(p_money.ToString("0.00")))
+                    {
+                        isExist = true;
+                        printObjectlist.RemoveAt(i);
+                        break;
+                    }
+                }
+                if (isExist)
+                {
+                    for (int i = 0; i < itemDataGridView.RowCount; i++)
+                    {
+                        string serialNumber = itemDataGridView[0, i].Value.ToString();
+                        if (serial.Equals(serialNumber))
+                        {
+                            string oldweight = itemDataGridView[8, i].Value.ToString();
+                            string oldMoney = itemDataGridView[16, i].Value.ToString();
+                            if(p_money.ToString("0.00").Equals(oldMoney) && oldweight.Equals(weight)){
+                                itemDataGridView.Rows.RemoveAt(i);
+                                break;
+                            }
+                        }
+                    }
+                }
+                else 
+                {
                     MessageBox.Show("已扫的商品中没有此商品，无法进行减去扫码操作!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    setFlagLabel();
                     return;
                 }
+                setFlagLabel();
             }
+
+            
+            //bool isExist = false;
+            //for (int i = 0; i < itemDataGridView.Rows.Count; i++)
+            //{
+            //    if (serial.Equals(itemDataGridView[0, i].Value.ToString()))
+            //    {
+            //        float existP_nums = itemDataGridView[21, i].Value != null ? float.Parse(itemDataGridView[21, i].Value.ToString()) : 0;
+            //        isExist = true;
+            //        //添加
+            //        if (AddOrDelete)
+            //        {
+            //            float p_price = 0;
+            //            float p_money = float.Parse(money);
+            //            bool isPromotion = false;
+            //            ///  1 折扣   2特价   3买满减
+            //            string p_mode = "";     
+            //            List<Promotion> promotionList = SalesPromotionUtil.promotionList;
+            //            if (promotionList != null && promotionList.Count > 0)
+            //            {
+            //                for (int m = 0; m < promotionList.Count; m++)
+            //                {
+            //                    Promotion promotion = promotionList[m];
+            //                    List<PromotionItem> promotionItemList = branchPromotionItemDao.FindByPromotionId(promotion.id);
+            //                    //促销模式
+            //                    ZcCode mode = branchCodeDao.FindById(promotion.zccode_modeId);
+            //                    //促销范围
+            //                    ZcCode scope = branchCodeDao.FindById(promotion.zccode_scopeId);
+            //                    //  DiscountType     SpecialPriceType   FullBuySendType
+            //                    if (promotionItemList != null && promotionItemList.Count > 0)
+            //                    {
+            //                        if ("DiscountType".Equals(mode.codeType))
+            //                        {
+            //                            //折扣
+            //                            if ("1".Equals(scope.codeValue))
+            //                            {
+            //                                PromotionItem promotionItem = promotionItemList[0];
+            //                                //全场
+            //                                float discount = string.IsNullOrEmpty(promotionItem.all_discount) ? 0 : float.Parse(promotionItem.all_discount);
+            //                                float newMoney = discount * float.Parse(money);
+            //                                if (newMoney < p_money)
+            //                                {
+            //                                    p_money = newMoney;
+            //                                    isPromotion = true;
+            //                                    p_mode = "1";
+            //                                }
+            //                            }
+            //                            else if ("2".Equals(scope.codeValue))
+            //                            {
+            //                                //类别
+            //                                ZcClassIfyInfo classIfyInfo = branchZcClassIfyInfoDao.getById(obj.GoodsClassId);
+            //                                for (int n = 0; n < promotionItemList.Count; n++)
+            //                                {
+            //                                    if (classIfyInfo.Id.Equals(promotionItemList[n].class_classify_id) || classIfyInfo.ParentId.Equals(promotionItemList[n].class_classify_id))
+            //                                    {
+            //                                        float discount = string.IsNullOrEmpty(promotionItemList[n].discount) ? 0 : float.Parse(promotionItemList[n].discount);
+            //                                        float newMoney = discount * float.Parse(money);
+            //                                        if (newMoney < p_money)
+            //                                        {
+            //                                            p_money = newMoney;
+            //                                            isPromotion = true;
+            //                                            p_mode = "1";
+            //                                        }
+            //                                    }
+            //                                }
+            //                            }
+            //                            else if ("3".Equals(scope.codeValue))
+            //                            {
+            //                                //商品
+            //                                for (int n = 0; n < promotionItemList.Count; n++)
+            //                                {
+            //                                    if (obj.Id.Equals(promotionItemList[n].goodsFile_id))
+            //                                    {
+            //                                        float discount = string.IsNullOrEmpty(promotionItemList[n].discount) ? 0 : float.Parse(promotionItemList[n].discount);
+            //                                        float newMoney = discount * float.Parse(money);
+            //                                        if (newMoney < p_money)
+            //                                        {
+            //                                            p_money = newMoney;
+            //                                            isPromotion = true;
+            //                                            p_mode = "1";
+            //                                        }
+            //                                    }
+            //                                }
+            //                            }
+
+            //                        }
+            //                        else if ("SpecialPriceType".Equals(mode.codeType))
+            //                        {
+            //                            //特价
+            //                            for (int n = 0; n < promotionItemList.Count; n++)
+            //                            {
+            //                                if (obj.Id.Equals(promotionItemList[n].goodsFile_id))
+            //                                {
+            //                                    float limitNums = promotionItemList[n].limit_number;
+            //                                    if(limitNums > existP_nums){
+            //                                        p_price = promotionItemList[n].bargain_price;
+            //                                        float newMoney = p_price * float.Parse(weight);
+            //                                        if (newMoney < p_money)
+            //                                        {
+            //                                            p_money = newMoney;
+            //                                            isPromotion = true;
+            //                                            p_mode = "2";
+            //                                        }
+            //                                    }
+            //                                }
+            //                            }
+            //                        }
+            //                        else if ("FullBuySendType".Equals(mode.codeType))
+            //                        {
+            //                            //买满送放在结算之前运算见Settlement()
+            //                        }
+            //                    }
+            //                }
+            //            }
+                        
+                        
+            //            ///是否是称重商品
+            //            float totalMoney = 0;
+            //            if (!isWeightGoods)
+            //            {
+            //                //不是称重商品
+            //                foreach (GoodsPrint gp in printObjectlist)
+            //                {
+            //                    if (gp.SerialNumber.Equals(serial))
+            //                    {
+            //                        gp.Nums += 1;
+            //                        gp.Weight += float.Parse(weight);
+            //                        gp.isPromotion = isPromotion;
+            //                        gp.money += isPromotion ? p_money : float.Parse(money);
+            //                        totalMoney = gp.money;
+            //                        break;
+            //                    }
+            //                }
+            //            }
+            //            else
+            //            {
+            //                goodsPrint.SerialNumber = serial;
+            //                goodsPrint.Name = obj.GoodsName;
+            //                goodsPrint.Nums = 1;
+            //                goodsPrint.Price = obj.GoodsPrice;
+            //                goodsPrint.Weight = float.Parse(weight);
+            //                goodsPrint.BarCode = numberString;
+            //                goodsPrint.GoodsFileId = obj.Id;
+            //                goodsPrint.isPromotion = isPromotion;
+            //                goodsPrint.money = isPromotion ? p_money : float.Parse(money);
+            //                totalMoney = goodsPrint.money;
+            //                printObjectlist.Add(goodsPrint);
+            //            }
+
+
+                        
+            //            float oldMoney = float.Parse(itemDataGridView[16, i].Value == null ? "0" : itemDataGridView[16, i].Value.ToString());
+            //            if (isWeightGoods)
+            //            {
+            //                float old_weight = string.IsNullOrEmpty(itemDataGridView[8, i].Value.ToString()) ? 0 : float.Parse(itemDataGridView[8, i].Value.ToString());
+            //                itemDataGridView[8, i].Value = old_weight + float.Parse(weight);
+            //                itemDataGridView[16, i].Value = MoneyFormat.RountFormat(oldMoney + totalMoney);
+            //            }
+            //            else
+            //            {
+            //                itemDataGridView[16, i].Value = MoneyFormat.RountFormat(oldMoney+totalMoney);
+            //            }
+            //            itemDataGridView[15, i].Value = float.Parse(itemDataGridView[15, i].Value.ToString()) + 1;
+            //            itemDataGridView.Rows[i].Selected = true;
+            //            itemDataGridView.CurrentCell = itemDataGridView.Rows[i].Cells[0];
+            //            break;
+            //        }
+            //        else
+            //        {
+            //            float nums = float.Parse(itemDataGridView[15, i].Value.ToString());
+            //            float old_weight = string.IsNullOrEmpty(itemDataGridView[8, i].Value.ToString()) ? 0 : float.Parse(itemDataGridView[8, i].Value.ToString());
+            //            if (isWeightGoods)
+            //            {
+            //                if (float.Parse(weight) > old_weight)
+            //                {
+            //                    MessageBox.Show("扫码减去的商品重量不能大于已扫描的商品重量", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            //                    setFlagLabel();
+            //                    return;
+            //                }
+            //            }
+
+            //            if (nums == 1)
+            //            {
+            //                bool isHave = false;
+            //                foreach (GoodsPrint gp in printObjectlist)
+            //                {
+            //                    if (gp.SerialNumber.Equals(serial))
+            //                    {
+            //                        if (!isWeightGoods)
+            //                        {
+            //                            printObjectlist.Remove(gp);
+            //                            isHave = true;
+            //                            break;
+            //                        }
+            //                        else 
+            //                        {
+            //                            if (gp.Weight == float.Parse(weight))
+            //                            {
+            //                                printObjectlist.Remove(gp);
+            //                                isHave = true;
+            //                                break;
+            //                            }
+            //                            else 
+            //                            {
+            //                                break;
+            //                            }
+            //                        }
+            //                    }
+            //                    else
+            //                    {
+            //                        continue;
+                                    
+            //                    }
+            //                }
+            //                if( !isHave)
+            //                {
+            //                    MessageBox.Show("没有此商品对应的扫码销售信息", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            //                    setFlagLabel();
+            //                    return;
+            //                }
+            //                itemDataGridView.Rows.RemoveAt(i);
+            //                setFlagLabel();
+            //            }
+            //            else
+            //            {
+            //                if (!isWeightGoods)
+            //                {
+            //                    foreach (GoodsPrint gp in printObjectlist)
+            //                    {
+            //                        if (gp.SerialNumber.Equals(serial))
+            //                        {
+            //                            gp.Nums -= 1;
+            //                            break;
+            //                        }
+            //                    }
+            //                }
+            //                else
+            //                {
+            //                    bool isHaveResaleGoods = false;
+            //                    foreach (GoodsPrint gp in printObjectlist)
+            //                    {
+            //                        if (gp.SerialNumber.Equals(serial) && gp.Weight == float.Parse(weight))
+            //                        {
+            //                            printObjectlist.Remove(gp);
+            //                            isHaveResaleGoods = true;
+            //                            break;
+            //                        }
+            //                    }
+            //                    if (!isHaveResaleGoods)
+            //                    {
+            //                        MessageBox.Show("没有此商品对应的扫码销售信息", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            //                        setFlagLabel();
+            //                        return;
+            //                    }
+            //                }
+            //                float p_price = 0;
+            //                float p_money = float.Parse(money);
+            //                bool isPromotion = false;
+            //                ///  1 折扣   2特价   3买满减
+            //                string p_mode = "";
+            //                List<Promotion> promotionList = SalesPromotionUtil.promotionList;
+            //                if (promotionList != null && promotionList.Count > 0)
+            //                {
+            //                    for (int m = 0; m < promotionList.Count; m++)
+            //                    {
+            //                        Promotion promotion = promotionList[m];
+            //                        List<PromotionItem> promotionItemList = branchPromotionItemDao.FindByPromotionId(promotion.id);
+            //                        //促销模式
+            //                        ZcCode mode = branchCodeDao.FindById(promotion.zccode_modeId);
+            //                        //促销范围
+            //                        ZcCode scope = branchCodeDao.FindById(promotion.zccode_scopeId);
+            //                        //  DiscountType     SpecialPriceType   FullBuySendType
+            //                        if (promotionItemList != null && promotionItemList.Count > 0)
+            //                        {
+            //                            if ("DiscountType".Equals(mode.codeType))
+            //                            {
+            //                                //折扣
+            //                                if ("1".Equals(scope.codeValue))
+            //                                {
+            //                                    PromotionItem promotionItem = promotionItemList[0];
+            //                                    //全场
+            //                                    float discount = string.IsNullOrEmpty(promotionItem.all_discount) ? 0 : float.Parse(promotionItem.all_discount);
+            //                                    float newMoney = discount * float.Parse(money);
+            //                                    if (newMoney < p_money)
+            //                                    {
+            //                                        p_money = newMoney;
+            //                                        isPromotion = true;
+            //                                        p_mode = "1";
+            //                                    }
+            //                                }
+            //                                else if ("2".Equals(scope.codeValue))
+            //                                {
+            //                                    //类别
+            //                                    ZcClassIfyInfo classIfyInfo = branchZcClassIfyInfoDao.getById(obj.GoodsClassId);
+            //                                    for (int n = 0; n < promotionItemList.Count; n++)
+            //                                    {
+            //                                        if (classIfyInfo.Id.Equals(promotionItemList[n].class_classify_id) || classIfyInfo.ParentId.Equals(promotionItemList[n].class_classify_id))
+            //                                        {
+            //                                            float discount = string.IsNullOrEmpty(promotionItemList[n].discount) ? 0 : float.Parse(promotionItemList[n].discount);
+            //                                            float newMoney = discount * float.Parse(money);
+            //                                            if (newMoney < p_money)
+            //                                            {
+            //                                                p_money = newMoney;
+            //                                                isPromotion = true;
+            //                                                p_mode = "1";
+            //                                            }
+            //                                        }
+            //                                    }
+            //                                }
+            //                                else if ("3".Equals(scope.codeValue))
+            //                                {
+            //                                    //商品
+            //                                    for (int n = 0; n < promotionItemList.Count; n++)
+            //                                    {
+            //                                        if (obj.Id.Equals(promotionItemList[n].goodsFile_id))
+            //                                        {
+            //                                            float discount = string.IsNullOrEmpty(promotionItemList[n].discount) ? 0 : float.Parse(promotionItemList[n].discount);
+            //                                            float newMoney = discount * float.Parse(money);
+            //                                            if (newMoney < p_money)
+            //                                            {
+            //                                                p_money = newMoney;
+            //                                                isPromotion = true;
+            //                                                p_mode = "1";
+            //                                            }
+            //                                        }
+            //                                    }
+            //                                }
+
+            //                            }
+            //                            else if ("SpecialPriceType".Equals(mode.codeType))
+            //                            {
+            //                                //特价
+            //                                for (int n = 0; n < promotionItemList.Count; n++)
+            //                                {
+            //                                    if (obj.Id.Equals(promotionItemList[n].goodsFile_id))
+            //                                    {
+            //                                        float limitNums = promotionItemList[n].limit_number;
+            //                                        if (limitNums >= existP_nums && existP_nums > 0)
+            //                                        {
+            //                                            p_price = promotionItemList[n].bargain_price;
+            //                                            float newMoney = p_price * float.Parse(weight);
+            //                                            if (newMoney < p_money)
+            //                                            {
+            //                                                p_money = newMoney;
+            //                                                isPromotion = true;
+            //                                                p_mode = "2";
+            //                                            }
+            //                                        }
+            //                                    }
+            //                                }
+            //                            }
+            //                            else if ("FullBuySendType".Equals(mode.codeType))
+            //                            {
+            //                                //买满送放在结算之前运算见Settlement()
+            //                            }
+            //                        }
+            //                    }
+            //                }
+
+            //                float old_money = float.Parse(itemDataGridView[16, i].Value == null ? "0" : itemDataGridView[16, i].Value.ToString());
+            //                itemDataGridView[15, i].Value = nums - 1;
+            //                if (isWeightGoods)
+            //                {
+            //                    itemDataGridView[8, i].Value = old_weight - float.Parse(weight);
+            //                    itemDataGridView[16, i].Value = MoneyFormat.RountFormat(old_money - p_money);
+            //                }
+            //                else 
+            //                {
+            //                    itemDataGridView[16, i].Value = MoneyFormat.RountFormat(old_money - p_money);
+            //                }
+            //                if(p_mode.Equals("2")){
+            //                    itemDataGridView[21, i].Value = (existP_nums - 1).ToString();
+            //                }
+            //                itemDataGridView.Rows[i].Selected = true;
+            //                itemDataGridView.CurrentCell = itemDataGridView.Rows[i].Cells[0];
+            //                setFlagLabel();
+            //                break;
+            //            }
+            //        }
+            //    }
+            //}
+            //if (!isExist)
+            //{
+            //    if (AddOrDelete)
+            //    {
+            //        float p_price = 0;
+            //        float p_money = float.Parse(money);
+            //        bool isPromotion = false;
+            //        ///  1 折扣   2特价   3买满减
+            //        string p_mode = "";
+            //        List<Promotion> promotionList = SalesPromotionUtil.promotionList;
+            //        if (promotionList != null && promotionList.Count > 0)
+            //        {
+            //            for (int m = 0; m < promotionList.Count; m++)
+            //            {
+            //                Promotion promotion = promotionList[m];
+            //                List<PromotionItem> promotionItemList = branchPromotionItemDao.FindByPromotionId(promotion.id);
+            //                //促销模式
+            //                ZcCode mode = branchCodeDao.FindById(promotion.zccode_modeId);
+            //                //促销范围
+            //                ZcCode scope = branchCodeDao.FindById(promotion.zccode_scopeId);
+            //                //  DiscountType     SpecialPriceType   FullBuySendType
+            //                if (promotionItemList != null && promotionItemList.Count > 0)
+            //                {
+            //                    if ("DiscountType".Equals(mode.codeType))
+            //                    {
+            //                        //折扣
+            //                        if ("1".Equals(scope.codeValue))
+            //                        {
+            //                            PromotionItem promotionItem = promotionItemList[0];
+            //                            //全场
+            //                            float discount = string.IsNullOrEmpty(promotionItem.all_discount) ? 0 : float.Parse(promotionItem.all_discount);
+            //                            float newMoney = discount * float.Parse(money);
+            //                            if (newMoney < p_money)
+            //                            {
+            //                                p_money = newMoney;
+            //                                isPromotion = true;
+            //                                p_mode = "1";
+            //                            }
+            //                        }
+            //                        else if ("2".Equals(scope.codeValue))
+            //                        {
+            //                            //类别
+            //                            ZcClassIfyInfo classIfyInfo = branchZcClassIfyInfoDao.getById(obj.GoodsClassId);
+            //                            for (int n = 0; n < promotionItemList.Count; n++)
+            //                            {
+            //                                if (classIfyInfo.Id.Equals(promotionItemList[n].class_classify_id) || classIfyInfo.ParentId.Equals(promotionItemList[n].class_classify_id))
+            //                                {
+            //                                    float discount = string.IsNullOrEmpty(promotionItemList[n].discount) ? 0 : float.Parse(promotionItemList[n].discount);
+            //                                    float newMoney = discount * float.Parse(money);
+            //                                    if (newMoney < p_money)
+            //                                    {
+            //                                        p_money = newMoney;
+            //                                        isPromotion = true;
+            //                                        p_mode = "1";
+            //                                    }
+            //                                }
+            //                            }
+            //                        }
+            //                        else if ("3".Equals(scope.codeValue))
+            //                        {
+            //                            //商品
+            //                            for (int n = 0; n < promotionItemList.Count; n++)
+            //                            {
+            //                                if (obj.Id.Equals(promotionItemList[n].goodsFile_id))
+            //                                {
+            //                                    float discount = string.IsNullOrEmpty(promotionItemList[n].discount) ? 0 : float.Parse(promotionItemList[n].discount);
+            //                                    float newMoney = discount * float.Parse(money);
+            //                                    if (newMoney < p_money)
+            //                                    {
+            //                                        p_money = newMoney;
+            //                                        isPromotion = true;
+            //                                        p_mode = "1";
+            //                                    }
+            //                                }
+            //                            }
+            //                        }
+
+            //                    }
+            //                    else if ("SpecialPriceType".Equals(mode.codeType))
+            //                    {
+            //                        //特价
+            //                        for (int n = 0; n < promotionItemList.Count; n++)
+            //                        {
+            //                            if (obj.Id.Equals(promotionItemList[n].goodsFile_id))
+            //                            {
+            //                                float limitNums = promotionItemList[n].limit_number;
+            //                                if (limitNums > 0)
+            //                                {
+            //                                    p_price = promotionItemList[n].bargain_price;
+            //                                    float newMoney = p_price * float.Parse(weight);
+            //                                    if (newMoney < p_money)
+            //                                    {
+            //                                        p_money = newMoney;
+            //                                        isPromotion = true;
+            //                                        p_mode = "2";
+            //                                    }
+            //                                }
+            //                            }
+            //                        }
+            //                    }
+            //                    else if ("FullBuySendType".Equals(mode.codeType))
+            //                    {
+            //                        //买满送
+            //                    }
+            //                }
+            //            }
+            //        }
+            //        if (isWeightGoods)
+            //        {
+            //            if (p_mode.Equals("2"))
+            //            {
+            //                itemDataGridView.Rows.Add(new Object[] { serial, obj.GoodsName, obj.GoodsPrice, "", "", "", "", "", weight, "", "", "", "", "", obj.Id, 1, p_money.ToString("0.00"), "", "", "", "", "1" });
+            //            }
+            //            else {
+            //                itemDataGridView.Rows.Add(new Object[] { serial, obj.GoodsName, obj.GoodsPrice, "", "", "", "", "", weight, "", "", "", "", "", obj.Id, 1, p_money.ToString("0.00")});
+            //            }
+                        
+            //        }
+            //        else
+            //        {
+            //            if (p_mode.Equals("2"))
+            //            {
+            //                itemDataGridView.Rows.Add(new Object[] { serial, obj.GoodsName, obj.GoodsPrice, "", "", "", "", "", weight, "", "", "", "", "", obj.Id, 1, p_money.ToString("0.00"), "", "", "", "", "1" });
+            //            }
+            //            else
+            //            {
+            //                itemDataGridView.Rows.Add(new Object[] { serial, obj.GoodsName, obj.GoodsPrice, "", "", "", "", "", weight, "", "", "", "", "", obj.Id, 1, p_money.ToString("0.00") });
+            //            }
+            //        }
+                    
+            //        itemDataGridView.Rows[itemDataGridView.Rows.Count - 1].Selected = true;
+            //        itemDataGridView.CurrentCell = itemDataGridView.Rows[itemDataGridView.Rows.Count - 1].Cells[0];
+            //        ///将待打印的商品添加进去
+            //        goodsPrint.SerialNumber = serial;
+            //        goodsPrint.Name = obj.GoodsName;
+            //        goodsPrint.Nums = 1;
+            //        goodsPrint.Weight = isWeightGoods ? float.Parse(weight) : 0;
+            //        goodsPrint.Price = obj.GoodsPrice;
+            //        goodsPrint.BarCode = numberString;
+            //        goodsPrint.GoodsFileId = obj.Id;
+            //        goodsPrint.isPromotion = isPromotion;
+            //        goodsPrint.money = p_money;
+            //        printObjectlist.Add(goodsPrint);
+            //    }
+            //    else
+            //    {
+            //        MessageBox.Show("已扫的商品中没有此商品，无法进行减去扫码操作!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            //        setFlagLabel();
+            //        return;
+            //    }
+            //}
             ///计算数量小计和金额总计
             ResaleCalculate();
         }
@@ -2574,14 +4513,24 @@ namespace Branch.com.proem.exm.window.order
                 {
                     if (obj.SerialNumber.Equals(itemDataGridView.Rows[index].Cells[0].Value.ToString()))
                     {
-                        deleteList.Add(obj);
+                        string oldweight = (float.Parse(itemDataGridView.CurrentRow.Cells[8].Value.ToString())).ToString("0.0000");
+                        string oldMoney = float.Parse(itemDataGridView.CurrentRow.Cells[16].Value.ToString()).ToString("0.00");
+                        if (obj.money.ToString("0.00").Equals(oldMoney) && obj.Weight.ToString("0.0000").Equals(oldweight))
+                        {
+                            //itemDataGridView.Rows.RemoveAt(i);
+                            //deleteList.Add(obj);
+                            printObjectlist.Remove(obj);
+                            itemDataGridView.Rows.RemoveAt(index);
+                            break;
+                        }
+                        
                     }
                 }
-                foreach(GoodsPrint obj in deleteList)
-                {
-                    printObjectlist.Remove(obj);
-                }
-                itemDataGridView.Rows.RemoveAt(index);
+                //foreach(GoodsPrint obj in deleteList)
+                //{
+                //    printObjectlist.Remove(obj);
+                //}
+                
                 //计算总的数量和金额的算法
                 ResaleCalculate();
             }
@@ -2632,7 +4581,7 @@ namespace Branch.com.proem.exm.window.order
         /// <param name="payInfoId">
         /// 支付主表id
         /// </param>
-        public void saveResaleInform(string waterNumber, string payInfoId)
+        public void saveResaleInform(string waterNumber, string payInfoId, string payMoney)
         {
             ///零售主表
             Resale resale = new Resale();
@@ -2641,12 +4590,12 @@ namespace Branch.com.proem.exm.window.order
             resale.UpdateTime = DateTime.Now;
             resale.WaterNumber = waterNumber;
             resale.Nums = totalSum.Text;
-            resale.Money = totalAmount.Text;
-            ///TODO  暂时未加入折扣，优惠金额等算法
-            resale.ActualMoney = totalAmount.Text;
+            resale.Money = payMoney;
+            //  暂时未加入折扣，优惠金额等算法
+            resale.ActualMoney = payMoney;
             resale.BranchId = LoginUserInfo.branchId;
             resale.SaleManId = LoginUserInfo.id;
-            resale.memberId = associatorInfo == null ? string.Empty : associatorInfo.Id;
+            resale.memberId = zcMember == null ? string.Empty : zcMember.id;
             resale.WaterNumber = waterNumber;
             resale.PayInfoId = payInfoId;
             
@@ -2663,18 +4612,32 @@ namespace Branch.com.proem.exm.window.order
                 obj.Nums = goodsPrint.Nums.ToString();
                 obj.Price = goodsPrint.Price.ToString();
                 obj.BarCode = goodsPrint.BarCode;
-                if (goodsPrint.Weight != 0)
-                {
-                    obj.weight = goodsPrint.Weight.ToString();
-                    obj.Money = MoneyFormat.RountFormat(goodsPrint.Weight * goodsPrint.Price);
-                }
-                else
-                {
-                    obj.Money = MoneyFormat.RountFormat(goodsPrint.Price * goodsPrint.Nums);
-                }
-                ///TODO  暂时未加入折扣，优惠金额等算法
+
+                obj.weight = goodsPrint.Weight.ToString();
+                obj.Money = MoneyFormat.RountFormat(goodsPrint.money);
+                
+                /// 暂时未加入折扣，优惠金额等算法
                 obj.ActualMoney = obj.Money;
                 list.Add(obj);
+            }
+            //赠送商品信息
+            if(givingList.Count > 0){
+                for (int i = 0; i < givingList.Count; i++ )
+                {
+                    ZcGoodsMaster zcGoodsMaster = givingList[i];
+                    ResaleItem obj = new ResaleItem();
+                    obj.Id = Guid.NewGuid().ToString();
+                    obj.CreateTime = DateTime.Now;
+                    obj.UpdateTime = DateTime.Now;
+                    obj.ResaleId = resale.Id;
+                    obj.GoodsFileId = zcGoodsMaster.Id;
+                    obj.Nums = "1";
+                    obj.Price = zcGoodsMaster.GoodsPrice.ToString();
+                    obj.weight = "1.0000";
+                    obj.Money = "0.00";
+                    obj.ActualMoney = "0.00";
+                    list.Add(obj);
+                }
             }
             BranchResaleItemService branchItemService = new BranchResaleItemService();
             BranchResaleService branchService = new BranchResaleService();
@@ -2805,11 +4768,15 @@ namespace Branch.com.proem.exm.window.order
         /// <param name="resale"></param>
         public void showRefundInfo(Resale resale)
         {
-            BranchAssociatorInfoService branchAssociatorInfoService = new BranchAssociatorInfoService();
-            associatorInfo = branchAssociatorInfoService.FindById(resale.memberId);
-            memberCard.Text = associatorInfo.CardNumber;
-            memberName.Text = associatorInfo.Name;
-            memberPhone.Text = associatorInfo.MobilePhone;
+            //BranchAssociatorInfoService branchAssociatorInfoService = new BranchAssociatorInfoService();
+            BranchZcMemberDao branchZcMemberDao = new BranchZcMemberDao();
+            zcMember = branchZcMemberDao.FindById(resale.memberId);
+            //memberCard.Text = zcMember.CardNumber;
+            if (zcMember != null)
+            {
+                memberName.Text = zcMember.memberName;
+                memberPhone.Text = zcMember.memberPhone;
+            }
             this.resaleObj = resale;
             if (!string.IsNullOrEmpty(resale.OrderId))
             {
@@ -2824,9 +4791,12 @@ namespace Branch.com.proem.exm.window.order
                 workModelabel.Text = "零售退货";
             }
             MysqlDBHelper dbHelper = new MysqlDBHelper();
-            string sql = "select c.id as goodsfile_id,c.SERIALNUMBER,c.GOODS_NAME as name , a.price as g_price,sum(a.nums) as nums, sum(a.weight) as weight, a.money as receive_money "
-                +" from zc_resale_item a left join zc_resale b on a.resale_id = b.id "
-                + " left join zc_goods_master c on a.goodsFile_id = c.ID where a.resale_id = '" + resale.Id + "' group by c.SERIALNUMBER";
+            string sql = "select c.id as goodsfile_id,c.SERIALNUMBER,c.GOODS_NAME as name , a.price as g_price,a.nums as nums, a.weight as weight, a.money as receive_money "
+               + " from zc_resale_item a left join zc_resale b on a.resale_id = b.id "
+               + " left join zc_goods_master c on a.goodsFile_id = c.ID where a.resale_id = '" + resale.Id + "' order by  a.price desc, c.serialNumber ";
+            //string sql = "select c.id as goodsfile_id,c.SERIALNUMBER,c.GOODS_NAME as name , a.price as g_price,sum(a.nums) as nums, sum(a.weight) as weight, a.money as receive_money "
+            //    +" from zc_resale_item a left join zc_resale b on a.resale_id = b.id "
+            //    + " left join zc_goods_master c on a.goodsFile_id = c.ID where a.resale_id = '" + resale.Id + "' group by c.SERIALNUMBER";
             DataSet ds = dbHelper.GetDataSet(sql, "zc_resale_item");
             itemDataGridView.AutoGenerateColumns = false;
             itemDataGridView.DataSource = ds;
@@ -2910,7 +4880,7 @@ namespace Branch.com.proem.exm.window.order
                 payInfo.Id = Guid.NewGuid().ToString();
                 payInfo.CreateTime = DateTime.Now;
                 payInfo.UpdateTime = DateTime.Now;
-                payInfo.MemberId = associatorInfo == null ? string.Empty : associatorInfo.Id;
+                payInfo.MemberId = zcMember == null ? string.Empty : zcMember.id;
                 payInfo.Money = "-"+totalAmount.Text;
                 payInfo.BranchId = LoginUserInfo.branchId;
                 payInfo.salesmanId = LoginUserInfo.id;
@@ -2946,7 +4916,7 @@ namespace Branch.com.proem.exm.window.order
                 resale.ActualMoney = resale.Money;
                 resale.BranchId = LoginUserInfo.branchId;
                 resale.SaleManId = LoginUserInfo.id;
-                resale.memberId = associatorInfo == null ? string.Empty : associatorInfo.Id;
+                resale.memberId = zcMember == null ? string.Empty : zcMember.id;
                 resale.PayInfoId = payInfo.Id;
                 if(!string.IsNullOrEmpty(resaleObj.OrderId)){
                     resale.OrderId = resaleObj.OrderId;
@@ -3124,12 +5094,11 @@ namespace Branch.com.proem.exm.window.order
                     UploadDao uploadDao = new UploadDao();
                     uploadDao.AddUploadInfo(uploadList);
                 }
-                
-            }
-            
+
             printTicket(float.Parse(totalAmount.Text));
             ///初始化数据   零售界面
             initData();
+            }
         }
 
         public void writeReason(string reason)

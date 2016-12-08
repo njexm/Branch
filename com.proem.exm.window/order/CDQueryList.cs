@@ -211,23 +211,23 @@ namespace Branch.com.proem.exm.window.order
                 string sql = "";
                 if (flag == 0)
                 {
-                    sql = "select e.id,e.ORDERNUM ,e.ORDERAMOUNT,e.CONSIGNEE,e.CANSIGNPHONE,f.ASSOCIATOR_CARDNUMBER "
+                    sql = "select e.id,e.ORDERNUM ,e.ORDERAMOUNT,e.CONSIGNEE,e.CANSIGNPHONE "
                     + " From zc_order_transit e "
-                    + " LEFT JOIN zc_associator_info f on e.member_id = f.id "
+                    + " LEFT JOIN zc_member f on e.member_id = f.id "
                     + " WHERE member_id = '" + keyStr + "' and e.orderstatus = '" + Constant.ORDER_STATUS_RECEIPT + "' and e.orderNum like '%" + searchText + "%'";
                 }
                 else 
                 {
-                    sql = "select e.id,e.ORDERNUM ,e.ORDERAMOUNT,e.CONSIGNEE,e.CANSIGNPHONE,f.ASSOCIATOR_CARDNUMBER "
+                    sql = "select e.id,e.ORDERNUM ,e.ORDERAMOUNT,e.CONSIGNEE,e.CANSIGNPHONE "
                     + " From zc_order_transit e "
-                    + " LEFT JOIN zc_associator_info f on e.member_id = f.id "
+                    + " LEFT JOIN zc_member f on e.member_id = f.id "
                     + " WHERE (e.CONSIGNEE = '" + keyStr + "' or e.CANSIGNPHONE = '" + keyStr + "' or e.MEMBERCARDNUMBER = '"+keyStr+"' ) and e.orderstatus = '" + Constant.ORDER_STATUS_RECEIPT + "' and e.orderNum like '%" + searchText + "%'";
                 }
                 MysqlDBHelper dbHelper = new MysqlDBHelper();
-                DataSet ds = dbHelper.GetDataSet(sql, "zc_goods_master");
+                DataSet ds = dbHelper.GetDataSet(sql, "member");
                 listDataGridView.AutoGenerateColumns = false;
                 listDataGridView.DataSource = ds;
-                listDataGridView.DataMember = "zc_goods_master";
+                listDataGridView.DataMember = "member";
             }
             catch (Exception ex)
             {

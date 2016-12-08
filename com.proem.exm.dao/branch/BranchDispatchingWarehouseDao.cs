@@ -76,9 +76,11 @@ namespace Branch.com.proem.exm.dao.branch
         public List<string> getCountToday()
         {
             List<string> list = new List<string>();
-            string startTime = DateTime.Now.ToString("yyyy-MM-dd 00:00:01");
-            string endTime = DateTime.Now.ToString("yyyy-MM-dd 23:59:59");
-            string sql = "select id from zc_dispatching_Warehouse where 1=1 and createTime>=to_date('"+startTime+"', 'yyyy-MM-dd HH24:mi:ss') createTime<=to_date('"+endTime+"', 'yyyy-MM-dd HH24:mi:ss') ";
+            string startTimeString = DateTime.Now.ToString("yyyy-MM-dd 00:00:01");
+            DateTime startTime = DateTime.Parse(startTimeString);
+            string endTimeString = DateTime.Now.ToString("yyyy-MM-dd 23:59:59");
+            DateTime endTime = DateTime.Parse(endTimeString);
+            string sql = "select id from zc_dispatching_Warehouse where 1=1 and createTime>=@startTime and createTime<=@endTime ";
             MysqlDBHelper dbHelper = new MysqlDBHelper();
             MySqlConnection conn = null;
             MySqlCommand cmd = new MySqlCommand();
@@ -88,6 +90,8 @@ namespace Branch.com.proem.exm.dao.branch
                 conn = dbHelper.GetConnection();
                 cmd.Connection = conn;
                 cmd.CommandText = sql;
+                cmd.Parameters.AddWithValue("@startTime", startTime);
+                cmd.Parameters.AddWithValue("@endTime", endTime);
                 reader = cmd.ExecuteReader();
                 while(reader.Read()){
                     string id = reader.IsDBNull(0) ? string.Empty : reader.GetString(0);

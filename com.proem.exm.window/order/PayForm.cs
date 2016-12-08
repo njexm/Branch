@@ -222,14 +222,14 @@ namespace Branch.com.proem.exm.window.order
                 MessageBox.Show("支付完成!");
                 if (ModeFlag == 1)
                 {
-                    customerDelivery.saveRefuseInform(Constant.ORDER_STATUS_PART_REFUSE, orderId, payInfo.Id);
+                    customerDelivery.saveRefuseInform(Constant.ORDER_STATUS_PART_REFUSE, orderId, payInfo.Id, textBox4.Text);
                 }
                 else if(ModeFlag == 0)
                 {
-                    customerDelivery.saveAllPay(Constant.ORDER_STATUS_FININSH, orderId, payInfo.Id);
+                    customerDelivery.saveAllPay(Constant.ORDER_STATUS_FININSH, orderId, payInfo.Id, textBox4.Text);
                 }else if(ModeFlag == 2)
                 {
-                    customerDelivery.saveResaleInform(orderId, payInfo.Id);
+                    customerDelivery.saveResaleInform(orderId, payInfo.Id, textBox4.Text);
                 }
                 clFlag = true;
                 ///打印小票的代码

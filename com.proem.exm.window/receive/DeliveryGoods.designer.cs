@@ -822,6 +822,8 @@
             this.weight.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.weight.DataPropertyName = "weight";
             dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle7.Format = "N4";
+            dataGridViewCellStyle7.NullValue = null;
             this.weight.DefaultCellStyle = dataGridViewCellStyle7;
             this.weight.FillWeight = 0.1F;
             this.weight.HeaderText = "重量";
@@ -832,6 +834,8 @@
             this.money.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.money.DataPropertyName = "money";
             dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle8.Format = "N2";
+            dataGridViewCellStyle8.NullValue = null;
             this.money.DefaultCellStyle = dataGridViewCellStyle8;
             this.money.FillWeight = 0.1F;
             this.money.HeaderText = "金额";

@@ -422,7 +422,7 @@ namespace Branch.com.proem.exm.dao.branch
         public int getCountBy(string p)
         {
             int count = 0;
-            string sql = "select count(1) from zc_order_transit where CONSIGNEE = '" + p + "' or CANSIGNPHONE = '" + p + "' or MEMBERCARDNUMBER = '"+p+"' ";
+            string sql = "select count(1) from zc_order_transit where 1=1 and orderstatus='6' and CONSIGNEE = '" + p + "' or CANSIGNPHONE = '" + p + "' or MEMBERCARDNUMBER = '"+p+"' ";
             MySqlConnection conn = null;
             MySqlCommand cmd = new MySqlCommand();
             try

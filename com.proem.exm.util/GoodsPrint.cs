@@ -49,5 +49,30 @@ namespace Branch.com.proem.exm.util
         /// 商品id
         /// </summary>
         public string GoodsFileId { get; set; }
+
+        /// <summary>
+        /// 是否是促销商品
+        /// true 是
+        /// false 否
+        /// </summary>
+        public bool isPromotion { get; set; }
+
+        /// <summary>
+        /// 特价价格
+        /// </summary>
+        public float p_price { get; set; }
+
+        /// <summary>
+        /// 特价数量
+        /// </summary>
+        public float p_nums { get; set; }
+
+        /// <summary>
+        /// 金额
+        /// </summary>
+        public float money { get; set; }
+
+
+
     }
 }

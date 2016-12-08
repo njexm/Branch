@@ -470,61 +470,11 @@ namespace Branch.com.proem.exm.window.main
 
         private void BranchLogin_KeyDown(object sender, KeyEventArgs e)
         {
-
-            //if (e.KeyCode == Keys.D1)
-            //{
-            //    oneButton_Click(this, EventArgs.Empty);
-            //}
-            //if (e.KeyCode == Keys.D2)
-            //{
-            //    twoButton_Click(this, EventArgs.Empty);
-            //}
-            //if (e.KeyCode == Keys.D3)
-            //{
-            //    threeButton_Click(this, EventArgs.Empty);
-            //}
-            //if (e.KeyCode == Keys.D4)
-            //{
-            //    fourButton_Click(this, EventArgs.Empty);
-            //}
-            //if (e.KeyCode == Keys.D5)
-            //{
-            //    fiveButton_Click(this, EventArgs.Empty);
-            //}
-            //if (e.KeyCode == Keys.D6)
-            //{
-            //    sixButton_Click(this, EventArgs.Empty);
-            //}
-            //if (e.KeyCode == Keys.D7)
-            //{
-            //    sevenButton_Click(this, EventArgs.Empty);
-            //}
-            //if (e.KeyCode == Keys.D8)
-            //{
-            //    eightButton_Click(this, EventArgs.Empty);
-            //}
-            //if (e.KeyCode == Keys.D9)
-            //{
-            //    nineButton_Click(this, EventArgs.Empty);
-            //}
-            //if (e.KeyCode == Keys.D0)
-            //{
-            //    zeroButton_Click(this, EventArgs.Empty);
-            //}
-            //if (e.KeyCode == Keys.Back)
-            //{
-            //    backButton_Click(this, EventArgs.Empty);
-            //}
-
-            //if ((e.KeyValue >= 'A' && e.KeyValue <= 'Z') || (e.KeyValue >= 'a' && e.KeyValue <= 'z'))
-            //{
-            //    userNameTextBox.Text += e.KeyCode.ToString();
-            //}
-
-            //MessageBox.Show(e.KeyCode.ToString());
             if (e.KeyCode == Keys.Enter)
             {
-                loginButton_Click(this, EventArgs.Empty);
+               
+               loginButton_Click(this, EventArgs.Empty);
+              
             }
             if (e.KeyCode == Keys.Escape)
             {

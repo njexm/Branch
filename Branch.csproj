@@ -76,6 +76,7 @@
     <Compile Include="app_code\Config.cs" />
     <Compile Include="app_code\LogHelper.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchAssociatorInfoDao.cs" />
+    <Compile Include="com.proem.exm.dao\branch\BranchCodeDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchDailyReceiveGoodsDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchDeliverAmountInfoDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchDiffDao.cs" />
@@ -89,6 +90,8 @@
     <Compile Include="com.proem.exm.dao\branch\BranchOutItemDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchPayInfoDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchPayInfoItemDao.cs" />
+    <Compile Include="com.proem.exm.dao\branch\BranchPromotionDao.cs" />
+    <Compile Include="com.proem.exm.dao\branch\BranchPromotionItemDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchRelUserRoleDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchResaleDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchResaleItemDao.cs" />
@@ -98,6 +101,7 @@
     <Compile Include="com.proem.exm.dao\branch\BranchZcBranchTotalDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchZcClassifyInfoDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchZcGoodsMasterDao.cs" />
+    <Compile Include="com.proem.exm.dao\branch\BranchZcMemberDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchZcOrderHistoryDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchZcOrderHistoryItemDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\BranchZcOrderRefundDao.cs" />
@@ -116,6 +120,7 @@
     <Compile Include="com.proem.exm.dao\branch\DownloadIdenifyDao.cs" />
     <Compile Include="com.proem.exm.dao\branch\UploadDao.cs" />
     <Compile Include="com.proem.exm.dao\master\AssociatorInfoDao.cs" />
+    <Compile Include="com.proem.exm.dao\master\CodeDao.cs" />
     <Compile Include="com.proem.exm.dao\master\DailyReceiveGoodsDao.cs" />
     <Compile Include="com.proem.exm.dao\master\DeliverAmountInfoDao.cs" />
     <Compile Include="com.proem.exm.dao\master\DispatchingWarehouseDao.cs" />
@@ -129,6 +134,8 @@
     <Compile Include="com.proem.exm.dao\master\OrderDigitsDao.cs" />
     <Compile Include="com.proem.exm.dao\master\PayInfoDao.cs" />
     <Compile Include="com.proem.exm.dao\master\PayInfoItemDao.cs" />
+    <Compile Include="com.proem.exm.dao\master\PromotionDao.cs" />
+    <Compile Include="com.proem.exm.dao\master\PromotionItemDao.cs" />
     <Compile Include="com.proem.exm.dao\master\RefundInfoDao.cs" />
     <Compile Include="com.proem.exm.dao\master\RelUserRoleDao.cs" />
     <Compile Include="com.proem.exm.dao\master\ResaleDao.cs" />
@@ -140,6 +147,7 @@
     <Compile Include="com.proem.exm.dao\master\ZcBranchTotalDao.cs" />
     <Compile Include="com.proem.exm.dao\master\ZcClassifyInfoDao.cs" />
     <Compile Include="com.proem.exm.dao\master\ZcGoodsMasterDao.cs" />
+    <Compile Include="com.proem.exm.dao\master\ZcMemberDao.cs" />
     <Compile Include="com.proem.exm.dao\master\ZcOrderHistoryDao.cs" />
     <Compile Include="com.proem.exm.dao\master\ZcOrderHistoryItemDao.cs" />
     <Compile Include="com.proem.exm.dao\master\ZcOrderRefuseDao.cs" />
@@ -168,6 +176,8 @@
     <Compile Include="com.proem.exm.domain\OrderDigits.cs" />
     <Compile Include="com.proem.exm.domain\PayInfo.cs" />
     <Compile Include="com.proem.exm.domain\PayInfoItem.cs" />
+    <Compile Include="com.proem.exm.domain\Promotion.cs" />
+    <Compile Include="com.proem.exm.domain\PromotionItem.cs" />
     <Compile Include="com.proem.exm.domain\RelUserRole.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -183,7 +193,9 @@
     <Compile Include="com.proem.exm.domain\ZcBranchInfo.cs" />
     <Compile Include="com.proem.exm.domain\ZcBranchTotal.cs" />
     <Compile Include="com.proem.exm.domain\ZcClassIfyInfo.cs" />
+    <Compile Include="com.proem.exm.domain\ZcCode.cs" />
     <Compile Include="com.proem.exm.domain\ZcGoodsMaster.cs" />
+    <Compile Include="com.proem.exm.domain\ZcMember.cs" />
     <Compile Include="com.proem.exm.domain\ZcOrderHistory.cs" />
     <Compile Include="com.proem.exm.domain\ZcOrderHistoryItem.cs" />
     <Compile Include="com.proem.exm.domain\ZcOrderRefund.cs" />
@@ -292,6 +304,7 @@
     </Compile>
     <Compile Include="com.proem.exm.util\ParentWindow.cs" />
     <Compile Include="com.proem.exm.util\PingTask.cs" />
+    <Compile Include="com.proem.exm.util\SalesPromotionUtil.cs" />
     <Compile Include="com.proem.exm.util\WindowFlag.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -567,6 +580,12 @@
     <Compile Include="com.proem.exm.window\util\ItemInput.Designer.cs">
       <DependentUpon>ItemInput.cs</DependentUpon>
     </Compile>
+    <Compile Include="com.proem.exm.window\util\Loading.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="com.proem.exm.window\util\Loading.designer.cs">
+      <DependentUpon>Loading.cs</DependentUpon>
+    </Compile>
     <Compile Include="com.proem.exm.window\util\QueryGoods.cs" />
     <Compile Include="com.proem.exm.window\require\ChooserCommitList.cs">
       <SubType>Form</SubType>
@@ -779,6 +798,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="com.proem.exm.window\require\ChooserCommitList.resx">
       <DependentUpon>ChooserCommitList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="com.proem.exm.window\util\Loading.resx">
+      <DependentUpon>Loading.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="com.proem.exm.window\util\Scan.resx">
       <DependentUpon>Scan.cs</DependentUpon>

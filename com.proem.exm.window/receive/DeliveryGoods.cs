@@ -22,6 +22,8 @@ using Branch.com.proem.exm.service;
 using MySql.Data.MySqlClient;
 using Branch.com.proem.exm.dao.branch;
 using Branch.com.proem.exm.dao.master;
+using sorteSystem;
+using System.Threading;
 
 namespace Branch.com.proem.exm.window.receive
 {
@@ -35,6 +37,16 @@ namespace Branch.com.proem.exm.window.receive
         /// </summary>
         private ILog log = LogManager.GetLogger(typeof(DeliveryGoods));
         ItemInput itemsInput = null;
+
+        private delegate void endSorteDelegate();
+
+        Loading loading;
+
+        private void endSorte()
+        {
+            loading = new Loading();
+            loading.Show();
+        }
         ///// <summary>
         ///// 业务员
         ///// </summary>
@@ -309,251 +321,262 @@ namespace Branch.com.proem.exm.window.receive
                 }
             }
 
-            BranchInDao branchInDao = new BranchInDao();
-            BranchInItemDao branchInItemDao = new BranchInItemDao();
 
-            BranchIn branchIn = new BranchIn();
-            branchIn.id = Guid.NewGuid().ToString().Replace("-", "");
-            branchIn.createTime = DateTime.Now;
-            branchIn.updateTime = DateTime.Now;
-            branchIn.InOdd ="TDRKD" + DateTime.Now.ToString("yyyyMMddHHmmssSSS");
-            branchIn.dispatching_id = dispatchingId;
-            branchIn.branch_id = LoginUserInfo.branchId;
-            branchIn.user_id = LoginUserInfo.id;
-            float number = 0;
-            float weight = 0;
-            float money = 0;
-            List<BranchInItem> list = new List<BranchInItem>();
-            //确定收货
-            for (int i = 0; i < itemDataGridView.RowCount; i++)
+            endSorteDelegate endDelegate = endSorte;
+            this.BeginInvoke(endDelegate);
+            Thread objThread = new Thread(new ThreadStart(delegate
             {
-                BranchInItem obj = new BranchInItem();
-                float nums = float.Parse(string.IsNullOrEmpty(itemDataGridView[4, i].Value.ToString()) ? "0" : itemDataGridView[4, i].Value.ToString());
-                if(nums == 0){
-                    continue;
-                }
-                number += nums;
-                obj.id = Guid.NewGuid().ToString().Replace("-", "");
-                obj.createTime = DateTime.Now;
-                obj.updateTime = DateTime.Now;
-                obj.branchIn_id = branchIn.id;
-                obj.nums = string.IsNullOrEmpty(itemDataGridView[4, i].Value.ToString()) ? "0" : itemDataGridView[4, i].Value.ToString();
-                obj.weight = string.IsNullOrEmpty(itemDataGridView[6, i].Value.ToString()) ? "0" : itemDataGridView[6, i].Value.ToString();
-                weight += float.Parse(obj.weight);
-                obj.money = string.IsNullOrEmpty(itemDataGridView[7, i].Value.ToString()) ? "0" : itemDataGridView[7, i].Value.ToString();
-                money += float.Parse(obj.money);
-                obj.goodsFile_id = itemDataGridView[8, i].Value.ToString();
-                obj.price = string.IsNullOrEmpty(itemDataGridView[2, i].Value.ToString()) ? "0" : itemDataGridView[2, i].Value.ToString();
-                list.Add(obj);
-            }
-            branchIn.nums = number.ToString();
-            branchIn.weight = weight.ToString();
-            branchIn.money = money.ToString();
 
-            if (prompt)
-            {
-                BranchDiff diff = new BranchDiff();
-                diff.id = Guid.NewGuid().ToString().Replace("-", "");
-                diff.createTime = DateTime.Now;
-                diff.updateTime = DateTime.Now;
-                diff.DiffOdd ="TDCYD"+ DateTime.Now.ToString("yyyyMMddHHmmssSSS");
-                diff.branchIn_id = branchIn.id;
-                diff.branch_id = LoginUserInfo.branchId;
-                diff.user_id = LoginUserInfo.id;
-                List<BranchDiffItem> diffList = new List<BranchDiffItem>();
-                float diffNums = 0;
+                BranchInDao branchInDao = new BranchInDao();
+                BranchInItemDao branchInItemDao = new BranchInItemDao();
+
+                BranchIn branchIn = new BranchIn();
+                branchIn.id = Guid.NewGuid().ToString().Replace("-", "");
+                branchIn.createTime = DateTime.Now;
+                branchIn.updateTime = DateTime.Now;
+                branchIn.InOdd = "TDRKD" + DateTime.Now.ToString("yyyyMMddHHmmssSSS");
+                branchIn.dispatching_id = dispatchingId;
+                branchIn.branch_id = LoginUserInfo.branchId;
+                branchIn.user_id = LoginUserInfo.id;
+                float number = 0;
+                float weight = 0;
+                float money = 0;
+                List<BranchInItem> list = new List<BranchInItem>();
+                //确定收货
                 for (int i = 0; i < itemDataGridView.RowCount; i++)
                 {
-                    if (float.Parse(itemDataGridView[5, i].Value == null ? "0" : itemDataGridView[5, i].Value.ToString()) != 0)
+                    BranchInItem obj = new BranchInItem();
+                    float nums = float.Parse(string.IsNullOrEmpty(itemDataGridView[4, i].Value.ToString()) ? "0" : itemDataGridView[4, i].Value.ToString());
+                    if (nums == 0)
                     {
-                        BranchDiffItem diffItem = new BranchDiffItem();
-                        diffItem.id = Guid.NewGuid().ToString().Replace("-", "");
-                        diffItem.branchDiff_id = diff.id;
-                        diffItem.createTime = DateTime.Now;
-                        diffItem.updateTime = DateTime.Now;
-                        diffItem.nums = itemDataGridView[5, i].Value.ToString();
-                        diffNums += float.Parse(diffItem.nums);
-                        diffItem.goodsFile_id = itemDataGridView[8, i].Value.ToString();
-                        diffItem.price = string.IsNullOrEmpty(itemDataGridView[2, i].Value.ToString()) ? "0" : itemDataGridView[2, i].Value.ToString();
-                        diffList.Add(diffItem);
+                        continue;
+                    }
+                    number += nums;
+                    obj.id = Guid.NewGuid().ToString().Replace("-", "");
+                    obj.createTime = DateTime.Now;
+                    obj.updateTime = DateTime.Now;
+                    obj.branchIn_id = branchIn.id;
+                    obj.nums = string.IsNullOrEmpty(itemDataGridView[4, i].Value.ToString()) ? "0" : itemDataGridView[4, i].Value.ToString();
+                    obj.weight = string.IsNullOrEmpty(itemDataGridView[6, i].Value.ToString()) ? "0" : itemDataGridView[6, i].Value.ToString();
+                    weight += float.Parse(obj.weight);
+                    obj.money = string.IsNullOrEmpty(itemDataGridView[7, i].Value.ToString()) ? "0" : itemDataGridView[7, i].Value.ToString();
+                    money += float.Parse(obj.money);
+                    obj.goodsFile_id = itemDataGridView[8, i].Value.ToString();
+                    obj.price = string.IsNullOrEmpty(itemDataGridView[2, i].Value.ToString()) ? "0" : itemDataGridView[2, i].Value.ToString();
+                    list.Add(obj);
+                }
+                branchIn.nums = number.ToString();
+                branchIn.weight = weight.ToString();
+                branchIn.money = money.ToString();
+
+                if (prompt)
+                {
+                    BranchDiff diff = new BranchDiff();
+                    diff.id = Guid.NewGuid().ToString().Replace("-", "");
+                    diff.createTime = DateTime.Now;
+                    diff.updateTime = DateTime.Now;
+                    diff.DiffOdd = "TDCYD" + DateTime.Now.ToString("yyyyMMddHHmmssSSS");
+                    diff.branchIn_id = branchIn.id;
+                    diff.branch_id = LoginUserInfo.branchId;
+                    diff.user_id = LoginUserInfo.id;
+                    List<BranchDiffItem> diffList = new List<BranchDiffItem>();
+                    float diffNums = 0;
+                    for (int i = 0; i < itemDataGridView.RowCount; i++)
+                    {
+                        if (float.Parse(itemDataGridView[5, i].Value == null ? "0" : itemDataGridView[5, i].Value.ToString()) != 0)
+                        {
+                            BranchDiffItem diffItem = new BranchDiffItem();
+                            diffItem.id = Guid.NewGuid().ToString().Replace("-", "");
+                            diffItem.branchDiff_id = diff.id;
+                            diffItem.createTime = DateTime.Now;
+                            diffItem.updateTime = DateTime.Now;
+                            diffItem.nums = itemDataGridView[5, i].Value.ToString();
+                            diffNums += float.Parse(diffItem.nums);
+                            diffItem.goodsFile_id = itemDataGridView[8, i].Value.ToString();
+                            diffItem.price = string.IsNullOrEmpty(itemDataGridView[2, i].Value.ToString()) ? "0" : itemDataGridView[2, i].Value.ToString();
+                            diffList.Add(diffItem);
+                        }
+                    }
+                    diff.nums = diffNums.ToString();
+
+                    BranchDiffDao diffDao = new BranchDiffDao();
+                    BranchDiffItemDao diffItemDao = new BranchDiffItemDao();
+
+                    //存入本地差异单表
+                    diffDao.addObj(diff);
+                    diffItemDao.addList(diffList);
+
+                    if (PingTask.IsConnected)
+                    {
+                        MasterBranchDiffDao masterDiffDao = new MasterBranchDiffDao();
+                        masterDiffDao.addObj(diff);
+                        MasterBranchDiffItemDao masterDiffItemDao = new MasterBranchDiffItemDao();
+                        masterDiffItemDao.addList(diffList);
+                    }
+                    else
+                    {
+                        List<UploadInfo> uploadList = new List<UploadInfo>();
+                        UploadInfo uploadInfo1 = new UploadInfo();
+                        uploadInfo1.Id = diff.id;
+                        uploadInfo1.Type = Constant.ZC_BRANCH_DIFF;
+                        uploadInfo1.CreateTime = DateTime.Now;
+                        uploadInfo1.UpdateTime = DateTime.Now;
+                        uploadList.Add(uploadInfo1);
+                        foreach (BranchDiffItem obj in diffList)
+                        {
+                            UploadInfo uploadInfo = new UploadInfo();
+                            uploadInfo.Id = obj.id;
+                            uploadInfo.CreateTime = DateTime.Now;
+                            uploadInfo.UpdateTime = DateTime.Now;
+                            uploadInfo.Type = Constant.ZC_BRANCH_DIFF_ITEM;
+                            uploadList.Add(uploadInfo);
+                        }
+                        UploadDao uploadDao = new UploadDao();
+                        uploadDao.AddUploadInfo(uploadList);
                     }
                 }
-                diff.nums = diffNums.ToString();
 
-                BranchDiffDao diffDao = new BranchDiffDao();
-                BranchDiffItemDao diffItemDao = new BranchDiffItemDao();
 
-                //存入本地差异单表
-                diffDao.addObj(diff);
-                diffItemDao.addList(diffList);
 
+                //存入本地数据库
+                branchInDao.addObj(branchIn);
+                branchInItemDao.addList(list);
+
+                //将全部订单改为待提货  
+                BranchZcOrderTransitService branchZcOrderTransitService = new BranchZcOrderTransitService();
+                branchZcOrderTransitService.UpdateOrderStatus(Constant.ORDER_STATUS_RECEIPT);
+                //将亭点收获标识更新为true
+                DownloadIdentifyService downloadService = new DownloadIdentifyService();
+                downloadService.UpdateHarvestFlag(Constant.HARVEST_YES);
+
+                List<ZcOrderTransit> tranlist = branchZcOrderTransitService.FindAll();
+                ///上传数据处理
                 if (PingTask.IsConnected)
                 {
-                    MasterBranchDiffDao masterDiffDao = new MasterBranchDiffDao();
-                    masterDiffDao.addObj(diff);
-                    MasterBranchDiffItemDao masterDiffItemDao = new MasterBranchDiffItemDao();
-                    masterDiffItemDao.addList(diffList);
+                    //上传每日收货数据
+                    MasterBranchInDao masterBranchInDao = new MasterBranchInDao();
+                    masterBranchInDao.addObj(branchIn);
+                    MasterBranchInItemDao masterBranchInItemDao = new MasterBranchInItemDao();
+                    masterBranchInItemDao.addList(list);
+
+                    ZcOrderTransitService zcOderTransitService = new ZcOrderTransitService();
+                    zcOderTransitService.UpdateStatus(tranlist);
                 }
-                else 
+                else
                 {
                     List<UploadInfo> uploadList = new List<UploadInfo>();
                     UploadInfo uploadInfo1 = new UploadInfo();
-                    uploadInfo1.Id = diff.id;
-                    uploadInfo1.Type = Constant.ZC_BRANCH_DIFF;
+                    uploadInfo1.Id = branchIn.id;
+                    uploadInfo1.Type = Constant.ZC_BRANCH_IN;
                     uploadInfo1.CreateTime = DateTime.Now;
                     uploadInfo1.UpdateTime = DateTime.Now;
                     uploadList.Add(uploadInfo1);
-                    foreach (BranchDiffItem obj in diffList)
+                    foreach (BranchInItem obj in list)
                     {
                         UploadInfo uploadInfo = new UploadInfo();
                         uploadInfo.Id = obj.id;
                         uploadInfo.CreateTime = DateTime.Now;
                         uploadInfo.UpdateTime = DateTime.Now;
-                        uploadInfo.Type = Constant.ZC_BRANCH_DIFF_ITEM;
+                        uploadInfo.Type = Constant.ZC_BRANCH_IN_ITEM;
                         uploadList.Add(uploadInfo);
+                    }
+                    foreach (ZcOrderTransit obj in tranlist)
+                    {
+                        UploadInfo uploadInfo = new UploadInfo();
+                        uploadInfo.Id = obj.Id;
+                        uploadInfo.CreateTime = DateTime.Now;
+                        uploadInfo.UpdateTime = DateTime.Now;
+                        uploadInfo.Type = Constant.ZC_ORDER_TRANSIT_UPDATE;
+                        uploadList.Add(uploadInfo);
+                    }
+
+                    UploadDao uploadDao = new UploadDao();
+                    uploadDao.AddUploadInfo(uploadList);
+                }
+
+                ///库存的更新
+                BranchZcGoodsMasterService branchGoodsService = new BranchZcGoodsMasterService();
+                BranchZcStoreHouseService branchStoreService = new BranchZcStoreHouseService();
+                List<ZcStoreHouse> storeList = new List<ZcStoreHouse>();
+                ZcStoreHouseService storeService = new ZcStoreHouseService();
+                foreach (BranchInItem dg in list)
+                {
+                    String goodsFileId = dg.goodsFile_id;
+                    float nums = float.Parse(dg.nums);
+                    bool isGoodsWeight = branchGoodsService.IsWeightGoods(dg.goodsFile_id);
+                    ZcStoreHouse storeHouse = branchStoreService.FindByGoodsFileIdAndBranchId(goodsFileId, LoginUserInfo.branchId);
+                    if (storeHouse != null)
+                    {
+                        bool zeroFlag = string.IsNullOrEmpty(storeHouse.Store) || storeHouse.Store.Equals("0");
+                        float oldNums = string.IsNullOrEmpty(storeHouse.Store) ? 0F : float.Parse(storeHouse.Store);
+                        float oldMoney = string.IsNullOrEmpty(storeHouse.Store) ? 0F : float.Parse(storeHouse.StoreMoney);
+                        storeHouse.UpdateTime = DateTime.Now;
+                        storeHouse.Store = (oldNums - nums).ToString();
+                        storeHouse.StoreMoney = zeroFlag ? "0" : (oldMoney * (oldNums - nums) / oldNums).ToString();
+                        storeList.Add(storeHouse);
+                    }
+                    else
+                    {
+                        ///TODO
+                        BranchZcBranchInfoService branchInfoService = new BranchZcBranchInfoService();
+                        storeHouse = new ZcStoreHouse();
+                        storeHouse.Id = Guid.NewGuid().ToString();
+                        storeHouse.CreateTime = DateTime.Now;
+                        storeHouse.UpdateTime = DateTime.Now;
+                        storeHouse.Store = nums.ToString();
+                        storeHouse.StoreMoney = dg.money;
+                        storeHouse.BranchId = branchInfoService.FindIdByBranchTotalId(LoginUserInfo.branchId);
+                        storeHouse.CreateUserId = LoginUserInfo.id;
+                        storeHouse.GoodsFileId = dg.goodsFile_id;
+                        branchStoreService.AddZcStoreHouse(storeHouse);
+                        if (PingTask.IsConnected)
+                        {
+                            storeService.AddZcStoreHouseII(storeHouse);
+                        }
+                        else
+                        {
+                            UploadInfo info = new UploadInfo();
+                            info.Id = storeHouse.Id;
+                            info.CreateTime = DateTime.Now;
+                            info.UpdateTime = DateTime.Now;
+                            info.Type = Constant.ZC_STORE_HOSUE;
+                            UploadDao dao = new UploadDao();
+                            dao.AddUploadInfo(info);
+                        }
+                    }
+
+                }
+                branchStoreService.updateStoreHouse(storeList);
+
+                if (PingTask.IsConnected)
+                {
+                    storeService.updateStoreHouse(storeList);
+                }
+                else
+                {
+                    List<UploadInfo> uploadList = new List<UploadInfo>();
+                    for (int i = 0; i < storeList.Count; i++)
+                    {
+                        ZcStoreHouse obj = storeList[i];
+                        UploadInfo info = new UploadInfo();
+                        info.Id = obj.Id;
+                        info.CreateTime = DateTime.Now;
+                        info.UpdateTime = DateTime.Now;
+                        info.Type = Constant.ZC_STOREHOUSE_UPDATE;
+                        uploadList.Add(info);
                     }
                     UploadDao uploadDao = new UploadDao();
                     uploadDao.AddUploadInfo(uploadList);
                 }
-            }
-
-
-
-            //存入本地数据库
-            branchInDao.addObj(branchIn);
-            branchInItemDao.addList(list);
-
-            //将全部订单改为待提货  
-            BranchZcOrderTransitService branchZcOrderTransitService = new BranchZcOrderTransitService();
-            branchZcOrderTransitService.UpdateOrderStatus(Constant.ORDER_STATUS_RECEIPT);
-            //将亭点收获标识更新为true
-            DownloadIdentifyService downloadService = new DownloadIdentifyService();
-            downloadService.UpdateHarvestFlag(Constant.HARVEST_YES);
-
-            List<ZcOrderTransit> tranlist = branchZcOrderTransitService.FindAll();
-            ///上传数据处理
-            if (PingTask.IsConnected)
-            {
-                //上传每日收货数据
-                MasterBranchInDao masterBranchInDao = new MasterBranchInDao();
-                masterBranchInDao.addObj(branchIn);
-                MasterBranchInItemDao masterBranchInItemDao = new MasterBranchInItemDao();
-                masterBranchInItemDao.addList(list);
-    
-                ZcOrderTransitService zcOderTransitService = new ZcOrderTransitService();
-                zcOderTransitService.UpdateStatus(tranlist);
-            }
-            else
-            {
-                List<UploadInfo> uploadList = new List<UploadInfo>();
-                UploadInfo uploadInfo1 = new UploadInfo();
-                uploadInfo1.Id = branchIn.id;
-                uploadInfo1.Type = Constant.ZC_BRANCH_IN;
-                uploadInfo1.CreateTime = DateTime.Now;
-                uploadInfo1.UpdateTime = DateTime.Now;
-                uploadList.Add(uploadInfo1);
-                foreach (BranchInItem obj in list)
-                {
-                    UploadInfo uploadInfo = new UploadInfo();
-                    uploadInfo.Id = obj.id;
-                    uploadInfo.CreateTime = DateTime.Now;
-                    uploadInfo.UpdateTime = DateTime.Now;
-                    uploadInfo.Type = Constant.ZC_BRANCH_IN_ITEM;
-                    uploadList.Add(uploadInfo);
-                }
-                foreach (ZcOrderTransit obj in tranlist)
-                {
-                    UploadInfo uploadInfo = new UploadInfo();
-                    uploadInfo.Id = obj.Id;
-                    uploadInfo.CreateTime = DateTime.Now;
-                    uploadInfo.UpdateTime = DateTime.Now;
-                    uploadInfo.Type = Constant.ZC_ORDER_TRANSIT_UPDATE;
-                    uploadList.Add(uploadInfo);
-                }
-
-                UploadDao uploadDao = new UploadDao();
-                uploadDao.AddUploadInfo(uploadList);
-            }
-
-            ///库存的更新
-            BranchZcGoodsMasterService branchGoodsService = new BranchZcGoodsMasterService();
-            BranchZcStoreHouseService branchStoreService = new BranchZcStoreHouseService();
-            List<ZcStoreHouse> storeList = new List<ZcStoreHouse>();
-            ZcStoreHouseService storeService = new ZcStoreHouseService();
-            foreach(BranchInItem dg in list)
-            {
-                String goodsFileId = dg.goodsFile_id;
-                float nums = float.Parse(dg.nums);
-                bool isGoodsWeight = branchGoodsService.IsWeightGoods(dg.goodsFile_id);
-                ZcStoreHouse storeHouse = branchStoreService.FindByGoodsFileIdAndBranchId(goodsFileId, LoginUserInfo.branchId);
-                if (storeHouse != null)
-                {
-                    bool zeroFlag = string.IsNullOrEmpty(storeHouse.Store) || storeHouse.Store.Equals("0");
-                    float oldNums = string.IsNullOrEmpty(storeHouse.Store) ? 0F: float.Parse(storeHouse.Store);
-                    float oldMoney = string.IsNullOrEmpty(storeHouse.Store) ? 0F: float.Parse(storeHouse.StoreMoney);
-                    storeHouse.UpdateTime = DateTime.Now;
-                    storeHouse.Store = (oldNums - nums).ToString();
-                    storeHouse.StoreMoney = zeroFlag ? "0" : (oldMoney * (oldNums - nums) / oldNums).ToString();
-                    storeList.Add(storeHouse);
-                }
-                else
-                {
-                    ///TODO
-                    BranchZcBranchInfoService branchInfoService = new BranchZcBranchInfoService();
-                    storeHouse = new ZcStoreHouse();
-                    storeHouse.Id = Guid.NewGuid().ToString();
-                    storeHouse.CreateTime = DateTime.Now;
-                    storeHouse.UpdateTime = DateTime.Now;
-                    storeHouse.Store = nums.ToString();
-                    storeHouse.StoreMoney = dg.money;
-                    storeHouse.BranchId = branchInfoService.FindIdByBranchTotalId(LoginUserInfo.branchId);
-                    storeHouse.CreateUserId = LoginUserInfo.id;
-                    storeHouse.GoodsFileId = dg.goodsFile_id;
-                    branchStoreService.AddZcStoreHouse(storeHouse);
-                    if (PingTask.IsConnected)
-                    {
-                        storeService.AddZcStoreHouseII(storeHouse);
-                    }
-                    else
-                    {
-                        UploadInfo info = new UploadInfo();
-                        info.Id = storeHouse.Id;
-                        info.CreateTime = DateTime.Now;
-                        info.UpdateTime = DateTime.Now;
-                        info.Type = Constant.ZC_STORE_HOSUE;
-                        UploadDao dao = new UploadDao();
-                        dao.AddUploadInfo(info);
-                    }
-                }
-
-            }
-            branchStoreService.updateStoreHouse(storeList);
-            
-            if (PingTask.IsConnected)
-            {
-                storeService.updateStoreHouse(storeList);
-            }
-            else
-            {
-                List<UploadInfo> uploadList = new List<UploadInfo>();
-                for (int i = 0; i < storeList.Count; i++)
-                {
-                    ZcStoreHouse obj = storeList[i];
-                    UploadInfo info = new UploadInfo();
-                    info.Id = obj.Id;
-                    info.CreateTime = DateTime.Now;
-                    info.UpdateTime = DateTime.Now;
-                    info.Type = Constant.ZC_STOREHOUSE_UPDATE;
-                    uploadList.Add(info);
-                }
-                UploadDao uploadDao = new UploadDao();
-                uploadDao.AddUploadInfo(uploadList);
-            }
-
-            MessageBox.Show("收货成功！");
-            this.branchMain.Show();
-            this.Close();
+                loading.Close();
+                MessageBox.Show("收货成功！");
+                this.branchMain.Show();
+                this.Close();
+            }));
+            objThread.Start();
         }
+
+        
 
         /// <summary>
         /// 加载商品
@@ -728,7 +751,7 @@ namespace Branch.com.proem.exm.window.receive
             {
                 for (int i = 0; i < itemDataGridView.RowCount; i++)
                 {
-                    totalSum += Convert.ToInt32((itemDataGridView[4, i].Value == null || itemDataGridView[5, i].Value.ToString().Trim() == "") ? "0" : itemDataGridView[5, i].Value.ToString());
+                    totalSum += float.Parse((itemDataGridView[4, i].Value == null || itemDataGridView[4, i].Value.ToString().Trim() == "") ? "0" : itemDataGridView[4, i].Value.ToString());
                     //totalAmount += float.Parse((itemDataGridView[8, i].Value == null || itemDataGridView[8, i].Value.ToString().Trim() == "") ? "0" : itemDataGridView[8, i].Value.ToString());
                 }
             }
@@ -869,6 +892,18 @@ namespace Branch.com.proem.exm.window.receive
                 {
                     float price = float.Parse(e.Value.ToString());
                     e.Value = MoneyFormat.RountFormat(price);
+                }
+            }
+            if (itemDataGridView.Columns[e.ColumnIndex].Name == "money")
+            {
+                if (e.Value == null || e.Value.ToString() == "")
+                {
+                    e.Value = "0.00";
+                }
+                else
+                {
+                    float money = float.Parse(e.Value.ToString());
+                    e.Value = MoneyFormat.RountFormat(money);
                 }
             }
         }
